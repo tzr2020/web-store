@@ -1,6 +1,8 @@
 package model
 
-import "web-store/util"
+import (
+	"web-store/util"
+)
 
 type User struct {
 	ID       int
@@ -38,4 +40,22 @@ func CheckUsername(username string) (user *User, err error) {
 // CheckUsername 验证用户账号状态
 func CheckUserState() {
 	// todo
+}
+
+// AddUser 新增用户
+func AddUser(user *User) error {
+	sql := "insert into user(username, password, email, phone, state) values(?,?,?,?,?)"
+
+	stmt, err := util.Db.Prepare(sql)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(user.Username, user.Password, user.Email, user.Phone, user.State)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
