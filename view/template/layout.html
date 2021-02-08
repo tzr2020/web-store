@@ -1,0 +1,24 @@
+{{ define "layout"}}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>layout</title>
+</head>
+
+<body>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">About</a>
+    </nav>
+    {{ block "content" . }}
+        <p>Template not found!</p>
+    {{ end }}
+</body>
+
+</html>
+
+{{ end }}
