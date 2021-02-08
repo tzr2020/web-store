@@ -29,7 +29,7 @@ func handlerLogin(w http.ResponseWriter, r *http.Request) {
 		// 从数据库获取用户信息
 		user, err := model.CheckUsernameAndPassword(username, password)
 		if err != nil {
-			log.Println(err)
+			log.Println("CheckUsernameAndPassword: ", err)
 		}
 
 		// 验证登录
@@ -116,7 +116,7 @@ func CheckRegist(w http.ResponseWriter, newUser *model.User) {
 	// 从数据库查询是否存在某用户名的用户
 	user, err := model.CheckUsername(newUser.Username)
 	if err != nil {
-		log.Println("数据库不存在某用户名的用户", err)
+		log.Println("CheckUsername: ", err)
 	}
 
 	// 用户名已存在，不可用
