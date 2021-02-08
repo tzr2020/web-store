@@ -7,12 +7,13 @@ import (
 	"web-store/model"
 )
 
-// 注册路由
+// registerUserRoutes 路由器注册用户相关的路由规则和处理器
 func registerUserRoutes() {
 	http.HandleFunc("/user/login", handlerLogin)
 	http.HandleFunc("/user/regist", handlerRegist)
 }
 
+// handlerLogin 用户登录处理器
 func handlerLogin(w http.ResponseWriter, r *http.Request) {
 	// GET请求
 	if r.Method == http.MethodGet {
@@ -37,13 +38,12 @@ func handlerLogin(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// 返回登录页面
+// getLoginPage 模板引擎生成最终页面，并返回登录页面
 func getLoginPage(w http.ResponseWriter, msg string) {
 	t, err := template.ParseFiles("./view/page/user/login.html")
 	if err != nil {
 		log.Println(err)
 	}
-
 	err = t.Execute(w, msg)
 	if err != nil {
 		log.Println(err)
@@ -52,13 +52,12 @@ func getLoginPage(w http.ResponseWriter, msg string) {
 
 // CheckLogin 验证登录
 func CheckLogin(user *model.User, w http.ResponseWriter) {
-	// 登录成功，返回欢迎用户页面
 	if user.ID > 0 {
+		// 登录成功，模板引擎生成最终页面，并返回欢迎用户页面
 		t, err := template.ParseFiles("./view/page/user/login_success.html")
 		if err != nil {
 			log.Println(err)
 		}
-
 		err = t.Execute(w, user.Username)
 		if err != nil {
 			log.Println(err)
@@ -98,13 +97,12 @@ func handlerRegist(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// 返回注册页面
+// getRegistPage 模板引擎生成最终页面，并返回注册页面
 func getRegistPage(w http.ResponseWriter, msg string) {
 	t, err := template.ParseFiles("./view/page/user/regist.html")
 	if err != nil {
 		log.Println(err)
 	}
-
 	err = t.Execute(w, msg)
 	if err != nil {
 		log.Println(err)
@@ -113,7 +111,7 @@ func getRegistPage(w http.ResponseWriter, msg string) {
 
 // 验证注册信息
 func CheckRegist(w http.ResponseWriter, newUser *model.User) {
-	// 从数据库查询是否存在某用户名的用户
+	// 从数据库查询是否存在某用户名的用户，判断用户名是否已存在
 	user, err := model.CheckUsername(newUser.Username)
 	if err != nil {
 		log.Println("CheckUsername: ", err)

@@ -28,6 +28,7 @@
 
             // 给登录按钮绑定单击事件
             $("#sub_btn").click(function () {
+
                 // 获取用户输入的用户名
                 var username = $("#username").val();
                 // 判断用户名是否为空
@@ -35,6 +36,7 @@
                     alert("用户名不能为空");
                     return false;   // 取消默认行为（提交表单行为）
                 }
+                
                 // 获取用户输入的密码
                 var password = $("#password").val();
                 if (password == "") {
