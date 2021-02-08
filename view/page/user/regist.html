@@ -91,6 +91,20 @@
                     return false;   // 取消默认行为（提交表单行为）
                 }
             });
+
+            // 发送Ajax请求，验证用户名是否已存在
+            $('#username').change(function () {
+                var url = "/user/checkUsername";        // 请求路径
+                var username = $(this).val();           // 用户输入的用户名
+                var param = { "username": username };   // 请求参数
+                // 发送Ajax请求，成功接收响应后调用回调函数
+                $.post(url, param, function (res) {
+                    // 将提示信息标签显示
+                    $('#msg').show();
+                    // 将响应数据设置到提示信息标签
+                    $('#msg').text(res);
+                });
+            });
         });
     </script>
 </body>

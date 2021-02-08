@@ -11,6 +11,7 @@ import (
 func registerUserRoutes() {
 	http.HandleFunc("/user/login", handlerLogin)
 	http.HandleFunc("/user/regist", handlerRegist)
+	http.HandleFunc("/user/checkUsername", handlerCheckUsername)
 }
 
 // handlerLogin 用户登录处理器
@@ -140,5 +141,24 @@ func CheckRegist(w http.ResponseWriter, newUser *model.User) {
 		if err != nil {
 			log.Println(err)
 		}
+	}
+}
+
+// handlerCheckUsername 验证用户名处理器
+func handlerCheckUsername(w http.ResponseWriter, r *http.Request) {
+	// 从Ajax请求里获取用户输入的用户名
+	username := r.PostFormValue("username")
+
+	// 根据用户名，从数据库里获取用户，来判断是否某用户名是否已存在
+	user, err := model.CheckUsername(username)
+	if err != nil {
+		log.Println("CheckUsername: ", err)
+	}
+	if user.ID > 0 {
+		// 已存在用户名，不可用，返回msg
+		w.Write([]byte("用户名已存在"))
+	} else {
+		// 用户名可用，返回msg
+		w.Write([]byte("用户名可用"))
 	}
 }
