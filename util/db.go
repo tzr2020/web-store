@@ -24,15 +24,18 @@ const (
 func init() {
 	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
 		username, password, ip, port, database)
+
 	Db, err = sql.Open("mysql", connStr)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalf("could not open database connection: %v\n", err)
+		return
 	}
 
 	err = Db.Ping()
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalf("could not ping to database: %v\n", err)
+		return
 	}
 
-	fmt.Println("Database connected!")
+	fmt.Println("database connected!")
 }
