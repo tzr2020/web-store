@@ -1,14 +1,43 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登录成功</title>
+    <title>欢迎登录惠绿商城</title>
+    <link type="text/css" rel="stylesheet" href="/static/css/style.css">
+    <style type="text/css">
+        h1 {
+            text-align: center;
+            margin-top: 200px;
+        }
+
+        h1 a {
+            color: red;
+        }
+    </style>
 </head>
 
 <body>
-    Welcome {{ . }}!
+    <div id="header">
+        <img class="logo_img" alt="" src="/static/img/logo.png">
+        <div>
+            <span>欢迎<span class="um_span">{{ .Username }}</span>光临惠绿商城</span>
+            <a href="#">购物车</a>
+            <a href="#">我的订单</a>
+            <a href="#">注销</a>&nbsp;&nbsp;
+            <a href="#">返回主页</a>
+        </div>
+    </div>
+
+    <div id="main">
+        <h1>欢迎回来 <a href="#">转到主页</a></h1>
+    </div>
+
+    <div id="bottom">
+        <span>
+            惠绿商城&nbsp;&copy;&nbsp;2021
+        </span>
+    </div>
 </body>
 
 </html>

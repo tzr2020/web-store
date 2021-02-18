@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会员登录</title>
+</head>
+
+<body>
+    <form action="/user/login" method="post">
+        <label for="username">用户名：</label>
+        <input type="text" name="username" id="username">
+        <label for="password">密码：</label>
+        <input type="password" name="password" id="password">
+        <input type="submit" value="登录" id="sub_btn">
+    </form>
+
+    <p id="msg" style="display: none;">{{ . }}</p>
+
+    <script src="/static/js/jquery-1.12.4.min.js"></script>
+    <script>
+        $(function () {
+            // 将提示信息标签显示
+            if ("{{ . }}" != "") {
+                $("#msg").show();
+            }
+
+            // 给登录按钮绑定单击事件
+            $("#sub_btn").click(function () {
+
+                // 获取用户输入的用户名
+                var username = $("#username").val();
+                // 判断用户名是否为空
+                if (username == "") {
+                    alert("用户名不能为空");
+                    return false;   // 取消默认行为（提交表单行为）
+                }
+                
+                // 获取用户输入的密码
+                var password = $("#password").val();
+                if (password == "") {
+                    alert("密码不能为空");
+                    return false;   // 取消默认行为（提交表单行为）
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
