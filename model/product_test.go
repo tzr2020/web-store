@@ -7,7 +7,7 @@ import (
 )
 
 func TestProduct(t *testing.T) {
-	t.Run("获取所有产品", testGetProducts)
+	// t.Run("获取所有产品", testGetProducts)
 }
 
 func testGetProducts(t *testing.T) {

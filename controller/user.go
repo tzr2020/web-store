@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -23,7 +22,6 @@ func handlerLogin(w http.ResponseWriter, r *http.Request) {
 		// 返回登录页面
 		getLoginPage(w, "")
 	case http.MethodPost:
-		fmt.Println("hhh")
 		// POST请求
 		// 从表单获取数据
 		username := r.PostFormValue("username")
