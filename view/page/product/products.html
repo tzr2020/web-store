@@ -200,8 +200,11 @@
                             <span>￥{{ .Price }}</span>
                         </div>
                         <a href="#" class="mask">
+                            {{ if .Stock }}
                             <span class="btn">查看详情</span>
-                            <span class="stock_msg" style="display: none;">无货，正在补货中</span>
+                            {{ else }}
+                            <span class="stock_msg">无货，正在补货中</span>
+                            {{ end }}
                         </a>
                     </li>
                     {{ end }}
