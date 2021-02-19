@@ -48,14 +48,16 @@ func getPageProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 解析模板文件
-	t, err := template.ParseFiles("./view/page/product/products.html")
+	t, err := template.ParseFiles("./view/template/layout.html", "./view/template/products.html")
+	// t, err := template.ParseFiles("./view/page/product/products.html")
 
 	// 执行模板，生成HTML文档，返回页面
 	if err != nil {
 		log.Printf("解析模板文件发生错误：%v", err)
 		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
 	} else {
-		t.Execute(w, page)
+		t.ExecuteTemplate(w, "layout", page)
+		// t.Execute(w, page)
 	}
 }
 
@@ -98,13 +100,15 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 解析模板文件
-	t, err := template.ParseFiles("./view/page/product/products.html")
+	t, err := template.ParseFiles("./view/template/layout.html", "./view/template/products.html")
+	// t, err := template.ParseFiles("./view/page/product/products.html")
 
 	// 执行模板，生成HTML文档，返回页面
 	if err != nil {
 		log.Printf("解析模板文件发生错误：%v", err)
 		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
 	} else {
-		t.Execute(w, page)
+		t.ExecuteTemplate(w, "layout", page)
+		// t.Execute(w, page)
 	}
 }

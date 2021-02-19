@@ -1,0 +1,125 @@
+{{ define "content" }}
+
+<!-- 二级页面内容 start -->
+<div class="content">
+    <div class="content_inner inner_c">
+        <!-- 面包屑导航 start -->
+        <div class="bread_nav">
+            <a href="#">首页</a>
+            <span>&gt;</span><span>所有商品</span>
+        </div>
+        <!-- 面包屑导航 end -->
+
+        <!-- 品牌分类 start -->
+        <div class="s_type">
+            <table>
+                <!-- <tr class="row1">
+                        <th>品牌</th>
+                        <td>
+                            <a href="#">品牌1</a>
+                            <a href="#">品牌2</a>
+                        </td>
+                    </tr> -->
+                <tr class="row2">
+                    <th>类型</th>
+                    <td>
+                        <a href="#">新鲜水果</a>
+                        <a href="#">海鲜水产</a>
+                        <a href="#">精选肉类</a>
+                        <a href="#">冻饮冻食</a>
+                        <a href="#">蔬菜蛋品</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- 品牌分类 end -->
+
+        <!-- 产品排序 start -->
+        <div class="s_detail">
+            <div class="sort">
+                <span>排序：</span>
+                <a href="#">销量</a>
+                <a href="#">价格</a>
+                <!-- <a href="#">上架时间</a> -->
+                <a href="#">仅显示有货</a>
+            </div>
+
+            <div class="price_search">
+                <form action="/productsByPrice" method="POST">
+                    <span>价格：</span>
+                    <input type="text" name="min"> 元 -
+                    <input type="text" name="max"> 元&nbsp;
+                    <button>查询</button>
+                </form>
+            </div>
+
+            <div class="amount">
+                共<span>20</span>个商品
+            </div>
+        </div>
+        <!-- 产品排序 end -->
+
+        <!-- 产品列表 start -->
+        <div class="s_product">
+            <ul>
+                <!-- 产品盒子 -->
+                {{ range .Products }}
+                <li class="common_product">
+                    <div class="pic">
+                        <img src={{ .ImgPath }} alt="product">
+                    </div>
+                    <div class="s_content">
+                        <p>{{ .Name }}</p>
+                        <span>￥{{ .Price }}</span>
+                    </div>
+                    <a href="#" class="mask">
+                        {{ if .Stock }}
+                        <span class="btn">查看详情</span>
+                        {{ else }}
+                        <span class="stock_msg">无货，正在补货中</span>
+                        {{ end }}
+                    </a>
+                </li>
+                {{ end }}
+            </ul>
+
+            <!-- <div class="page">
+                    <span>&lt;</span>
+                    <a href="#" class="active">1</a>
+                    <a href="#">2</a>
+                    <span>&gt;</span>
+                </div> -->
+
+            <div id="page_nav">
+                {{ if .IsHasPrev }}
+                <a href="/productsByPrice?min={{ .MinPrice }}&max={{ .MaxPrice }}">首页</a>
+                <a href="/productsByPrice?pageNo={{ .GetPrevPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}">上一页</a>
+                {{ end }}
+
+                当前页:第{{ .PageNo }}页 共{{ .TotalPageNo }}页、{{ .TotalRecord }}件商品
+
+                {{ if .IsHasNext }}
+                <a href="/productsByPrice?pageNo={{ .GetNextPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}">下一页</a>
+                <a href="/productsByPrice?pageNo={{ .TotalPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}">末页</a>
+                {{ end }}
+
+                到第<input value="{{ .PageNo }}" name="pn" id="pn_input" />页
+                <input type="button" value="确定" id="sub">
+
+                <script>
+                    // 给分页跳转确定按钮绑定单击事件
+                    $("#sub").click(function () {
+                        // 获取输入的页码
+                        var pageNo = $("#pn_input").val();
+                        location = "/productsByPrice?pageNo=" + pageNo + "&min={{ .MinPrice }}&max={{ .MaxPrice }}"
+                    });
+                </script>
+            </div>
+
+        </div>
+        <!-- 产品列表 end -->
+    </div>
+</div>
+<!-- 二级页面内容 end -->
+
+{{ end }}
