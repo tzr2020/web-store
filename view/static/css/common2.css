@@ -1,0 +1,20 @@
+/* 二级页面 */
+
+.content {
+    background-color: #f2f2f2;
+    padding-bottom: 60px;
+}
+
+.content .content_inner {
+    width: 1120px;
+    padding: 0 10px;
+    background-color: #fff;
+}
+
+.content .content_inner .bread_nav {
+    padding-top: 30px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    line-height: 40px;
+    color: #555;
+}

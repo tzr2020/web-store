@@ -9,4 +9,5 @@ func RegsiRoutes() {
 	registerHomeRoutes()
 	registerAboutRoutes()
 	registerUserRoutes()
+	registerProductRoutes()
 }

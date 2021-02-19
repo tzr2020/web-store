@@ -7,9 +7,9 @@ import (
 )
 
 func TestUser(t *testing.T) {
-	t.Run("验证用户名和密码", testCheckUsernameAndPassword)
-	t.Run("验证用户名", testCheckUsername)
-	t.Run("新增用户", testAddUser)
+	// t.Run("验证用户名和密码", testCheckUsernameAndPassword)
+	// t.Run("验证用户名", testCheckUsername)
+	// t.Run("新增用户", testAddUser)
 }
 
 func testCheckUsernameAndPassword(t *testing.T) {

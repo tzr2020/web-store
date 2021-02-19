@@ -1,0 +1,444 @@
+/* 版心 */
+
+.inner_c {
+	width: 1140px;
+	margin: 0 auto;
+}
+
+a {
+	text-decoration: none;
+	/* 继承父元素的颜色 */
+	color: inherit;
+}
+
+/* 产品盒子 */
+
+.common_product {
+	/* 用于产品盒子遮罩的定位 */
+	position: relative;
+	padding-top: 20px;
+}
+
+.common_product .pic {
+	width: 200px;
+	margin: 0 auto;
+}
+
+.common_product .pic img {
+	width: 100%;
+}
+
+.common_product .s_content {
+	text-align: center;
+	padding-top: 20px;
+	font-size: 12px;
+	font-weight: 700;
+	color: #303030;
+}
+
+.common_product .s_content span {
+	color: #ce2b2b;
+}
+
+.common_product:hover .mask {
+	display: block;
+}
+
+/* mask 产品盒子遮罩 */
+
+.mask {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, .1);
+	display: none;
+}
+
+.mask .btn {
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -26px;
+	margin-left: -69px;
+	width: 138px;
+	height: 52px;
+	background-color: #c78a49;
+	color: #fff;
+	text-align: center;
+	line-height: 52px;
+	border-radius: 4px;
+}
+
+.mask .stock_msg {
+	display: block;
+	position: absolute;
+	top: 30%;
+	left: 50%;
+	margin-top: -26px;
+	margin-left: -69px;
+	width: 138px;
+	height: 52px;
+	background-color: #c75c49;
+	color: #fff;
+	text-align: center;
+	line-height: 52px;
+	border-radius: 4px;
+}
+
+/* 标题 */
+
+.common_title {
+	padding-top: 45px;
+	padding-bottom: 18px;
+	text-align: center;
+}
+
+.common_title h3 {
+	line-height: 50px;
+	font-size: 20px;
+	color: #3f3f3f;
+	font-weight: 700;
+}
+
+.common_title p {
+	line-height: 20px;
+	font-size: 14px;
+	color: #999;
+}
+
+/* header */
+
+.header {
+	width: 100%;
+	/* 子元素浮动后，无法撑开该元素，故需要设置高度 */
+	height: 68px;
+	/* 下边框 */
+	border-bottom: 1px solid #e2e2e2;
+	/* 阴影 */
+	box-shadow: 4px 0px 2px 2px rgba(0, 0, 0, .4);
+	/* 相对定位，用于定位.all_pro元素 */
+	position: relative;
+	line-height: 68px;
+	text-align: center;
+	font-size: 14px;
+	z-index: 1;
+}
+
+.header .header_c h1 {
+	width: 140px;
+	/* 垂直居中 */
+	padding: 0 15px;
+	float: left;
+}
+
+.header .header_c h1 a {
+	display: block;
+	/* 文本块中首行文本的缩进 */
+	text-indent: -100em;
+	/* 定义溢出元素内容区的内容会如何处理，hidden：内容会被修剪，并且其余内容是不可见的 */
+	overflow: hidden;
+	/* 待修改内容 */
+	background: url(/static/img/logo2.png) no-repeat center center;
+	background-size: 140px 68px;
+}
+
+.header .header_c .all_pro {
+	width: 168px;
+	float: left;
+	margin: 0 10px;
+}
+
+.header .header_c .all_pro:hover {
+	background-color: #e6d6c6;
+}
+
+.header .header_c .all_pro .all_type {
+	display: block;
+}
+
+.header .header_c .all_pro .all_type .icon {
+	/* 向下三角形 */
+	display: inline-block;
+	width: 0;
+	height: 0;
+	border: 5px solid transparent;
+	border-top-color: #333;
+	position: relative;
+	left: 3px;
+	top: 3px;
+}
+
+.header .header_c .all_pro:hover .icon {
+	/* 鼠标移动到.all_pro标签后，子标签span标签的行为 */
+	/* 向下三角颜色形设置为透明 */
+	border-top-color: transparent;
+	/* 向下三角形 */
+	border-bottom-color: #333;
+	position: relative;
+	top: -3px;
+}
+
+.header .header_c .all_pro .product {
+	width: 100%;
+	background-color: #fff;
+	/* 绝对定位，相较于.header元素 */
+	position: absolute;
+	left: 0;
+	top: 68px;
+	display: none;
+}
+
+.header .header_c .all_pro:hover .product {
+	/* 鼠标移动到.all_pro标签后，子标签.product标签的行为 */
+	/* 显示.product */
+	display: block;
+}
+
+.header .header_c .all_pro .product .pro_inner {
+	text-align: left;
+	padding-left: 250px;
+	line-height: 38px;
+}
+
+.header .header_c .all_pro .product .pro_inner .inn_nav {
+	float: left;
+	width: 155px;
+	padding-top: 45px;
+	padding-left: 26px;
+}
+
+.header .header_c .all_pro .product .pro_inner .inn_nav a:hover {
+	color: #e6d6c6;
+}
+
+.header .header_c .all_pro .product .pro_inner .inn_detail {
+	float: left;
+	width: 744px;
+	/* background-color: blue; */
+	margin-left: 65px;
+}
+
+.header .header_c .all_pro .product .pro_inner .inn_detail li {
+	float: left;
+	width: 248px;
+	height: 320px;
+	/* background-color: gold; */
+}
+
+.header .header_c .header_nav {
+	float: left;
+}
+
+.header .header_c .header_nav ul li {
+	float: left;
+}
+
+.header .header_c .header_nav ul li a {
+	display: block;
+	padding: 0 20px;
+}
+
+.header .header_c .header_nav ul li a:hover {
+	background-color: #e6d6c6;
+}
+
+.header .header_c .search {
+	float: left;
+	width: 154px;
+	height: 68px;
+	background-color: blue;
+	/* 待修改内容 */
+	background: url(/static/img/search.png) no-repeat center right;
+}
+
+.header .header_c .login {
+	float: right;
+}
+
+.header .header_c .login a {
+	padding: 0 0;
+}
+
+.header .header_c .login span {
+	padding: 0 5px;
+}
+
+.header .header_c .login .gwc {
+	display: inline-block;
+	padding-left: 29px;
+	/* 待修改内容 */
+	background: url(/static/img/gwc.png) no-repeat left center;
+	/* 鼠标移入显示小手 */
+	cursor: pointer;
+}
+
+.header .header_c .login .gwc .check_out {
+	/* 绝对定位，相较于.header元素 */
+	position: absolute;
+	right: 200px;
+	top: 68px;
+	width: 230px;
+	padding: 10px;
+	background-color: #f2f2f2;
+	border: 1px solid #dddddd;
+	border-radius: 2px;
+	display: none;
+}
+
+.header .header_c .login .gwc:hover .check_out {
+	display: block;
+}
+
+.header .header_c .login .gwc .check_out .check_con {
+	line-height: 58px;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.header .header_c .login .gwc .check_out .check_con span {
+	color: #db2e2e;
+}
+
+.header .header_c .login .gwc .check_out .button {
+	background-color: #c78a49;
+	border-radius: 2px;
+	color: #fff;
+	line-height: 44px;
+	font-size: 16px;
+}
+
+/* footer */
+
+.footer {
+	background-color: #f8f8f8;
+}
+
+.footer .footer_c .f_top {
+	overflow: hidden;
+	padding: 30px 0;
+	border-bottom: 1px solid #e6e6e6;
+}
+
+.footer .footer_c .f_top .copy {
+	float: left;
+	width: 300px;
+	margin-right: 20px;
+	font-size: 12px;
+	color: #636363;
+}
+
+.footer .footer_c .f_top .copy p {
+	padding-top: 20px;
+}
+
+.footer .footer_c .f_top .about {
+	float: left;
+	margin: 0 45px;
+	line-height: 30px;
+	font-size: 14px;
+	color: #333;
+}
+
+.footer .footer_c .f_top .about dt {
+	font-size: 16px;
+}
+
+.footer .footer_c .f_top .ewm {
+	float: right;
+	width: 120px;
+	margin-left: 50px;
+	text-align: center;
+}
+
+.footer .footer_c .f_top .ewm img {
+	width: 100%;
+}
+
+.footer .footer_c .f_bot {
+	padding: 20px 0;
+	overflow: hidden;
+}
+
+.footer .footer_c .f_bot .f_icon {
+	float: left;
+}
+
+.footer .footer_c .f_bot .f_icon p {
+	line-height: 30px;
+	font-size: 12px;
+	color: #919191;
+}
+
+.footer .footer_c .f_bot .f_icon img {
+	margin-right: 5px;
+}
+
+.footer .footer_c .f_bot .icp {
+	float: right;
+	line-height: 100px;
+}
+
+.footer .footer_c .f_bot .icp img {
+	margin-left: 10px;
+}
+
+/* 返回顶部按钮 */
+
+.fix_top {
+	position: fixed;
+	right: 80px;
+	bottom: 240px;
+	width: 50px;
+	color: #fff;
+}
+
+.fix_top p {
+	height: 30px;
+	padding: 10px;
+	background-color: rgba(0, 0, 0, .4);
+	margin-bottom: 10px;
+	font-size: 12px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.fix_top p.qq {
+	position: relative;
+}
+
+.fix_top p.qq img {
+	position: absolute;
+	left: -150px;
+	top: 0;
+    width: 140px;
+    height: 140px;
+	display: none;
+}
+
+.fix_top p.qq:hover img {
+	display: block;
+}
+
+.fix_top p.wx {
+	position: relative;
+}
+
+.fix_top p.wx img {
+	position: absolute;
+	left: -150px;
+	top: 0;
+    width: 140px;
+    height: 140px;
+	display: none;
+}
+
+.fix_top p.wx:hover img {
+	display: block;
+}
+
+.fix_top p.top {
+	font-size: 25px;
+}
