@@ -172,7 +172,7 @@
                 </div>
 
                 <div class="price_search">
-                    <form action="/getPageBooksByPrice" method="POST">
+                    <form action="/productsByPrice" method="POST">
                         <span>价格：</span>
                         <input type="text" name="min"> 元 -
                         <input type="text" name="max"> 元&nbsp;
@@ -219,15 +219,15 @@
 				
                 <div id="page_nav">
                     {{ if .IsHasPrev }}
-					<a href="/products">首页</a>
-					<a href="/products?pageNo={{ .GetPrevPageNo }}">上一页</a>
+					<a href="/productsByPrice?min={{ .MinPrice }}&max={{ .MaxPrice }}">首页</a>
+					<a href="/productsByPrice?pageNo={{ .GetPrevPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}">上一页</a>
                     {{ end }}
 
 					当前页:第{{ .PageNo }}页 共{{ .TotalPageNo }}页、{{ .TotalRecord }}件商品
 
                     {{ if .IsHasNext }}
-					<a href="/products?pageNo={{ .GetNextPageNo }}">下一页</a>
-					<a href="/products?pageNo={{ .TotalPageNo }}">末页</a>
+					<a href="/productsByPrice?pageNo={{ .GetNextPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}">下一页</a>
+					<a href="/productsByPrice?pageNo={{ .TotalPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}">末页</a>
                     {{ end }}
 
 					到第<input value="{{ .PageNo }}" name="pn" id="pn_input" />页
@@ -238,7 +238,7 @@
                         $("#sub").click(function () {
                             // 获取输入的页码
                             var pageNo = $("#pn_input").val();
-                            location = "/products?pageNo=" + pageNo
+                            location = "/productsByPrice?pageNo=" + pageNo + "&min={{ .MinPrice }}&max={{ .MaxPrice }}"
                         });
                     </script>
 				</div>
