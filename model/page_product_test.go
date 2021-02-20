@@ -8,7 +8,7 @@ import (
 
 func TestPageProduct(t *testing.T) {
 	// t.Run("获取产品列表，根据分页", testGetPageProducts)
-	t.Run("测试获取产品列表，根据分页和价格区间", testGetPageProductsByPrice)
+	// t.Run("测试获取产品列表，根据分页和价格区间", testGetPageProductsByPrice)
 }
 
 func testGetPageProducts(t *testing.T) {
