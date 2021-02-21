@@ -7,6 +7,8 @@ import (
 )
 
 func main() {
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+
 	// 配置服务器结构
 	server := http.Server{
 		Addr:    "localhost:8081",

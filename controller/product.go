@@ -9,8 +9,8 @@ import (
 
 func registerProductRoutes() {
 	// http.HandleFunc("/products", getProducts)
-	http.HandleFunc("/products", getPageProducts)
-	http.HandleFunc("/productsByPrice", getPageProductsByPrice)
+	http.HandleFunc("/products", getPageProductsByPrice)
+	// http.HandleFunc("/productsByPrice", getPageProductsByPrice)
 }
 
 func getProducts(w http.ResponseWriter, r *http.Request) {
@@ -45,6 +45,14 @@ func getPageProducts(w http.ResponseWriter, r *http.Request) {
 		log.Printf("查询数据库发生错误：%v", err)
 		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
 		return
+	}
+
+	// 检查用户是否已经登录
+	ok, username := IsLogin(r)
+	if ok {
+		// 设置分页结构
+		page.IsLogin = true
+		page.Username = username
 	}
 
 	// 解析模板文件
@@ -94,9 +102,17 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
 			return
 		}
-		// 将价格区间设置到page结构
+		// 将价格区间设置到分页结构，让产品列表模板使用
 		page.MinPrice = minPrice
 		page.MaxPrice = maxPrice
+	}
+
+	// 检查用户是否已经登录
+	ok, username := IsLogin(r)
+	if ok {
+		// 设置分页结构
+		page.IsLogin = true
+		page.Username = username
 	}
 
 	// 解析模板文件

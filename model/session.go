@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"fmt"
 	"web-store/util"
 )
@@ -56,7 +57,7 @@ func GetSession(sessID string) (*Session, error) {
 	sess := &Session{}
 
 	err = stmt.QueryRow(sessID).Scan(&sess.SessionID, &sess.Username, &sess.UserID)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		return nil, fmt.Errorf("执行SQL语句错误：%v", err)
 	}
 

@@ -105,13 +105,17 @@
             <!-- 登录注册购物车 start -->
             <div class="login">
                 <!-- 待修改内容 -->
-                <a href="user/regist">注册</a>
+                <a href="/regist">注册</a>
                 <span>|</span>
-                <a href="user/login">登录</a>
+                <a href="/login">登录</a>
                 <span>|</span>
-                <a href="#">注销</a>
+                <a href="/logout">注销</a>
                 <span>|</span>
+                {{ if.IsLogin }}
+                <a href="#">{{ .Username }}</a>
+                {{ else }}
                 <a href="#">个人</a>
+                {{ end }}
                 <span>|</span>
                 <a href="#">订单</a>
                 <div href="#" class="gwc">

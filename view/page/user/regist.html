@@ -70,7 +70,7 @@
                 // 获取用户输入的用户名
                 var username = $(this).val();
                 // 设置请求地址
-                var url = "/user/checkUsername";
+                var url = "/checkUsername";
                 // 设置请求参数
                 var param = { "username": username };
                 // 发送ajax请求
@@ -104,7 +104,7 @@
                     </div>
                     <br>
                     <div class="form">
-                        <form action="/user/regist" method="POST">
+                        <form action="/regist" method="POST">
                             <label>用户名称：</label>
                             <input class="itxt" type="text" placeholder="请输入用户名" autocomplete="off" tabindex="1"
                                 name="username" id="username" />

@@ -13,6 +13,8 @@ type PageProduct struct {
 	TotalRecord int64      // 总记录数，通过查询数据库得到
 	MinPrice    string
 	MaxPrice    string
+	IsLogin     bool
+	Username    string
 }
 
 // IsHasPrev 判断是否存在上一页

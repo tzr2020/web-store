@@ -1,17 +1,20 @@
 package controller
 
 import (
+	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
 	"web-store/model"
+	"web-store/util"
 )
 
 // registerUserRoutes 路由器注册用户相关的路由规则和处理器
 func registerUserRoutes() {
-	http.HandleFunc("/user/login", handlerLogin)
-	http.HandleFunc("/user/regist", handlerRegist)
-	http.HandleFunc("/user/checkUsername", handlerCheckUsername)
+	http.HandleFunc("/login", handlerLogin)
+	http.HandleFunc("/regist", handlerRegist)
+	http.HandleFunc("/checkUsername", handlerCheckUsername)
+	http.HandleFunc("/logout", handlerLogout)
 }
 
 // handlerLogin 用户登录处理器
@@ -19,10 +22,24 @@ func handlerLogin(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		// GET请求
+		ok, _ := IsLogin(r)
+		if ok {
+			// 已经登录，返回所有产品页面，不用进行用户名和密码验证和创建Session操作
+			getPageProductsByPrice(w, r)
+			return
+		}
+
 		// 返回登录页面
 		getLoginPage(w, "")
 	case http.MethodPost:
 		// POST请求
+		ok, _ := IsLogin(r)
+		if ok {
+			// 已经登录，返回所有产品页面，不用进行用户名和密码验证和创建Session操作
+			getPageProductsByPrice(w, r)
+			return
+		}
+
 		// 从表单获取数据
 		username := r.PostFormValue("username")
 		password := r.PostFormValue("password")
@@ -71,6 +88,34 @@ func getLoginPage(w http.ResponseWriter, msg string) {
 // CheckLogin 验证登录，返回最终页面
 func CheckLogin(user *model.User, w http.ResponseWriter) {
 	if user.ID > 0 {
+		// 用户名和密码正确
+
+		// 创建Session
+		uuid := util.CreateUUID()
+		sess := &model.Session{
+			SessionID: uuid,
+			Username:  user.Username,
+			UserID:    user.ID,
+		}
+
+		// 将Session保存到数据库
+		err := model.AddSession(sess)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
+			return
+		}
+
+		// 创建Cookie
+		cookie := http.Cookie{
+			Name:   "user",
+			Value:  sess.SessionID,
+			MaxAge: 60 * 60 * 24 * 7,
+			Path:   "/",
+		}
+		// 将Cookie发送到浏览器
+		http.SetCookie(w, &cookie)
+
 		// 登录成功，模板引擎生成最终页面，并返回欢迎用户页面
 		t, err := template.ParseFiles("./view/page/user/login_success.html")
 		if err != nil {
@@ -203,4 +248,58 @@ func handlerCheckUsername(w http.ResponseWriter, r *http.Request) {
 		// 用户名可用，返回msg
 		w.Write([]byte("<font style='color:green'>用户名可用</font>"))
 	}
+}
+
+func handlerLogout(w http.ResponseWriter, r *http.Request) {
+	// 获取Cookie
+	cookie, err := r.Cookie("user")
+	if err != nil {
+		log.Printf("获取Cookie发生错误：%v", err)
+		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
+		return
+	}
+
+	if cookie != nil {
+		// 获取SessionID
+		sessID := cookie.Value
+
+		// 删除数据库中对应的Session
+		err := model.DeleteSession(sessID)
+		if err != nil && err != sql.ErrNoRows {
+			log.Println(err)
+			return
+		}
+
+		// 设置Cookie为失效状态
+		cookie.Path = "/"
+		cookie.MaxAge = -1
+		// 将Cookie发送到浏览器
+		http.SetCookie(w, cookie)
+	}
+
+	// 注销账号后，返回登录页面
+	handlerLogin(w, r)
+}
+
+// IsLogin 检查用户是否已经登录
+func IsLogin(r *http.Request) (bool, string) {
+	// 获取Cookie
+	cookie, _ := r.Cookie("user")
+
+	if cookie != nil {
+		// 获取SessionID
+		sessID := cookie.Value
+		// 获取Session
+		sess, err := model.GetSession(sessID)
+		if err != nil && err != sql.ErrNoRows {
+			log.Println(err)
+		} else {
+			if sess.UserID > 0 {
+				// 用户已经登录
+				return true, sess.Username
+			}
+		}
+	}
+
+	return false, ""
 }
