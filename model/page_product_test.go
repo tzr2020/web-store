@@ -9,6 +9,8 @@ import (
 func TestPageProduct(t *testing.T) {
 	// t.Run("获取产品列表，根据分页", testGetPageProducts)
 	// t.Run("测试获取产品列表，根据分页和价格区间", testGetPageProductsByPrice)
+	t.Run("测试获取产品列表，根据分页和产品类别id", testGetPageProductsByCategoryID)
+	t.Run("测试获取产品列表，根据分页和价格区间和产品类别id", testGetPageProductsByPriceAndCategoryID)
 }
 
 func testGetPageProducts(t *testing.T) {
@@ -34,6 +36,44 @@ func testGetPageProductsByPrice(t *testing.T) {
 	fmt.Println("测试获取产品列表，根据分页和价格区间")
 
 	PageProduct, err := GetPageProductsByPrice("1", "50", "80")
+	if err != nil {
+		log.Println("查询数据库错误：", err)
+		return
+	}
+
+	fmt.Println("当前页码：", PageProduct.PageNo)
+	fmt.Println("总页数：", PageProduct.TotalPageNo)
+	fmt.Println("总记录数：", PageProduct.TotalRecord)
+	fmt.Println("当前页产品列表：")
+
+	for _, v := range PageProduct.Products {
+		fmt.Println(v)
+	}
+}
+
+func testGetPageProductsByCategoryID(t *testing.T) {
+	fmt.Println("测试获取产品列表，根据分页和产品类别id")
+
+	PageProduct, err := GetPageProductsByCategoryID("1", "1")
+	if err != nil {
+		log.Println("查询数据库错误：", err)
+		return
+	}
+
+	fmt.Println("当前页码：", PageProduct.PageNo)
+	fmt.Println("总页数：", PageProduct.TotalPageNo)
+	fmt.Println("总记录数：", PageProduct.TotalRecord)
+	fmt.Println("当前页产品列表：")
+
+	for _, v := range PageProduct.Products {
+		fmt.Println(v)
+	}
+}
+
+func testGetPageProductsByPriceAndCategoryID(t *testing.T) {
+	fmt.Println("测试获取产品列表，根据分页和价格区间和产品类别id")
+
+	PageProduct, err := GetPageProductsByPriceAndCategoryID("1", "1", "10", "80")
 	if err != nil {
 		log.Println("查询数据库错误：", err)
 		return

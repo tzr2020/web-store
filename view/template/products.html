@@ -23,11 +23,20 @@
                 <tr class="row2">
                     <th>类型</th>
                     <td>
-                        <a href="#">新鲜水果</a>
+                        <a href="/products?min={{ .MinPrice }}&max={{ .MaxPrice }}">全部类型</a>
+                        {{ $MinPrice := .MinPrice}}
+                        {{ $MaxPrice := .MaxPrice}}
+
+                        {{ range .Categories }}
+                        <a href="/products?min={{ $MinPrice }}&max={{ $MaxPrice }}&category_id={{ .ID }}">{{ .Name }}</a>
+                        {{ end }}
+
+                        <a href="/products">重置</a>
+                        <!-- <a href="#">新鲜水果</a>
                         <a href="#">海鲜水产</a>
                         <a href="#">精选肉类</a>
                         <a href="#">冻饮冻食</a>
-                        <a href="#">蔬菜蛋品</a>
+                        <a href="#">蔬菜蛋品</a> -->
                     </td>
                 </tr>
             </table>
@@ -45,16 +54,16 @@
             </div>
 
             <div class="price_search">
-                <form action="/products" method="POST">
+                <form action="/products?category_id={{ .Category_id }}" method="POST">
                     <span>价格：</span>
-                    <input type="text" name="min"> 元 -
-                    <input type="text" name="max"> 元&nbsp;
+                    <input type="text" name="min" value="{{ .MinPrice }}"> 元 -
+                    <input type="text" name="max" value="{{ .MaxPrice }}"> 元&nbsp;
                     <button>查询</button>
                 </form>
             </div>
 
             <div class="amount">
-                共<span>20</span>个商品
+                共<span>{{ .TotalRecord }}</span>个商品
             </div>
         </div>
         <!-- 产品排序 end -->
@@ -92,15 +101,15 @@
 
             <div id="page_nav">
                 {{ if .IsHasPrev }}
-                <a href="/products?min={{ .MinPrice }}&max={{ .MaxPrice }}">首页</a>
-                <a href="/products?pageNo={{ .GetPrevPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}">上一页</a>
+                <a href="/products?min={{ .MinPrice }}&max={{ .MaxPrice }}&category_id={{ .Category_id }}">首页</a>
+                <a href="/products?pageNo={{ .GetPrevPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}&category_id={{ .Category_id }}">上一页</a>
                 {{ end }}
 
                 当前页:第{{ .PageNo }}页 共{{ .TotalPageNo }}页、{{ .TotalRecord }}件商品
 
                 {{ if .IsHasNext }}
-                <a href="/products?pageNo={{ .GetNextPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}">下一页</a>
-                <a href="/products?pageNo={{ .TotalPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}">末页</a>
+                <a href="/products?pageNo={{ .GetNextPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}&category_id={{ .Category_id }}">下一页</a>
+                <a href="/products?pageNo={{ .TotalPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}&category_id={{ .Category_id }}">末页</a>
                 {{ end }}
 
                 到第<input value="{{ .PageNo }}" name="pn" id="pn_input" />页
@@ -111,7 +120,7 @@
                     $("#sub").click(function () {
                         // 获取输入的页码
                         var pageNo = $("#pn_input").val();
-                        location = "/products?pageNo=" + pageNo + "&min={{ .MinPrice }}&max={{ .MaxPrice }}"
+                        location = "/products?pageNo=" + pageNo + "&min={{ .MinPrice }}&max={{ .MaxPrice }}&category_id={{ .Category_id }}";
                     });
                 </script>
             </div>

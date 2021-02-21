@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"web-store/model"
 	"web-store/util"
 )
@@ -85,28 +86,56 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 		minPrice = "0"
 	}
 
+	// 获取产品类别id
+	category_id := r.FormValue("category_id")
+
 	var page *model.PageProduct
 	var err error
 
 	if maxPrice == "" {
-		// 从数据库获取当前产品列表分页结构
-		page, err = model.GetPageProducts(pageNo)
-		if err != nil {
-			log.Printf("查询数据库发生错误：%v", err)
-			http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
-			return
+		if category_id == "" {
+			// 从数据库获取当前产品列表分页结构
+			page, err = model.GetPageProducts(pageNo)
+			if err != nil {
+				log.Printf("查询数据库发生错误：%v", err)
+				http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			page, err = model.GetPageProductsByCategoryID(pageNo, category_id)
+			if err != nil {
+				log.Printf("查询数据库发生错误：%v", err)
+				http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
+				return
+			}
+			// 将产品类别id设置到分页结构，让产品列表模板使用
+			page.Category_id = category_id
 		}
+
 	} else {
-		// 从数据库获取当前产品列表分页结构，根据价格
-		page, err = model.GetPageProductsByPrice(pageNo, minPrice, maxPrice)
-		if err != nil {
-			log.Printf("查询数据库发生错误：%v", err)
-			http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
-			return
+		if category_id == "" {
+			// 从数据库获取当前产品列表分页结构，根据价格
+			page, err = model.GetPageProductsByPrice(pageNo, minPrice, maxPrice)
+			if err != nil {
+				log.Printf("查询数据库发生错误：%v", err)
+				http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
+				return
+			}
+			// 将价格区间设置到分页结构，让产品列表模板使用
+			page.MinPrice = minPrice
+			page.MaxPrice = maxPrice
+		} else {
+			page, err = model.GetPageProductsByPriceAndCategoryID(pageNo, category_id, minPrice, maxPrice)
+			if err != nil {
+				log.Printf("查询数据库发生错误：%v", err)
+				http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
+				return
+			}
+			// 将产品类别id和价格区间设置到分页结构，让产品列表模板使用
+			page.Category_id = category_id
+			page.MinPrice = minPrice
+			page.MaxPrice = maxPrice
 		}
-		// 将价格区间设置到分页结构，让产品列表模板使用
-		page.MinPrice = minPrice
-		page.MaxPrice = maxPrice
 	}
 
 	// 检查用户是否已经登录
@@ -116,6 +145,14 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 		page.IsLogin = true
 		page.Username = username
 	}
+
+	cates, err := model.GetCategories()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+	page.Categories = cates
 
 	// 解析模板文件
 	t, err := template.ParseFiles("./view/template/layout.html", "./view/template/products.html")
@@ -139,13 +176,24 @@ func getProduct(w http.ResponseWriter, r *http.Request) {
 	p, err := model.GetProduct(pid)
 
 	if err == model.ErrNotFoundProduct {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if err != nil {
+		log.Println(err)
 		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	strCategory_id := strconv.Itoa(p.Category_id)
+	cate, err := model.GetCategory(strCategory_id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+	p.Category = cate
 
 	// 判断会员是否已经登录
 	ok, username := IsLogin(r)
