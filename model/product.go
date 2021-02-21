@@ -1,6 +1,16 @@
 package model
 
-import "web-store/util"
+import (
+	"database/sql"
+	"errors"
+	"log"
+	"web-store/util"
+)
+
+var (
+	// ErrNotFoundProduct 在数据库没有找到产品
+	ErrNotFoundProduct = errors.New("在数据库没有找到产品")
+)
 
 type Product struct {
 	ID          int
@@ -12,6 +22,8 @@ type Product struct {
 	ImgPath     string
 	Detail      string
 	HotPoint    string
+	IsLogin     bool   // 用于模板
+	Username    string // 用于模板
 }
 
 func GetProducts() ([]*Product, error) {
@@ -32,4 +44,28 @@ func GetProducts() ([]*Product, error) {
 	}
 
 	return ps, nil
+}
+
+func GetProduct(pid string) (*Product, error) {
+	query := "select id, category_id, name, price, stock, sales, img_path, detail, hot_point from products"
+	query += " where id = ?"
+
+	stmt, err := util.Db.Prepare(query)
+	if err != nil {
+		log.Println("准备SQL语句发生错误")
+		return nil, err
+	}
+
+	p := &Product{}
+
+	err = stmt.QueryRow(pid).Scan(&p.ID, &p.Category_id, &p.Name, &p.Price,
+		&p.Stock, &p.Sales, &p.ImgPath, &p.Detail, &p.HotPoint)
+	if err == sql.ErrNoRows {
+		return nil, ErrNotFoundProduct
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return p, nil
 }

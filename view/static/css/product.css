@@ -1,0 +1,112 @@
+/* 产品图片 */
+
+.content_inner .pro_cont {
+    padding: 30px 10px;
+}
+
+.content_inner .pro_cont .pro_buy {
+    overflow: hidden;
+}
+
+.content_inner .pro_cont .pro_buy .pro_left {
+    float: left;
+}
+
+.content_inner .pro_cont .pro_buy .pro_left .pro_pic {
+    width: 453px;
+    margin-right: 100px;
+}
+
+.content_inner .pro_cont .pro_buy .pro_left .pro_pic img {
+    width: 100%;
+}
+
+/* 产品规格选择 */
+
+.content_inner .pro_cont .pro_buy .pro_detail {
+    width: 545px;
+    float: left;
+}
+
+.content_inner .pro_cont .pro_buy .pro_detail h1 {
+    margin-bottom: 5px;
+    line-height: 32px;
+    font-size: 20px;
+    color: #333;
+}
+
+.content_inner .pro_cont .pro_buy .pro_detail h3 {
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #777;
+}
+
+.content_inner .pro_cont .pro_buy .pro_detail .pro_pri {
+    padding: 15px 30px 20px;
+    background-color: #f7f6f4;
+    font-size: 14px;
+    color: #333;
+}
+
+.content_inner .pro_cont .pro_buy .pro_detail .pro_pri .pri_sym,
+.content_inner .pro_cont .pro_buy .pro_detail .pro_pri .pri_num {
+    font-size: 24px;
+    color: #c78a49;
+}
+
+.content_inner .pro_cont .pro_buy .pro_detail .pro_pri .pri_sym {
+    margin-left: 20px;
+}
+
+.content_inner .pro_cont .pro_buy .pro_detail .pro_num {
+    margin-top: 15px;
+}
+
+.content_inner .pro_cont .pro_buy .pro_detail .pro_num p {
+    padding-bottom: 10px;
+}
+
+.content_inner .pro_cont .pro_buy .pro_detail .pro_num p,
+.content_inner .pro_cont .pro_buy .pro_detail .pro_num span {
+    font-size: 14px;
+    color: #777;
+}
+
+.content_inner .pro_cont .pro_buy .pro_detail .pro_num button {
+    width: 25px;
+    height: 25px;
+}
+.content_inner .pro_cont .pro_buy .pro_detail .pro_num input {
+    width: 30px;
+    text-align: center;
+}
+
+.content_inner .pro_cont .pro_buy .pro_detail .btns {
+    margin-top: 30px;
+}
+
+.content_inner .pro_cont .pro_buy .pro_detail .btns a {
+    display: inline-block;
+    width: 260px;
+    padding: 15px 0;
+    background-color: #c78a49;
+    border-radius: 4px;
+    font-size: 18px;
+    color: #fff;
+    text-align: center;
+    margin: 0 5px;
+}
+
+/* 产品介绍 */
+
+.content_inner .pro_cont .pro_desc {
+    padding-top: 30px;
+    margin-top: 30px;
+    border-top: 1px solid #777;
+}
+
+.content_inner .pro_cont .pro_desc .pic img {
+    display: block;
+    width: 100%;
+} 

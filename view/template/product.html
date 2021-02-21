@@ -1,0 +1,58 @@
+{{ define "content" }}
+
+<link rel="stylesheet" href="/static/css/product.css">
+
+<!-- 二级页面内容 start -->
+<div class="content">
+    <div class="content_inner inner_c">
+        <!-- 面包屑导航 start -->
+        <div class="bread_nav">
+            <a href="#">首页</a>
+            <span>&gt;</span><a href="/products">所有商品</a>
+            <span>&gt;</span><a href="#">产品类别</a>
+            <span>&gt;</span><span>{{ .Name }}</span>
+        </div>
+        <!-- 面包屑导航 end -->
+
+        <!-- 商品页面内容 -->
+        <div class="pro_cont">
+            <div class="pro_buy">
+                <!-- 产品图片 -->
+                <div class="pro_left">
+                    <div class="pro_pic">
+                        <img src="{{ .ImgPath }}" alt="">
+                    </div>
+                </div>
+                <!-- 产品规格选择 -->
+                <div class="pro_detail">
+                    <h1>{{ .Name }}</h1>
+                    <h3>{{ .HotPoint }}</h3>
+                    <div class="pro_pri">
+                        售价<span class="pri_sym">￥</span><span class="pri_num">{{ .Price }}</span>
+                    </div>
+                    <div class="pro_num">
+                        <p>选择数量</p>
+                        <button>-</button>
+                        <input type="text" value="1">
+                        <button>+</button>
+                        <span>（库存 {{ .Stock }} 件，已售 {{ .Sales }} 件）</span>
+                    </div>
+                    <div class="btns">
+                        <a href="#">加入购物车</a>
+                        <a href="#">立即购买</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品介绍 -->
+            <div class="pro_desc">
+                <div class="pic">
+                    <img src="{{ .Detail }}" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 二级页面内容 end -->
+
+{{ end }}

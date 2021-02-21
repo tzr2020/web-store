@@ -5,12 +5,14 @@ import (
 	"log"
 	"net/http"
 	"web-store/model"
+	"web-store/util"
 )
 
 func registerProductRoutes() {
 	// http.HandleFunc("/products", getProducts)
 	http.HandleFunc("/products", getPageProductsByPrice)
 	// http.HandleFunc("/productsByPrice", getPageProductsByPrice)
+	http.HandleFunc("/product", getProduct)
 }
 
 func getProducts(w http.ResponseWriter, r *http.Request) {
@@ -126,5 +128,39 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 	} else {
 		t.ExecuteTemplate(w, "layout", page)
 		// t.Execute(w, page)
+	}
+}
+
+func getProduct(w http.ResponseWriter, r *http.Request) {
+	// 从查询字符串参数获取产品id
+	pid := r.FormValue("pid")
+
+	// 从数据库获取产品
+	p, err := model.GetProduct(pid)
+
+	if err == model.ErrNotFoundProduct {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err != nil {
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 判断会员是否已经登录
+	ok, username := IsLogin(r)
+	if ok {
+		// 产品结构设置模板需要使用的字段
+		p.IsLogin = true
+		p.Username = username
+	}
+
+	// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端
+	t, err := template.ParseFiles("./view/template/layout.html", "./view/template/product.html")
+	if err != nil {
+		log.Printf("解析模板文件发生错误：%v\n", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+	} else {
+		t.ExecuteTemplate(w, "layout", p)
 	}
 }
