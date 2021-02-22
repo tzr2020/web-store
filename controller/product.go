@@ -51,11 +51,11 @@ func getPageProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 检查用户是否已经登录
-	ok, username := IsLogin(r)
+	ok, sess := IsLogin(r)
 	if ok {
 		// 设置分页结构
 		page.IsLogin = true
-		page.Username = username
+		page.Username = sess.Username
 	}
 
 	// 解析模板文件
@@ -139,11 +139,11 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 检查用户是否已经登录
-	ok, username := IsLogin(r)
+	ok, sess := IsLogin(r)
 	if ok {
 		// 设置分页结构
 		page.IsLogin = true
-		page.Username = username
+		page.Username = sess.Username
 	}
 
 	cates, err := model.GetCategories()
@@ -196,11 +196,11 @@ func getProduct(w http.ResponseWriter, r *http.Request) {
 	p.Category = cate
 
 	// 判断会员是否已经登录
-	ok, username := IsLogin(r)
+	ok, sess := IsLogin(r)
 	if ok {
 		// 产品结构设置模板需要使用的字段
 		p.IsLogin = true
-		p.Username = username
+		p.Username = sess.Username
 	}
 
 	// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端

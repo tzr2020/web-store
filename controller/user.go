@@ -282,7 +282,7 @@ func handlerLogout(w http.ResponseWriter, r *http.Request) {
 }
 
 // IsLogin 检查用户是否已经登录
-func IsLogin(r *http.Request) (bool, string) {
+func IsLogin(r *http.Request) (bool, *model.Session) {
 	// 获取Cookie
 	cookie, _ := r.Cookie("user")
 
@@ -296,10 +296,10 @@ func IsLogin(r *http.Request) (bool, string) {
 		} else {
 			if sess.UserID > 0 {
 				// 用户已经登录
-				return true, sess.Username
+				return true, sess
 			}
 		}
 	}
 
-	return false, ""
+	return false, nil
 }
