@@ -31,15 +31,31 @@
                         售价<span class="pri_sym">￥</span><span class="pri_num">{{ .Price }}</span>
                     </div>
                     <div class="pro_num">
-                        <p>选择数量</p>
+                        <!-- <p>选择数量</p>
                         <button>-</button>
                         <input type="text" value="1">
-                        <button>+</button>
+                        <button>+</button> -->
                         <span>（库存 {{ .Stock }} 件，已售 {{ .Sales }} 件）</span>
                     </div>
                     <div class="btns">
-                        <a href="#">加入购物车</a>
-                        <a href="#">立即购买</a>
+                        <a id="{{ .ID }}" class="addToCart" href="javascript:void(0)">加入购物车</a>
+                        <a href="javascript:void(0)">立即购买</a>
+
+                        <script>
+                            $(function () {
+                                // 给添加购物车按钮绑定单击事件
+                                $(".addToCart").click(function () {
+                                    var productID = $(this).attr("id");
+                                    var url = "/addToCart"
+                                    var param = { "productID": productID }
+                                    // 发送ajax请求
+                                    $.post(url, param, function (res) {
+                                        alert(res);
+                                    });
+                                });
+                            });
+                        </script>
+
                     </div>
                 </div>
             </div>

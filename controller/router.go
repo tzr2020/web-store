@@ -10,4 +10,5 @@ func RegsiRoutes() {
 	registerAboutRoutes()
 	registerUserRoutes()
 	registerProductRoutes()
+	regsiterCartRoutes()
 }

@@ -76,3 +76,15 @@ func GetCartByUserID(uid int) (*Cart, error) {
 
 	return cart, nil
 }
+
+func UpdateCountAndAmountOfCart(c *Cart) error {
+	query := "update carts set total_count = ?, total_amount = ?"
+	query += " where id = ?"
+
+	_, err := util.Db.Exec(query, c.GetTotalCount(), c.GetTotalAmount(), c.CartID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

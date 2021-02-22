@@ -38,7 +38,7 @@ func AddCartItem(cartItem *CartItem) error {
 }
 
 func GetCartItemByCartID(cid string) ([]*CartItem, error) {
-	query := "select id, cart_id, count, amount from cart_items"
+	query := "select id, cart_id, product_id, count, amount from cart_items"
 	query += " where cart_id = ?"
 
 	rows, err := util.Db.Query(query, cid)
@@ -48,15 +48,24 @@ func GetCartItemByCartID(cid string) ([]*CartItem, error) {
 	}
 
 	var cartItems []*CartItem
+	var pid string
 
 	for rows.Next() {
 		cItem := &CartItem{}
 
-		err = rows.Scan(&cItem.CartItemID, &cItem.CartID, &cItem.Count, &cItem.Amount)
+		err = rows.Scan(&cItem.CartItemID, &cItem.CartID, &pid, &cItem.Count, &cItem.Amount)
 		if err != nil {
 			log.Printf("数据库扫描购物项发生错误: %v", err)
 			return nil, err
 		}
+
+		// 将数据库查询的产品设置到购物项结构的产品字段
+		product, err := GetProduct(pid)
+		if err != nil {
+			log.Printf("从数据库获取产品发生错误: %v", err)
+			return nil, err
+		}
+		cItem.Product = product
 
 		cartItems = append(cartItems, cItem)
 	}
@@ -77,5 +86,27 @@ func GetCartItemByCartIDAndProductID(cid string, pid string) (*CartItem, error) 
 		return nil, err
 	}
 
+	// 将数据库查询的产品设置到购物项结构的产品字段
+	product, err := GetProduct(pid)
+	if err != nil {
+		log.Printf("从数据库获取产品发生错误: %v", err)
+		return nil, err
+	}
+	cItem.Product = product
+
 	return cItem, nil
+}
+
+// UpdateProductCountOfCartItem 数据库更新购物项的产品数量
+func UpdateProductCountOfCartItem(cItem *CartItem) error {
+	query := "update cart_items set count = ?, amount = ?"
+	query += " where cart_id = ? and Product_id = ?"
+
+	_, err := util.Db.Exec(query, cItem.Count, cItem.GetAmount(),
+		cItem.CartID, cItem.Product.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
