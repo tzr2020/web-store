@@ -55,7 +55,7 @@ func AddCart(cart *Cart) error {
 	return nil
 }
 
-func GetCartByUserID(uid string) (*Cart, error) {
+func GetCartByUserID(uid int) (*Cart, error) {
 	query := "select id, uid, total_count, total_amount from carts"
 	query += " where uid = ?"
 

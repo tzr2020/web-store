@@ -61,7 +61,7 @@ func testAddCart(t *testing.T) {
 func testGetCartByUserID(t *testing.T) {
 	fmt.Println("测试获取购物车，根据用户id")
 
-	cart, err := GetCartByUserID("1")
+	cart, err := GetCartByUserID(1)
 	if err != nil {
 		return
 	}
