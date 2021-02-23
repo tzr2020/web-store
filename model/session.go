@@ -12,6 +12,7 @@ type Session struct {
 	UserID    int
 }
 
+// AddSession 数据库新增Session
 func AddSession(sess *Session) error {
 	query := "insert into session values (?, ?, ?)"
 
@@ -29,6 +30,7 @@ func AddSession(sess *Session) error {
 	return nil
 }
 
+// DeleteSession 根据SessionID，数据库删除Session
 func DeleteSession(sessID string) error {
 	query := "delete from session where session_id = ?"
 
@@ -45,6 +47,7 @@ func DeleteSession(sessID string) error {
 	return nil
 }
 
+// GetSession 根据SessionID，从数据库获取Session
 func GetSession(sessID string) (*Session, error) {
 	query := "select session_id, username, user_id from session where session_id = ?"
 

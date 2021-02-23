@@ -27,6 +27,7 @@ type Product struct {
 	Category    *Category // 用于模板
 }
 
+// GetProducts 从数据库获取所有产品
 func GetProducts() ([]*Product, error) {
 	query := "select id, category_id, name, price, stock, sales, img_path, detail, hot_point from products"
 
@@ -47,6 +48,7 @@ func GetProducts() ([]*Product, error) {
 	return ps, nil
 }
 
+// GetProduct 根据产品id，从数据库获取产品
 func GetProduct(pid string) (*Product, error) {
 	query := "select id, category_id, name, price, stock, sales, img_path, detail, hot_point from products"
 	query += " where id = ?"

@@ -47,7 +47,7 @@ func (p *PageProduct) GetNextPageNo() int64 {
 	}
 }
 
-// GetPageProducts 获取产品列表分页结构
+// GetPageProducts 根据页码，从数据库获取产品列表分页结构
 func GetPageProducts(pageNo string) (*PageProduct, error) {
 	query := "select count(*) from products"
 	query2 := "select id, category_id, name, price, stock, sales, img_path, detail, hot_point from products"
@@ -98,7 +98,7 @@ func GetPageProducts(pageNo string) (*PageProduct, error) {
 	return pageProduct, nil
 }
 
-// GetPageProducts 获取产品列表分页结构
+// GetPageProducts 根据页码和产品类别id，从数据库获取产品列表分页结构
 func GetPageProductsByCategoryID(pageNo string, category_id string) (*PageProduct, error) {
 	query := "select count(*) from products"
 	query += " where category_id = ?"
@@ -151,7 +151,7 @@ func GetPageProductsByCategoryID(pageNo string, category_id string) (*PageProduc
 	return pageProduct, nil
 }
 
-// GetPageProductsByPrice 获取产品列表分页结构，根据价格区间
+// GetPageProductsByPrice 根据页码和产品价格区间，从数据库获取产品列表分页结构
 func GetPageProductsByPrice(pageNo string, minPrice string, maxPrice string) (*PageProduct, error) {
 	query := "select count(*) from products"
 	query += " where price between ? and ?"
@@ -205,7 +205,7 @@ func GetPageProductsByPrice(pageNo string, minPrice string, maxPrice string) (*P
 	return pageProduct, nil
 }
 
-// GetPageProductsByPriceAndCategory 获取产品列表分页结构，根据价格区间和产品类别id
+// GetPageProductsByPriceAndCategory 根据页码、产品类别id和产品价格区间，从数据库获取产品列表分页结构
 func GetPageProductsByPriceAndCategoryID(pageNo string, category_id string, minPrice string, maxPrice string) (*PageProduct, error) {
 	query := "select count(*) from products"
 	query += " where category_id = ? and price between ? and ?"

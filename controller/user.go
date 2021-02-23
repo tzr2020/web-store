@@ -137,6 +137,7 @@ func CheckLogin(user *model.User, w http.ResponseWriter) {
 	}
 }
 
+// handlerRegist 会员用户注册账号处理器
 func handlerRegist(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	// GET请求
@@ -250,6 +251,7 @@ func handlerCheckUsername(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handlerLogout 会员用户注销账号处理器
 func handlerLogout(w http.ResponseWriter, r *http.Request) {
 	// 获取Cookie
 	cookie, err := r.Cookie("user")
@@ -281,7 +283,7 @@ func handlerLogout(w http.ResponseWriter, r *http.Request) {
 	handlerLogin(w, r)
 }
 
-// IsLogin 检查用户是否已经登录
+// IsLogin 根据Cookie，Session检查用户是否已经登录
 func IsLogin(r *http.Request) (bool, *model.Session) {
 	// 获取Cookie
 	cookie, _ := r.Cookie("user")

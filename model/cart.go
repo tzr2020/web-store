@@ -27,6 +27,7 @@ func (cart *Cart) GetTotalAmount() float64 {
 	return totalAmount
 }
 
+// AddCart 数据库新增购物车，同时新增购物项
 func AddCart(cart *Cart) error {
 	query := "insert into carts (id, uid, total_count, total_amount) values (?, ?, ?, ?)"
 
@@ -55,6 +56,7 @@ func AddCart(cart *Cart) error {
 	return nil
 }
 
+// GetCartByUserID 根据会员用户id，从数据库获取购物车，维护购物车结构的购物项字段
 func GetCartByUserID(uid int) (*Cart, error) {
 	query := "select id, uid, total_count, total_amount from carts"
 	query += " where uid = ?"
@@ -77,6 +79,7 @@ func GetCartByUserID(uid int) (*Cart, error) {
 	return cart, nil
 }
 
+// UpdateCountAndAmountOfCart 数据库更新购物车的购物项数和总计金额
 func UpdateCountAndAmountOfCart(c *Cart) error {
 	query := "update carts set total_count = ?, total_amount = ?"
 	query += " where id = ?"

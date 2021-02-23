@@ -18,6 +18,7 @@ func (cartItem *CartItem) GetAmount() float64 {
 	return float64(cartItem.Count) * cartItem.Product.Price
 }
 
+// AddCartItem 数据库新增购物项
 func AddCartItem(cartItem *CartItem) error {
 	query := "insert into cart_items (cart_id, product_id, count, amount) values (?, ?, ?, ?)"
 
@@ -37,6 +38,7 @@ func AddCartItem(cartItem *CartItem) error {
 	return nil
 }
 
+// GetCartItemByCartID 根据购物车id，从数据库获取购物项，维护购物项结构
 func GetCartItemByCartID(cid string) ([]*CartItem, error) {
 	query := "select id, cart_id, product_id, count, amount from cart_items"
 	query += " where cart_id = ?"
@@ -73,6 +75,7 @@ func GetCartItemByCartID(cid string) ([]*CartItem, error) {
 	return cartItems, nil
 }
 
+// GetCartItemByCartIDAndProductID 根据购物车id和产品id，从数据库获取购物项，维护购物项结构
 func GetCartItemByCartIDAndProductID(cid string, pid string) (*CartItem, error) {
 	query := "select id, cart_id, count, amount from cart_items"
 	query += " where cart_id = ? and product_id = ?"
@@ -97,7 +100,7 @@ func GetCartItemByCartIDAndProductID(cid string, pid string) (*CartItem, error) 
 	return cItem, nil
 }
 
-// UpdateProductCountOfCartItem 数据库更新购物项的产品数量
+// UpdateProductCountOfCartItem 数据库更新购物项的产品数量以及金额小计
 func UpdateProductCountOfCartItem(cItem *CartItem) error {
 	query := "update cart_items set count = ?, amount = ?"
 	query += " where cart_id = ? and Product_id = ?"

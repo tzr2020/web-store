@@ -27,7 +27,7 @@ type User struct {
 	city     string
 }
 
-// CheckUsernameAndPassword 验证用户名和密码
+// CheckUsernameAndPassword 从数据库验证用户名和密码，返回用户
 func CheckUsernameAndPassword(username string, password string) (*User, error) {
 	user := &User{}
 	query := "select id, username, password, email from users where username=? and password=?"
@@ -48,7 +48,7 @@ func CheckUsernameAndPassword(username string, password string) (*User, error) {
 	return user, nil
 }
 
-// CheckUsername 验证用户名
+// CheckUsername 从数据库验证用户名，返回用户
 func CheckUsername(username string) (user *User, err error) {
 	user = &User{}
 	query := "select id, username, password, email from users where username=?"
@@ -63,7 +63,7 @@ func CheckUsername(username string) (user *User, err error) {
 	return
 }
 
-// AddUser 新增用户
+// AddUser 数据库新增用户
 func AddUser(user *User) error {
 	query := "insert into users (username, password, email) values(?,?,?)"
 

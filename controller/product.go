@@ -16,25 +16,26 @@ func registerProductRoutes() {
 	http.HandleFunc("/product", getProduct)
 }
 
-func getProducts(w http.ResponseWriter, r *http.Request) {
-	ps, err := model.GetProducts()
+// func getProducts(w http.ResponseWriter, r *http.Request) {
+// 	ps, err := model.GetProducts()
 
-	if err != nil {
-		log.Printf("从数据库获取数据发生错误：%v", err)
-		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
-		return
-	}
+// 	if err != nil {
+// 		log.Printf("从数据库获取数据发生错误：%v", err)
+// 		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
+// 		return
+// 	}
 
-	t, err := template.ParseFiles("./view/page/product/products.html")
+// 	t, err := template.ParseFiles("./view/page/product/products.html")
 
-	if err != nil {
-		log.Printf("解析模板文件发生错误：%v", err)
-		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
-	} else {
-		t.Execute(w, ps)
-	}
-}
+// 	if err != nil {
+// 		log.Printf("解析模板文件发生错误：%v", err)
+// 		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
+// 	} else {
+// 		t.Execute(w, ps)
+// 	}
+// }
 
+// getPageProducts 返回分页的产品列表页面
 func getPageProducts(w http.ResponseWriter, r *http.Request) {
 	// 获取页码
 	pageNo := r.FormValue("pageNo")
@@ -72,6 +73,7 @@ func getPageProducts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// getPageProductsByPrice 根据请求参数（价格区间，产品类别）来查询数据库得到相应的产品列表分页结构后，返回产品列表页面
 func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 	// 获取页码
 	pageNo := r.FormValue("pageNo")
@@ -168,6 +170,7 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// getProduct 根据请求参数（产品id），返回产品详情页面
 func getProduct(w http.ResponseWriter, r *http.Request) {
 	// 从查询字符串参数获取产品id
 	pid := r.FormValue("pid")

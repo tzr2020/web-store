@@ -10,6 +10,7 @@ type Category struct {
 	Img   string // 图片路径
 }
 
+// GetCategories 从数据库获取所有产品类别
 func GetCategories() ([]*Category, error) {
 	query := "select id, name, p_id, level, img from categories"
 
@@ -29,6 +30,7 @@ func GetCategories() ([]*Category, error) {
 	return cates, nil
 }
 
+// GetCategory 根据产品类别id，从数据库获取产品类别
 func GetCategory(cate_id string) (*Category, error) {
 	query := "select id, name, p_id, level, img from categories"
 	query += " where id = ?"
