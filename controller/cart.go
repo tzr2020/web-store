@@ -15,6 +15,7 @@ func regsiterCartRoutes() {
 	http.HandleFunc("/getCartInfo", GetCartInfo)
 	http.HandleFunc("/deleteCart", DeleteCart)
 	http.HandleFunc("/deleteCartItem", DeleteCartItem)
+	http.HandleFunc("/updateCartItem", UpdateCartItem)
 }
 
 // AddToCart 将产品添加到购物车
@@ -206,7 +207,7 @@ func DeleteCartItem(w http.ResponseWriter, r *http.Request) {
 
 	ok, sess := IsLogin(r)
 	if !ok {
-		log.Println("从数据库获取购物车发生错误")
+		log.Println("未登录")
 		http.Error(w, "会员用户未登录，无法进行删除购物项操作", http.StatusUnauthorized)
 		return
 	}
@@ -227,6 +228,58 @@ func DeleteCartItem(w http.ResponseWriter, r *http.Request) {
 			err := model.DeleteCartItem(cartItemID)
 			if err != nil {
 				log.Println("从数据库删除购物项发生错误")
+				http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+
+	// 数据库更新购物车
+	model.UpdateCountAndAmountOfCart(cart)
+
+	GetCartInfo(w, r)
+}
+
+// UpdateCartItem 用户更新购物项，返回购物车页面
+func UpdateCartItem(w http.ResponseWriter, r *http.Request) {
+	cartItemID := r.FormValue("cartItemID")
+	productCount := r.FormValue("productCount")
+
+	iCartItemID, err := strconv.Atoi(cartItemID)
+	if err != nil {
+		log.Println("购物项id类型转换发生错误")
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+	iProductCount, err := strconv.Atoi(productCount)
+	if err != nil {
+		log.Println("购物项的产品数量类型转换发生错误")
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	ok, sess := IsLogin(r)
+	if !ok {
+		log.Println("未登录")
+		http.Error(w, "会员用户未登录，无法进行更新购物项操作", http.StatusUnauthorized)
+		return
+	}
+
+	cart, err := model.GetCartByUserID(sess.UserID)
+	if err != nil {
+		log.Println("从数据库获取购物车发生错误")
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 遍历购物车结构的购物项字段，找到需要被删除的购物项
+	for _, v := range cart.CartItems {
+		if v.CartItemID == iCartItemID {
+			// 数据库更新购物项
+			v.Count = iProductCount
+			err := model.UpdateProductCountOfCartItem(v)
+			if err != nil {
+				log.Println("数据库更新购物项发生错误")
 				http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
 				return
 			}

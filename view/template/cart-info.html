@@ -32,12 +32,13 @@
                     {{ range .Cart.CartItems }}
                     <tr>
                         <td>{{ .Product.Name }}</td>
-                        <td><input type="" name="" id="" value="{{ .Count }}"
+                        <td><input type="" name="" class="updateCartItem" id="{{ .CartItemID }}" value="{{ .Count }}"
                                 style="width: 35px; text-align: center;" /></td>
                         <td>{{ .Product.Price }}</td>
                         <td>{{ .Amount }}</td>
                         <td><a href="/deleteCartItem?cartItemID={{ .CartItemID }}"
-                                class="ax-iconfont ax-icon-trash-alt-fill deleteCartItem" id="{{ .Product.Name }}" title="删除"></a>
+                                class="ax-iconfont ax-icon-trash-alt-fill deleteCartItem" id="{{ .Product.Name }}"
+                                title="删除"></a>
                         </td>
                     </tr>
                     {{ end }}
@@ -76,6 +77,13 @@
         $(".deleteCartItem").click(function () {
             var productName = $(this).attr("id")
             return confirm("确定要删除购物项: \"" + productName + "\" 吗？");
+        });
+
+        // 购物项的产品数量input绑定change事件
+        $(".updateCartItem").change(function () {
+            var cartItemID = $(this).attr("id");
+            var bookCount = $(this).val();
+            location = "/updateCartItem?cartItemID=" + cartItemID + "&productCount=" + bookCount;
         });
     });
 </script>
