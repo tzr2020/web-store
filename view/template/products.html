@@ -23,11 +23,11 @@
                 <tr class="row2">
                     <th>类型</th>
                     <td>
-                        <a href="/products?min={{ .MinPrice }}&max={{ .MaxPrice }}">全部类型</a>
-                        {{ $MinPrice := .MinPrice}}
-                        {{ $MaxPrice := .MaxPrice}}
+                        <a href="/products?min={{ .PageProduct.MinPrice }}&max={{ .PageProduct.MaxPrice }}">全部类型</a>
+                        {{ $MinPrice := .PageProduct.MinPrice}}
+                        {{ $MaxPrice := .PageProduct.MaxPrice}}
 
-                        {{ range .Categories }}
+                        {{ range .PageProduct.Categories }}
                         <a href="/products?min={{ $MinPrice }}&max={{ $MaxPrice }}&category_id={{ .ID }}">{{ .Name }}</a>
                         {{ end }}
 
@@ -54,16 +54,16 @@
             </div>
 
             <div class="price_search">
-                <form action="/products?category_id={{ .Category_id }}" method="POST">
+                <form action="/products?category_id={{ .PageProduct.Category_id }}" method="POST">
                     <span>价格：</span>
-                    <input type="text" name="min" value="{{ .MinPrice }}"> 元 -
-                    <input type="text" name="max" value="{{ .MaxPrice }}"> 元&nbsp;
+                    <input type="text" name="min" value="{{ .PageProduct.MinPrice }}"> 元 -
+                    <input type="text" name="max" value="{{ .PageProduct.MaxPrice }}"> 元&nbsp;
                     <button>查询</button>
                 </form>
             </div>
 
             <div class="amount">
-                共<span>{{ .TotalRecord }}</span>个商品
+                共<span>{{ .PageProduct.TotalRecord }}</span>个商品
             </div>
         </div>
         <!-- 产品排序 end -->
@@ -72,7 +72,7 @@
         <div class="s_product">
             <ul>
                 <!-- 产品盒子 -->
-                {{ range .Products }}
+                {{ range .PageProduct.Products }}
                 <li class="common_product">
                     <div class="pic">
                         <img src={{ .ImgPath }} alt="product">
@@ -100,19 +100,19 @@
                 </div> -->
 
             <div id="page_nav">
-                {{ if .IsHasPrev }}
-                <a href="/products?min={{ .MinPrice }}&max={{ .MaxPrice }}&category_id={{ .Category_id }}">首页</a>
-                <a href="/products?pageNo={{ .GetPrevPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}&category_id={{ .Category_id }}">上一页</a>
+                {{ if .PageProduct.IsHasPrev }}
+                <a href="/products?min={{ .PageProduct.MinPrice }}&max={{ .PageProduct.MaxPrice }}&category_id={{ .PageProduct.Category_id }}">首页</a>
+                <a href="/products?pageNo={{ .PageProduct.GetPrevPageNo }}&min={{ .PageProduct.MinPrice }}&max={{ .PageProduct.MaxPrice }}&category_id={{ .PageProduct.Category_id }}">上一页</a>
                 {{ end }}
 
-                当前页:第{{ .PageNo }}页 共{{ .TotalPageNo }}页、{{ .TotalRecord }}件商品
+                当前页:第{{ .PageProduct.PageNo }}页 共{{ .PageProduct.TotalPageNo }}页、{{ .PageProduct.TotalRecord }}件商品
 
-                {{ if .IsHasNext }}
-                <a href="/products?pageNo={{ .GetNextPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}&category_id={{ .Category_id }}">下一页</a>
-                <a href="/products?pageNo={{ .TotalPageNo }}&min={{ .MinPrice }}&max={{ .MaxPrice }}&category_id={{ .Category_id }}">末页</a>
+                {{ if .PageProduct.IsHasNext }}
+                <a href="/products?pageNo={{ .PageProduct.GetNextPageNo }}&min={{ .PageProduct.MinPrice }}&max={{ .PageProduct.MaxPrice }}&category_id={{ .PageProduct.Category_id }}">下一页</a>
+                <a href="/products?pageNo={{ .PageProduct.TotalPageNo }}&min={{ .PageProduct.MinPrice }}&max={{ .PageProduct.MaxPrice }}&category_id={{ .PageProduct.Category_id }}">末页</a>
                 {{ end }}
 
-                到第<input value="{{ .PageNo }}" name="pn" id="pn_input" />页
+                到第<input value="{{ .PageProduct.PageNo }}" name="pn" id="pn_input" />页
                 <input type="button" value="确定" id="sub">
 
                 <script>
@@ -120,7 +120,7 @@
                     $("#sub").click(function () {
                         // 获取输入的页码
                         var pageNo = $("#pn_input").val();
-                        location = "/products?pageNo=" + pageNo + "&min={{ .MinPrice }}&max={{ .MaxPrice }}&category_id={{ .Category_id }}";
+                        location = "/products?pageNo=" + pageNo + "&min={{ .PageProduct.MinPrice }}&max={{ .PageProduct.MaxPrice }}&category_id={{ .PageProduct.Category_id }}";
                     });
                 </script>
             </div>

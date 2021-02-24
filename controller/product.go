@@ -36,42 +36,42 @@ func registerProductRoutes() {
 // }
 
 // getPageProducts 返回分页的产品列表页面
-func getPageProducts(w http.ResponseWriter, r *http.Request) {
-	// 获取页码
-	pageNo := r.FormValue("pageNo")
-	if pageNo == "" {
-		pageNo = "1"
-	}
+// func getPageProducts(w http.ResponseWriter, r *http.Request) {
+// 	// 获取页码
+// 	pageNo := r.FormValue("pageNo")
+// 	if pageNo == "" {
+// 		pageNo = "1"
+// 	}
 
-	// 从数据库获取当前产品列表分页结构
-	page, err := model.GetPageProducts(pageNo)
-	if err != nil {
-		log.Printf("查询数据库发生错误：%v", err)
-		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
-		return
-	}
+// 	// 从数据库获取当前产品列表分页结构
+// 	page, err := model.GetPageProducts(pageNo)
+// 	if err != nil {
+// 		log.Printf("查询数据库发生错误：%v", err)
+// 		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
+// 		return
+// 	}
 
-	// 检查用户是否已经登录
-	ok, sess := IsLogin(r)
-	if ok {
-		// 设置分页结构
-		page.IsLogin = true
-		page.Username = sess.Username
-	}
+// 	// 检查用户是否已经登录
+// 	ok, sess := IsLogin(r)
+// 	if ok {
+// 		// 设置分页结构
+// 		page.IsLogin = true
+// 		page.Username = sess.Username
+// 	}
 
-	// 解析模板文件
-	t, err := template.ParseFiles("./view/template/layout.html", "./view/template/products.html")
-	// t, err := template.ParseFiles("./view/page/product/products.html")
+// 	// 解析模板文件
+// 	t, err := template.ParseFiles("./view/template/layout.html", "./view/template/products.html")
+// 	// t, err := template.ParseFiles("./view/page/product/products.html")
 
-	// 执行模板，生成HTML文档，返回页面
-	if err != nil {
-		log.Printf("解析模板文件发生错误：%v", err)
-		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
-	} else {
-		t.ExecuteTemplate(w, "layout", page)
-		// t.Execute(w, page)
-	}
-}
+// 	// 执行模板，生成HTML文档，返回页面
+// 	if err != nil {
+// 		log.Printf("解析模板文件发生错误：%v", err)
+// 		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
+// 	} else {
+// 		t.ExecuteTemplate(w, "layout", page)
+// 		// t.Execute(w, page)
+// 	}
+// }
 
 // getPageProductsByPrice 根据请求参数（价格区间，产品类别）来查询数据库得到相应的产品列表分页结构后，返回产品列表页面
 func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
@@ -140,14 +140,6 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// 检查用户是否已经登录
-	ok, sess := IsLogin(r)
-	if ok {
-		// 设置分页结构
-		page.IsLogin = true
-		page.Username = sess.Username
-	}
-
 	cates, err := model.GetCategories()
 	if err != nil {
 		log.Println(err)
@@ -155,6 +147,15 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	page.Categories = cates
+
+	// 检查用户是否已经登录
+	ok, sess := IsLogin(r)
+	if !ok {
+		sess := &model.Session{}
+		sess.PageProduct = page
+	} else {
+		sess.PageProduct = page
+	}
 
 	// 解析模板文件
 	t, err := template.ParseFiles("./view/template/layout.html", "./view/template/products.html")
@@ -165,7 +166,7 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 		log.Printf("解析模板文件发生错误：%v", err)
 		http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
 	} else {
-		t.ExecuteTemplate(w, "layout", page)
+		t.ExecuteTemplate(w, "layout", sess)
 		// t.Execute(w, page)
 	}
 }
@@ -200,10 +201,11 @@ func getProduct(w http.ResponseWriter, r *http.Request) {
 
 	// 判断会员是否已经登录
 	ok, sess := IsLogin(r)
-	if ok {
-		// 产品结构设置模板需要使用的字段
-		p.IsLogin = true
-		p.Username = sess.Username
+	if !ok {
+		sess := &model.Session{}
+		sess.Product = p
+	} else {
+		sess.Product = p
 	}
 
 	// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端
@@ -212,6 +214,6 @@ func getProduct(w http.ResponseWriter, r *http.Request) {
 		log.Printf("解析模板文件发生错误：%v\n", err)
 		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
 	} else {
-		t.ExecuteTemplate(w, "layout", p)
+		t.ExecuteTemplate(w, "layout", sess)
 	}
 }

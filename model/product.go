@@ -22,8 +22,6 @@ type Product struct {
 	ImgPath     string
 	Detail      string
 	HotPoint    string
-	IsLogin     bool      // 用于模板
-	Username    string    // 用于模板
 	Category    *Category // 用于模板
 }
 

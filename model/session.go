@@ -7,9 +7,12 @@ import (
 )
 
 type Session struct {
-	SessionID string
-	Username  string
-	UserID    int
+	SessionID   string
+	Username    string
+	UserID      int
+	PageProduct *PageProduct
+	Product     *Product
+	Cart        *Cart
 }
 
 // AddSession 数据库新增Session

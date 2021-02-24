@@ -19,7 +19,7 @@
     <div class="header">
         <div class="header_c inner_c">
             <!-- logo start -->
-            <h1>
+            <h1 style="line-height: 68px;">
                 <!-- 待修改内容 -->
                 <a href="#">
                     惠绿商城
@@ -29,7 +29,7 @@
             <!-- 所有产品类别 start -->
             <div class="all_pro">
                 <!-- 待修改内容 -->
-                <a class="all_type" href="/products">查看所有类别<span class="icon"></span></a>
+                <a class="all_type" href="/products">查看所有类别<span class="icon" style="vertical-align: middle;"></span></a>
                 <!-- 产品类别栏 -->
                 <div class="product">
                     <div class="pro_inner inner_c">
@@ -111,7 +111,7 @@
                 <span>|</span>
                 <a href="/logout">注销</a>
                 <span>|</span>
-                {{ if.IsLogin }}
+                {{ if.UserID }}
                 <a href="#">{{ .Username }}</a>
                 {{ else }}
                 <a href="#">个人</a>
@@ -204,11 +204,11 @@
     <!-- 返回顶部按钮 start -->
     <div class="fix_top">
         <p class="qq">
-            <span>QQ客服</span>
+            <span style="width: 24px; height: 32px; line-height: 16px;">QQ客服</span>
             <img src="/static/img/ewm.jpg" alt="">
         </p>
         <p class="wx">
-            <span>微信客服</span>
+            <span style="width: 24px; height: 32px; line-height: 16px;">微信客服</span>
             <img src="/static/img/ewm.jpg" alt="">
         </p>
         <p class="top">↑</p>

@@ -13,8 +13,6 @@ type PageProduct struct {
 	TotalRecord int64       // 总记录数，通过查询数据库得到
 	MinPrice    string      // 用于模板
 	MaxPrice    string      // 用于模板
-	IsLogin     bool        // 用于模板
-	Username    string      // 用于模板
 	Categories  []*Category // 用于模板
 	Category_id string      // 用于模板
 }

@@ -9,8 +9,8 @@
         <div class="bread_nav">
             <a href="#">首页</a>
             <span>&gt;</span><a href="/products">所有商品</a>
-            <span>&gt;</span><a href="#">{{ .Category.Name}}</a>
-            <span>&gt;</span><span>{{ .Name }}</span>
+            <span>&gt;</span><a href="#">{{ .Product.Category.Name}}</a>
+            <span>&gt;</span><span>{{ .Product.Name }}</span>
         </div>
         <!-- 面包屑导航 end -->
 
@@ -20,25 +20,25 @@
                 <!-- 产品图片 -->
                 <div class="pro_left">
                     <div class="pro_pic">
-                        <img src="{{ .ImgPath }}" alt="">
+                        <img src="{{ .Product.ImgPath }}" alt="">
                     </div>
                 </div>
                 <!-- 产品规格选择 -->
                 <div class="pro_detail">
-                    <h1>{{ .Name }}</h1>
-                    <h3>{{ .HotPoint }}</h3>
+                    <h1>{{ .Product.Name }}</h1>
+                    <h3>{{ .Product.HotPoint }}</h3>
                     <div class="pro_pri">
-                        售价<span class="pri_sym">￥</span><span class="pri_num">{{ .Price }}</span>
+                        售价<span class="pri_sym">￥</span><span class="pri_num">{{ .Product.Price }}</span>
                     </div>
                     <div class="pro_num">
                         <!-- <p>选择数量</p>
                         <button>-</button>
                         <input type="text" value="1">
                         <button>+</button> -->
-                        <span>（库存 {{ .Stock }} 件，已售 {{ .Sales }} 件）</span>
+                        <span>（库存 {{ .Product.Stock }} 件，已售 {{ .Product.Sales }} 件）</span>
                     </div>
                     <div class="btns">
-                        <a id="{{ .ID }}" class="addToCart" href="javascript:void(0)">加入购物车</a>
+                        <a id="{{ .Product.ID }}" class="addToCart" href="javascript:void(0)">加入购物车</a>
                         <a href="javascript:void(0)">立即购买</a>
 
                         <script>
@@ -63,7 +63,7 @@
             <!-- 产品介绍 -->
             <div class="pro_desc">
                 <div class="pic">
-                    <img src="{{ .Detail }}" alt="">
+                    <img src="{{ .Product.Detail }}" alt="">
                 </div>
             </div>
         </div>
