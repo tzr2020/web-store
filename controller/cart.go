@@ -12,6 +12,7 @@ import (
 func regsiterCartRoutes() {
 	http.HandleFunc("/addToCart", AddToCart)
 	http.HandleFunc("/getCartInfo", GetCartInfo)
+	http.HandleFunc("/deleteCart", DeleteCart)
 }
 
 // AddToCart 将产品添加到购物车
@@ -174,4 +175,18 @@ func GetCartInfo(w http.ResponseWriter, r *http.Request) {
 	} else {
 		t.ExecuteTemplate(w, "layout", sess)
 	}
+}
+
+// DeleteCart 清空购物车，返回购物车内容页面
+func DeleteCart(w http.ResponseWriter, r *http.Request) {
+	cartID := r.FormValue("cartID")
+
+	err := model.DeleteCart(cartID)
+	if err != nil {
+		log.Println("从数据库删除购物车发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	GetCartInfo(w, r)
 }

@@ -113,3 +113,14 @@ func UpdateProductCountOfCartItem(cItem *CartItem) error {
 
 	return nil
 }
+
+func DeleteCartItemByCartID(cartID string) error {
+	query := "delete from cart_items where cart_id = ?"
+
+	_, err := util.Db.Exec(query, cartID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

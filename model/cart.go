@@ -91,3 +91,21 @@ func UpdateCountAndAmountOfCart(c *Cart) error {
 
 	return nil
 }
+
+// DeleteCart 根据购物车id，从数据库删除购物车，同时删除该购物车的购物项
+func DeleteCart(cartID string) error {
+	query := "delete from carts where id = ?"
+
+	err := DeleteCartItemByCartID(cartID)
+	if err != nil {
+		log.Println("从数据库删除购物项发生错误:", err)
+		return err
+	}
+
+	_, err = util.Db.Exec(query, cartID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
