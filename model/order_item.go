@@ -4,7 +4,7 @@ package model
 type OrderItem struct {
 	ID        int
 	OrderID   string
-	ProductID *Product
+	ProductID int
 	Count     int
 	Amount    float64
 }

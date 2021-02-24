@@ -3,7 +3,7 @@ package model
 // Address 用户预存的收货地址表结构
 type Address struct {
 	ID        int
-	UserID    int
+	UID       int
 	Name      string
 	Tel       string
 	Province  string
