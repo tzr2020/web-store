@@ -1,0 +1,74 @@
+{{ define "content" }}
+
+<!-- 二级页面内容 start -->
+<link rel="stylesheet" href="/static/axui/iconfont.css">
+<link href="/static/axui/css/ax.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+    .cart_container {
+        width: 800px;
+        margin: 100px auto 0;
+    }
+
+    .cart_container .ax-panel-header {
+        margin-top: 20px;
+    }
+</style>
+
+<div class="cart_container">
+    {{ if .Cart}}
+    <div class="ax-panel ax-border ax-radius ax-padding ax-xl">
+        <div class="ax-panel-body">
+            <table class="ax-table ax-stripe">
+                <thead>
+                    <tr>
+                        <th>产品名称</th>
+                        <th>数量</th>
+                        <th>单价</th>
+                        <th>金额</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range .Cart.CartItems }}
+                    <tr>
+                        <td>{{ .Product.Name }}</td>
+                        <td><input type="" name="" id="" value="{{ .Count }}"
+                                style="width: 35px; text-align: center;" /></td>
+                        <td>{{ .Product.Price }}</td>
+                        <td>{{ .Amount }}</td>
+                        <td><a href="javascript:void(0);" class="ax-iconfont ax-icon-trash-alt-fill" title="删除"></a>
+                        </td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+        <div class="ax-panel-header ax-row">
+            <div class="ax-col">
+                <b class="ax-title">购物车中共有<span class="ax-color-danger">{{ .Cart.TotalCount }}</span>件商品 总金额<span
+                        class="ax-color-danger">{{ .Cart.TotalAmount }}</span>元</b>
+            </div>
+            <a href="javascript:void(0);" class="ax-btn ax-success ax-sm">继续购物</a>
+            <a href="javascript:void(0);" class="ax-btn ax-ad ax-sm">清空购物车</a>
+            <a href="javascript:void(0);" class="ax-btn ax-primary ax-sm">去结账</a>
+        </div>
+    </div>
+    {{ else }}
+    <div style="height: 400px; text-align: center;">
+        <p style="margin-top: 100px; font-size: 18px; font-weight: 600;">购物车还没有产品，去<a style="color: red;"
+                href="#">首页</a>添加产品</h1>
+        </p>
+    </div>
+    {{ end }}
+</div>
+
+<script src="/static/js/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="/static/axui/js/ax.min.js" type="text/javascript"></script>
+<script type='text/javascript'>
+    $(document).ready(function () {
+
+    });
+</script>
+<!-- 二级页面内容 end -->
+
+{{ end }}

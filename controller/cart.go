@@ -2,6 +2,7 @@ package controller
 
 import (
 	"database/sql"
+	"html/template"
 	"log"
 	"net/http"
 	"web-store/model"
@@ -10,6 +11,7 @@ import (
 
 func regsiterCartRoutes() {
 	http.HandleFunc("/addToCart", AddToCart)
+	http.HandleFunc("/getCartInfo", GetCartInfo)
 }
 
 // AddToCart 将产品添加到购物车
@@ -136,5 +138,40 @@ func AddToCart(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// 用户还没登录
 		w.Write([]byte("请先登录账号，再将产品加入购物车"))
+	}
+}
+
+// GetCartInfo 返回购物车内容页面
+func GetCartInfo(w http.ResponseWriter, r *http.Request) {
+	ok, sess := IsLogin(r)
+
+	if !ok {
+		// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端
+		t, err := template.ParseFiles("./view/template/layout.html", "./view/template/cart-info.html")
+		if err != nil {
+			log.Printf("解析模板文件发生错误：%v\n", err)
+			http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		} else {
+			t.ExecuteTemplate(w, "layout", nil)
+		}
+		return
+	}
+
+	cart, err := model.GetCartByUserID(sess.UserID)
+	if err != nil {
+		log.Println("从数据库获取购物车发生错误: ", err)
+	}
+
+	if cart != nil {
+		sess.Cart = cart
+	}
+
+	// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端
+	t, err := template.ParseFiles("./view/template/layout.html", "./view/template/cart-info.html")
+	if err != nil {
+		log.Printf("解析模板文件发生错误：%v\n", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+	} else {
+		t.ExecuteTemplate(w, "layout", sess)
 	}
 }
