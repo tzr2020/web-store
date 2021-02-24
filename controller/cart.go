@@ -221,7 +221,7 @@ func DeleteCartItem(w http.ResponseWriter, r *http.Request) {
 	// 遍历购物车结构的购物项字段，找到需要被删除的购物项
 	for k, v := range cart.CartItems {
 		if v.CartItemID == iCartItemID {
-			//  维护购物车结构，除指定购物项
+			//  维护购物车结构，移除指定购物项
 			cart.CartItems = append(cart.CartItems[:k], cart.CartItems[k+1:]...)
 			// 从数据库删除购物项
 			err := model.DeleteCartItem(cartItemID)
