@@ -10,7 +10,8 @@ import (
 func TestCart(t *testing.T) {
 	// t.Run("测试添加购物车", testAddCart)
 	// t.Run("测试获取购物车，根据用户id", testGetCartByUserID)
-	t.Run("测试删除购物车，根据购物车id", testDeleteCart)
+	// t.Run("测试删除购物车，根据购物车id", testDeleteCart)
+	// t.Run("测试删除购物项，根据购物项id", testDeleteCartItem)
 }
 
 func testAddCart(t *testing.T) {
@@ -77,4 +78,14 @@ func testDeleteCart(t *testing.T) {
 	fmt.Println("测试删除购物车，根据购物车id")
 
 	DeleteCart("f3e80ed1-3a33-4c2b-5139-751085cfd060")
+}
+
+func testDeleteCartItem(t *testing.T) {
+	fmt.Println("测试删除购物项，根据购物项id")
+
+	err := DeleteCartItem("12")
+	if err != nil {
+		log.Println("删除购物项失败")
+		return
+	}
 }

@@ -124,3 +124,15 @@ func DeleteCartItemByCartID(cartID string) error {
 
 	return nil
 }
+
+// DeleteCartItem 根据购物项id，从数据库删除购物项
+func DeleteCartItem(cartItemID string) error {
+	query := "delete from cart_items where id = ?"
+
+	_, err := util.Db.Exec(query, cartItemID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

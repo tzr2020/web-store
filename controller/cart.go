@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"web-store/model"
 	"web-store/util"
 )
@@ -13,6 +14,7 @@ func regsiterCartRoutes() {
 	http.HandleFunc("/addToCart", AddToCart)
 	http.HandleFunc("/getCartInfo", GetCartInfo)
 	http.HandleFunc("/deleteCart", DeleteCart)
+	http.HandleFunc("/deleteCartItem", DeleteCartItem)
 }
 
 // AddToCart 将产品添加到购物车
@@ -187,6 +189,52 @@ func DeleteCart(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	GetCartInfo(w, r)
+}
+
+// DeleteCartItem 删除购物项，返回购物车内容页面
+func DeleteCartItem(w http.ResponseWriter, r *http.Request) {
+	cartItemID := r.FormValue("cartItemID")
+
+	iCartItemID, err := strconv.Atoi(cartItemID)
+	if err != nil {
+		log.Println("购物项id类型转换发生错误")
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	ok, sess := IsLogin(r)
+	if !ok {
+		log.Println("从数据库获取购物车发生错误")
+		http.Error(w, "会员用户未登录，无法进行删除购物项操作", http.StatusUnauthorized)
+		return
+	}
+
+	cart, err := model.GetCartByUserID(sess.UserID)
+	if err != nil {
+		log.Println("从数据库获取购物车发生错误")
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 遍历购物车结构的购物项字段，找到需要被删除的购物项
+	for k, v := range cart.CartItems {
+		if v.CartItemID == iCartItemID {
+			//  维护购物车结构，除指定购物项
+			cart.CartItems = append(cart.CartItems[:k], cart.CartItems[k+1:]...)
+			// 从数据库删除购物项
+			err := model.DeleteCartItem(cartItemID)
+			if err != nil {
+				log.Println("从数据库删除购物项发生错误")
+				http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+
+	// 数据库更新购物车
+	model.UpdateCountAndAmountOfCart(cart)
 
 	GetCartInfo(w, r)
 }

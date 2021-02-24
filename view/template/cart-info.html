@@ -6,7 +6,7 @@
 <style type="text/css">
     .cart_container {
         width: 800px;
-        margin: 100px auto 0;
+        margin: 100px auto;
     }
 
     .cart_container .ax-panel-header {
@@ -36,7 +36,8 @@
                                 style="width: 35px; text-align: center;" /></td>
                         <td>{{ .Product.Price }}</td>
                         <td>{{ .Amount }}</td>
-                        <td><a href="javascript:void(0);" class="ax-iconfont ax-icon-trash-alt-fill" title="删除"></a>
+                        <td><a href="/deleteCartItem?cartItemID={{ .CartItemID }}"
+                                class="ax-iconfont ax-icon-trash-alt-fill deleteCartItem" id="{{ .Product.Name }}" title="删除"></a>
                         </td>
                     </tr>
                     {{ end }}
@@ -69,6 +70,12 @@
         // 清空购物车链接绑定单击事件
         $("#emptyCart").click(function () {
             return confirm("确定要清空购物车吗？");
+        });
+
+        // 删除购物项链接绑定单击事件
+        $(".deleteCartItem").click(function () {
+            var productName = $(this).attr("id")
+            return confirm("确定要删除购物项: \"" + productName + "\" 吗？");
         });
     });
 </script>
