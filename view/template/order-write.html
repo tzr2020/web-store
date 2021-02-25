@@ -1,0 +1,116 @@
+{{ define "content" }}
+
+<!-- 二级页面内容 start -->
+<link rel="stylesheet" href="/static/axui/iconfont.css">
+<link rel="stylesheet" href="/static/axui/css/ax.css">
+<style>
+    .order_write_container {
+        width: 1100px;
+        margin: 100px auto;
+    }
+
+    .order_write_container .ax-panel-header {
+        margin-top: 20px;
+    }
+    .order_write_container .ax-panel-header .ax-flex-row {
+        margin: 5px 0;
+    }
+</style>
+
+<div class="order_write_container">
+    <div class="ax-panel ax-border ax-radius ax-padding ax-xl">
+        <div class="ax-panel-body">
+            <table class="ax-table ax-stripe">
+                <thead>
+                    <tr>
+                        <th>产品名称</th>
+                        <th>数量</th>
+                        <th>单价</th>
+                        <th>金额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range .Cart.CartItems }}
+                    <tr>
+                        <td>{{ .Product.Name }}</td>
+                        <td>{{ .Count }}</td>
+                        <td>{{ .Product.Price }}</td>
+                        <td>{{ .Amount }}</td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+        <div class="ax-panel-header ax-row">
+            <div class="ax-col">
+                <div class="ax-form-group">
+                    <div class="ax-flex-row">
+                        <div class="ax-form-label">收货地址：</div>
+                        <div class="ax-form-con">
+                            <div class="ax-form-input">
+                                <div class="ax-row" style="width: 700px;">
+                                    <div class="ax-col ax-col-4"><input type="text" id="province"
+                                            value="{{ .Address.Province }}"><span class="ax-pos-right">省</span></div>
+                                    <span class="ax-gutter-md"></span>
+                                    <div class="ax-col ax-col-6"><input type="text" id="city"
+                                            value="{{ .Address.City }}"><span class="ax-pos-right">市</span></div>
+                                    <span class="ax-gutter-md"></span>
+                                    <div class="ax-col ax-col-8"><input type="text" id="area"
+                                            value="{{ .Address.Area }}"><span class="ax-pos-right">县/区</span></div>
+                                    <span class="ax-gutter-md"></span>
+                                    <div class="ax-col ax-col-12"><input type="text" id="street"
+                                            value="{{ .Address.Street }}"><span class="ax-pos-right">街道</span></div>
+                                    <span class="ax-gutter-md"></span>
+                                    <div class="ax-col ax-col-6"><input type="text" id="code"
+                                            value="{{ .Address.Code }}"><span class="ax-pos-right">邮编</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ax-flex-row">
+                        <div class="ax-flex-row">
+                            <div class="ax-form-label">支付方式：</div>
+                            <div class="ax-form-con">
+                                <div class="ax-form-input">
+                                    <select id="paymentType">
+                                        <option value="1">在线支付</option>
+                                        <option value="2">货到付款</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>                    
+                    </div>
+                    <div class="ax-flex-row">
+                        <div class="ax-form-label">电话号码：</div>
+                        <div class="ax-form-con">
+                            <div class="ax-form-input"><input type="text" value="{{ .Address.Tel }}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ax-panel-header ax-row">
+            <div class="ax-col">
+                <b class class="ax-title">
+                    购物车中共有<span class="ax-color-danger">{{ .Cart.TotalCount }}</span>件商品，
+                    总金额<span class="ax-color-danger">{{ .Cart.TotalAmount }}</span>元，
+                    支付金额<span class="ax-color-danger">{{ .Order.Payment }}</span>元
+                    (含运费<span class="ax-color-danger">{{ .Order.ShipFee }}</span>元)</b>
+            </div>
+            <a href="javascript:void(0);" class="ax-btn ax-primary ax-md">提交订单</a>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/jquery-1.10.2.min.js"></script>
+<script src="/static/axui/js/ax.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // 设置选项选中
+        $('#paymentType').val('{{ .Order.PaymentType }}');
+    });
+</script>
+<!-- 二级页面内容 end -->
+
+{{ end }}
