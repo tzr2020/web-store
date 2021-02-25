@@ -30,7 +30,7 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	intPaymentType, err := strconv.Atoi(paymentType)
 	if err != nil {
-		log.Println("数据类型转换发生错误:", err)
+		log.Println("订单的支付方式字段类型转换发生错误:", err)
 		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -54,7 +54,7 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if addresses == nil {
-		log.Println("用户的购物车为空")
+		log.Println("用户的收货地址为空")
 		w.Write([]byte("你还没有添加收货地址，请先去添加收货地址。"))
 		return
 	}
