@@ -153,6 +153,16 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		sess := &model.Session{}
 		sess.PageProduct = page
+		// 解析模板文件
+		t, err := template.ParseFiles("./view/template/layout.html", "./view/template/products.html")
+		// 执行模板，生成HTML文档，返回页面
+		if err != nil {
+			log.Printf("解析模板文件发生错误：%v", err)
+			http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
+		} else {
+			t.ExecuteTemplate(w, "layout", sess)
+			// t.Execute(w, page)
+		}
 	} else {
 		sess.PageProduct = page
 	}
@@ -204,6 +214,14 @@ func getProduct(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		sess := &model.Session{}
 		sess.Product = p
+		// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端
+		t, err := template.ParseFiles("./view/template/layout.html", "./view/template/product.html")
+		if err != nil {
+			log.Printf("解析模板文件发生错误：%v\n", err)
+			http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		} else {
+			t.ExecuteTemplate(w, "layout", sess)
+		}
 	} else {
 		sess.Product = p
 	}
