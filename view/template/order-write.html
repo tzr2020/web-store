@@ -128,6 +128,28 @@
             var name = $('#name').val();
             var tel = $('#tel').val();
             var paymentType = $('#paymentType').val();
+
+            if (province == "") {
+                alert('省份不能为空！');
+                return
+            }
+            if (city == "") {
+                alert('城市不能为空！');
+                return
+            }
+            if (area == "") {
+                alert('区/县不能为空！');
+                return
+            }
+            if (name == "") {
+                alert('姓名不能为空！');
+                return
+            }
+            if (tel == "") {
+                alert('电话号不能为空！');
+                return
+            }
+
             var url = '/commitOrder';
             var param = {
                 'province': province,
@@ -139,6 +161,7 @@
                 'tel': tel,
                 'paymentType': paymentType
             };
+
             $.post(url, param, function (resp) {
                 alert(resp);
                 location = '/products'

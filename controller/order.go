@@ -49,18 +49,16 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	address := &model.Address{}
 	addresses, err := model.GetAddressByUserID(sess.UserID)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("从数据库获取收货地址发生错误:", err)
 		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
 		return
 	}
-	if addresses == nil {
-		log.Println("用户的收货地址为空")
-		w.Write([]byte("你还没有添加收货地址，请先去添加收货地址。"))
-		return
+	if addresses != nil {
+		address = addresses[0]
 	}
-	address := addresses[0]
 
 	shipFee := 11.00
 	order := &model.Order{
