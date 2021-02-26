@@ -7,14 +7,15 @@ import (
 )
 
 type Session struct {
-	SessionID   string
-	Username    string
-	UserID      int
-	PageProduct *PageProduct // 用于模板
-	Product     *Product     // 用于模板
-	Cart        *Cart        // 用于模板
-	Order       *Order       // 用于模板
-	Address     *Address     // 用于模板
+	SessionID         string
+	Username          string
+	UserID            int
+	PageProduct       *PageProduct        // 用于模板
+	Product           *Product            // 用于模板
+	Cart              *Cart               // 用于模板
+	Order             *Order              // 用于模板
+	OrderPaymentTypes []*OrderPaymentType // 用于模板
+	Address           *Address            // 用于模板
 }
 
 // AddSession 数据库新增Session

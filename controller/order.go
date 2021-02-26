@@ -69,8 +69,16 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 		ShipFee:     shipFee,
 	}
 
+	orderPaymentTypes, err := model.GetOrderPaymentTypes()
+	if err != nil {
+		log.Println("从数据库获取所有订单支付方式发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	sess.Cart = cart
 	sess.Order = order
+	sess.OrderPaymentTypes = orderPaymentTypes
 	sess.Address = address
 
 	// 解析模板文件，并执行模板，生成包含动态数据的HTML文档，返回给浏览器

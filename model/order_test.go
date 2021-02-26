@@ -10,6 +10,7 @@ import (
 
 func TestOrder(t *testing.T) {
 	// t.Run("测试添加订单", testAddOrder)
+	t.Run("测试从数据库获取所有订单支付方式", testGetOrderPaymentType)
 }
 
 func testAddOrder(t *testing.T) {
@@ -67,5 +68,18 @@ func testAddOrder(t *testing.T) {
 	if err := orderAddress.Add(); err != nil {
 		log.Println("数据库发生错误:", err)
 		return
+	}
+}
+
+func testGetOrderPaymentType(t *testing.T) {
+	fmt.Println("测试从数据库获取所有订单支付方式")
+
+	orderPaymentTypes, err := GetOrderPaymentTypes()
+	if err != nil {
+		log.Println("获取从数据库所有订单支付方式发生错误")
+	}
+
+	for _, v := range orderPaymentTypes {
+		fmt.Println(v)
 	}
 }

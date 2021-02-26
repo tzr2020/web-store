@@ -74,8 +74,9 @@
                             <div class="ax-form-con">
                                 <div class="ax-form-input">
                                     <select id="paymentType">
-                                        <option value="1">在线支付</option>
-                                        <option value="2">货到付款</option>
+                                        {{ range.OrderPaymentTypes }}
+                                        <option value="{{ .Code }}">{{ .Text }}</option>
+                                        {{ end }}
                                     </select>
                                 </div>
                             </div>
