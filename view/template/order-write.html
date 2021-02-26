@@ -12,6 +12,7 @@
     .order_write_container .ax-panel-header {
         margin-top: 20px;
     }
+
     .order_write_container .ax-panel-header .ax-flex-row {
         margin: 5px 0;
     }
@@ -78,12 +79,18 @@
                                     </select>
                                 </div>
                             </div>
-                        </div>                    
+                        </div>
                     </div>
                     <div class="ax-flex-row">
                         <div class="ax-form-label">电话号码：</div>
                         <div class="ax-form-con">
-                            <div class="ax-form-input"><input type="text" value="{{ .Address.Tel }}"></div>
+                            <div class="ax-form-input"><input type="text" id="tel" value="{{ .Address.Tel }}"></div>
+                        </div>
+                    </div>
+                    <div class="ax-flex-row">
+                        <div class="ax-form-label">姓名：</div>
+                        <div class="ax-form-con">
+                            <div class="ax-form-input"><input type="text" id="name" value="{{ .Address.Name }}"></div>
                         </div>
                     </div>
                 </div>
@@ -98,7 +105,7 @@
                     支付金额<span class="ax-color-danger">{{ .Order.Payment }}</span>元
                     (含运费<span class="ax-color-danger">{{ .Order.ShipFee }}</span>元)</b>
             </div>
-            <a href="javascript:void(0);" class="ax-btn ax-primary ax-md">提交订单</a>
+            <a href="javascript:void(0);" class="ax-btn ax-primary ax-md" id="commitOrder">提交订单</a>
         </div>
     </div>
 </div>
@@ -109,6 +116,33 @@
     $(document).ready(function () {
         // 设置选项选中
         $('#paymentType').val('{{ .Order.PaymentType }}');
+
+        // 为提交订单按钮添加单击事件
+        $('#commitOrder').click(function () {
+            var province = $('#province').val();
+            var city = $('#city').val();
+            var area = $('#area').val();
+            var street = $('#street').val();
+            var code = $('#code').val();
+            var name = $('#name').val();
+            var tel = $('#tel').val();
+            var paymentType = $('#paymentType').val();
+            var url = '/commitOrder';
+            var param = {
+                'province': province,
+                'city': city,
+                'area': area,
+                'street': street,
+                'code': code,
+                'name': name,
+                'tel': tel,
+                'paymentType': paymentType
+            };
+            $.post(url, param, function (resp) {
+                alert(resp);
+                location = '/products'
+            });
+        });
     });
 </script>
 <!-- 二级页面内容 end -->

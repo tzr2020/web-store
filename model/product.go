@@ -70,3 +70,15 @@ func GetProduct(pid string) (*Product, error) {
 
 	return p, nil
 }
+
+func (product *Product) UpdateStockAndSales() error {
+	query := "update products set stock = ?, sales = ?"
+	query += " where id = ?"
+
+	_, err := util.Db.Exec(query, product.Stock, product.Sales, product.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -1,5 +1,10 @@
 package model
 
+import (
+	"log"
+	"web-store/util"
+)
+
 // Order 订单结构
 type Order struct {
 	ID           string
@@ -20,4 +25,22 @@ type Order struct {
 	FinishTime   string  // 完成时间
 	CloseTime    string  // 关闭时间
 	Status       int     // 状态：0-禁用，1-正常，-1-删除
+}
+
+func (order *Order) Add() error {
+	query := "insert into orders (id, uid, total_count, total_amount, payment, payment_type, ship_fee, create_time) values (?, ?, ?, ?, ?, ?, ?, ?)"
+
+	stmt, err := util.Db.Prepare(query)
+	if err != nil {
+		log.Println("准备SQL语句发生错误:", err)
+		return err
+	}
+
+	_, err = stmt.Exec(order.ID, order.UID, order.TotalCount, order.TotalAmount,
+		order.Payment, order.PaymentType, order.ShipFee, order.CreateTime)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

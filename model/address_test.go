@@ -7,7 +7,7 @@ import (
 )
 
 func TestAddress(t *testing.T) {
-	t.Run("测试获取会员用户的所有收货地址，根据用户id", testGetAddress)
+	// t.Run("测试获取会员用户的所有收货地址，根据用户id", testGetAddress)
 }
 
 func testGetAddress(t *testing.T) {
