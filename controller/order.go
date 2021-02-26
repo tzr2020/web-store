@@ -16,6 +16,7 @@ func registerOrderRoutes() {
 	http.HandleFunc("/commitOrder", CommitOrder)
 }
 
+// WriteOrder 用户填写订单
 func WriteOrder(w http.ResponseWriter, r *http.Request) {
 	ok, sess := IsLogin(r)
 
@@ -90,6 +91,7 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// CommitOrder 用户提交订单
 func CommitOrder(w http.ResponseWriter, r *http.Request) {
 	ok, sess := IsLogin(r)
 
