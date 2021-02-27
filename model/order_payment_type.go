@@ -1,6 +1,9 @@
 package model
 
-import "web-store/util"
+import (
+	"log"
+	"web-store/util"
+)
 
 type OrderPaymentType struct {
 	ID   int
@@ -31,4 +34,23 @@ func GetOrderPaymentTypes() ([]*OrderPaymentType, error) {
 	}
 
 	return orderPaymentTypes, nil
+}
+
+// OrderPaymentTypeCodeToText 是模板函数，用于将订单的支付方式代码转换为对应的支付方式文本
+func OrderPaymentTypeCodeToText(code int) string {
+
+	types, err := GetOrderPaymentTypes()
+	if err != nil {
+		log.Println("从数据库获取所有订单的支付方式发生错误:", err)
+		return ""
+	}
+
+	for _, v := range types {
+		if code == v.Code {
+			return v.Text
+		}
+	}
+
+	log.Println("数据库没有匹配的支付方式代码")
+	return ""
 }

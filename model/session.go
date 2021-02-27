@@ -14,6 +14,7 @@ type Session struct {
 	Product           *Product            // 用于模板
 	Cart              *Cart               // 用于模板
 	Order             *Order              // 用于模板
+	Orders            []*Order            // 用于模板
 	OrderPaymentTypes []*OrderPaymentType // 用于模板
 	Address           *Address            // 用于模板
 }

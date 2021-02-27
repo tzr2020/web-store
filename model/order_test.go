@@ -10,7 +10,9 @@ import (
 
 func TestOrder(t *testing.T) {
 	// t.Run("测试添加订单", testAddOrder)
-	t.Run("测试从数据库获取所有订单支付方式", testGetOrderPaymentType)
+	// t.Run("测试从数据库获取所有订单支付方式", testGetOrderPaymentType)
+	// t.Run("测试从数据库获取订单的状态字典", testGetOrderStatus)
+	// t.Run("测试从数据库获取某用户的所有订单，根据用户id", testGetOrdersByUserID)
 }
 
 func testAddOrder(t *testing.T) {
@@ -76,10 +78,37 @@ func testGetOrderPaymentType(t *testing.T) {
 
 	orderPaymentTypes, err := GetOrderPaymentTypes()
 	if err != nil {
-		log.Println("获取从数据库所有订单支付方式发生错误")
+		log.Println("从数据库获取所有订单支付方式发生错误")
 	}
 
 	for _, v := range orderPaymentTypes {
+		fmt.Println(v)
+	}
+}
+
+func testGetOrderStatus(t *testing.T) {
+	fmt.Println("测试从数据库获取订单的状态字典")
+
+	allStatus, err := GetOrderStatus()
+	if err != nil {
+		log.Println("从数据库获取订单的状态字典发生错误")
+	}
+
+	for _, v := range allStatus {
+		fmt.Println(v)
+	}
+}
+
+func testGetOrdersByUserID(t *testing.T) {
+	fmt.Println("测试从数据库获取某用户的所有订单，根据用户id")
+
+	orders, err := GetOrdersByUserID(1)
+	if err != nil {
+		log.Println("从数据库获取某用户的所有订单发生错误:", err)
+		return
+	}
+
+	for _, v := range orders {
 		fmt.Println(v)
 	}
 }

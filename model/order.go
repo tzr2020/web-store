@@ -13,7 +13,7 @@ type Order struct {
 	TotalAmount  float64 // 产品金额
 	Payment      float64 // 支付金额=产品金额+运费
 	PaymentType  int     // 支付方式：1-在线支付，2-货到付款
-	ShipNumber   int     // 快递单号
+	ShipNumber   string  // 快递单号
 	ShipName     string  // 快递公司
 	ShipFee      float64 // 运费
 	OrderStatus  int     // 状态字典的状态码
@@ -43,4 +43,31 @@ func (order *Order) Add() error {
 	}
 
 	return nil
+}
+
+// GetOrdersByUserID 从数据库获取某用户所有订单，根据用户id
+func GetOrdersByUserID(uid int) ([]*Order, error) {
+	query := "select id, uid, total_count, total_amount, payment, payment_type, ship_number, ship_name, ship_fee, order_status, create_time, update_time, payment_time, ship_time, received_time, finish_time, close_time, status from orders"
+	query += " where status = 1 and uid = ?"
+
+	var orders []*Order
+
+	rows, err := util.Db.Query(query, uid)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		order := &Order{}
+		err := rows.Scan(&order.ID, &order.UID, &order.TotalCount, &order.TotalAmount, &order.Payment,
+			&order.PaymentType, &order.ShipNumber, &order.ShipName, &order.ShipFee, &order.OrderStatus,
+			&order.CreateTime, &order.UpdateTime, &order.PaymentTime, &order.ShipTime, &order.ReceivedTime,
+			&order.FinishTime, &order.CloseTime, &order.Status)
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+
+	return orders, nil
 }

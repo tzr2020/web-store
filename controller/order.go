@@ -14,6 +14,7 @@ import (
 func registerOrderRoutes() {
 	http.HandleFunc("/writeOrder", WriteOrder)
 	http.HandleFunc("/commitOrder", CommitOrder)
+	http.HandleFunc("/myOrder", MyOrder)
 }
 
 // WriteOrder 用户填写订单
@@ -200,4 +201,37 @@ func CommitOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write([]byte("成功提交订单。"))
+}
+
+// MyOrder 用户查看订单，返回用户订单页面
+func MyOrder(w http.ResponseWriter, r *http.Request) {
+	ok, sess := IsLogin(r)
+
+	if !ok {
+		log.Println("用户查看订单时，没有登录账号")
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("你没有登录账号。"))
+		return
+	}
+
+	orders, err := model.GetOrdersByUserID(sess.UserID)
+	if err != nil {
+		log.Println("数据库获取某用户的所有订单发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	sess.Orders = orders
+
+	// 解析模板文件，并执行模板，生成包含动态数据的HTML文档，返回给浏览器
+	funcMap := template.FuncMap{"OrderPaymentTypeCodeToText": model.OrderPaymentTypeCodeToText,
+		"OrderStatusCodeToText": model.OrderStatusCodeToText} // 包含自定义的模板函数
+	t := template.New("layout").Funcs(funcMap) // 创建模板并绑定FuncMap
+	t, err = t.ParseFiles("./view/template/layout.html", "./view/template/order.html")
+	if err != nil {
+		log.Printf("解析模板文件发生错误：%v\n", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+	} else {
+		t.ExecuteTemplate(w, "layout", sess)
+	}
 }
