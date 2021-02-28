@@ -15,6 +15,8 @@ func registerOrderRoutes() {
 	http.HandleFunc("/writeOrder", WriteOrder)
 	http.HandleFunc("/commitOrder", CommitOrder)
 	http.HandleFunc("/myOrder", MyOrder)
+	http.HandleFunc("/payOrder", PayOrder)
+	http.HandleFunc("/receivedOrder", ReceivedOrder)
 }
 
 // WriteOrder 用户填写订单
@@ -224,8 +226,11 @@ func MyOrder(w http.ResponseWriter, r *http.Request) {
 	sess.Orders = orders
 
 	// 解析模板文件，并执行模板，生成包含动态数据的HTML文档，返回给浏览器
-	funcMap := template.FuncMap{"OrderPaymentTypeCodeToText": model.OrderPaymentTypeCodeToText,
-		"OrderStatusCodeToText": model.OrderStatusCodeToText} // 包含自定义的模板函数
+	funcMap := template.FuncMap{ // 包含自定义的模板函数
+		"OrderPaymentTypeCodeToText":   model.OrderPaymentTypeCodeToText,
+		"OrderStatusCodeToText":        model.OrderStatusCodeToText,
+		"OrderStatusCodeToOperateURL":  model.OrderStatusCodeToOperateURL,
+		"OrderStatusCodeToOperateText": model.OrderStatusCodeToOperateText}
 	t := template.New("layout").Funcs(funcMap) // 创建模板并绑定FuncMap
 	t, err = t.ParseFiles("./view/template/layout.html", "./view/template/order.html")
 	if err != nil {
@@ -234,4 +239,88 @@ func MyOrder(w http.ResponseWriter, r *http.Request) {
 	} else {
 		t.ExecuteTemplate(w, "layout", sess)
 	}
+}
+
+// PayOrder 用户付款
+func PayOrder(w http.ResponseWriter, r *http.Request) {
+	ok, _ := IsLogin(r)
+
+	if !ok {
+		log.Println("用户付款订单时，没有登录账号")
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("你没有登录账号。"))
+		return
+	}
+
+	orderID := r.FormValue("orderID")
+
+	// 数据库更新订单状态为已付款
+	_, err := model.UpdateOrderStatus(orderID, 3)
+	if err != nil {
+		log.Println("数据库更新订单的状态字典的状态码发生错误")
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 数据库更新订单的付款时间
+	_, err = model.UpdateOrderPaymentTime(orderID, time.Now().Format("2006-01-02 15:04:05"))
+	if err != nil {
+		log.Println("数据库更新订单的付款时间发生错误")
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 数据库更新订单的更新时间
+	_, err = model.UpdateOrderUpdateTime(orderID, time.Now().Format("2006-01-02 15:04:05"))
+	if err != nil {
+		log.Println("数据库更新订单的更新时间发生错误")
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 重定向到用户订单页面
+	w.Header().Set("Location", "/myOrder")
+	w.WriteHeader(302)
+}
+
+// ReceivedOrder 用户确认收货
+func ReceivedOrder(w http.ResponseWriter, r *http.Request) {
+	ok, _ := IsLogin(r)
+
+	if !ok {
+		log.Println("用户付款订单时，没有登录账号")
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("你没有登录账号。"))
+		return
+	}
+
+	orderID := r.FormValue("orderID")
+
+	// 数据库更新订单状态为已收货
+	_, err := model.UpdateOrderStatus(orderID, 5)
+	if err != nil {
+		log.Println("")
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 数据库更新订单的收货时间
+	_, err = model.UpdateOrderReceivedTime(orderID, time.Now().Format("2006-01-02 15:04:05"))
+	if err != nil {
+		log.Println("数据库更新订单的收货时间发生错误")
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 数据库更新订单的更新时间
+	_, err = model.UpdateOrderUpdateTime(orderID, time.Now().Format("2006-01-02 15:04:05"))
+	if err != nil {
+		log.Println("数据库更新订单的更新时间发生错误")
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 重定向到用户订单页面
+	w.Header().Set("Location", "/myOrder")
+	w.WriteHeader(302)
 }

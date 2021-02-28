@@ -71,3 +71,55 @@ func GetOrdersByUserID(uid int) ([]*Order, error) {
 
 	return orders, nil
 }
+
+// UpdateOrderStatus 数据库更新订单的状态字典的状态码
+func UpdateOrderStatus(orderID string, toStatus int) (bool, error) {
+	query := "update orders set order_status = ?"
+	query += " where id = ?"
+
+	_, err := util.Db.Exec(query, toStatus, orderID)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// UpdateOrderPaymentTime 数据库更新订单的付款时间
+func UpdateOrderPaymentTime(orderID string, time string) (bool, error) {
+	query := "update orders set payment_time = ?"
+	query += " where id = ?"
+
+	_, err := util.Db.Exec(query, time, orderID)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// UpdateOrderPaymentTime 数据库更新订单的更新时间
+func UpdateOrderUpdateTime(orderID string, time string) (bool, error) {
+	query := "update orders set update_time = ?"
+	query += " where id = ?"
+
+	_, err := util.Db.Exec(query, time, orderID)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// UpdateOrderPaymentTime 数据库更新订单的付款时间
+func UpdateOrderReceivedTime(orderID string, time string) (bool, error) {
+	query := "update orders set received_time = ?"
+	query += " where id = ?"
+
+	_, err := util.Db.Exec(query, time, orderID)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

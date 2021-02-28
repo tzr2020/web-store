@@ -6,7 +6,7 @@
 
 <style type="text/css">
     .order_container {
-        width: 1100px;
+        width: 1200px;
         margin: 100px auto;
     }
 </style>
@@ -25,7 +25,7 @@
                         <th>支付金额</th>
                         <th>支付方式</th>
                         <th>订单状态</th>
-                        <th>状态时间</th>
+                        <th>更新时间</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -41,7 +41,7 @@
                         <td >{{ .PaymentType | OrderPaymentTypeCodeToText }}</td>
                         <td>{{ .OrderStatus | OrderStatusCodeToText }}</td>
                         <td>{{ .UpdateTime }}</td>
-                        <td></td>
+                        <td><a href="{{ .OrderStatus | OrderStatusCodeToOperateURL }}?orderID={{ .ID }}" class="ax-btn ax-primary ax-sm">{{ .OrderStatus | OrderStatusCodeToOperateText }}</a></td>
                     </tr>
                     {{ end }}
                 </tbody>

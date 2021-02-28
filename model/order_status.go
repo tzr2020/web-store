@@ -54,3 +54,29 @@ func OrderStatusCodeToText(code int) string {
 	log.Println("数据库没有匹配的订单状态字典的状态代码")
 	return ""
 }
+
+// OrderStatusCodeToOperateURL 是模板函数，用于将订单状态字典的状态代码转换为对应的操作URL
+func OrderStatusCodeToOperateURL(code int) string {
+
+	switch code {
+	case 0, 1, 2: // 等待买家付款
+		return "/payOrder"
+	case 4: // 卖家已发货，等待买家确认收货
+		return "/receivedOrder"
+	}
+
+	return "#"
+}
+
+// OrderStatusCodeToOperateText 是模板函数，用于将订单状态字典的状态代码转换为对应的操作文本
+func OrderStatusCodeToOperateText(code int) string {
+
+	switch code {
+	case 0, 1, 2: // 等待买家付款
+		return "去付款"
+	case 4: // 卖家已发货，等待买家确认收货
+		return "确认收货"
+	}
+
+	return "暂无操作"
+}
