@@ -17,6 +17,7 @@ func registerOrderRoutes() {
 	http.HandleFunc("/myOrder", MyOrder)
 	http.HandleFunc("/payOrder", PayOrder)
 	http.HandleFunc("/receivedOrder", ReceivedOrder)
+	http.HandleFunc("/getOrderDetail", GetOrderDetail)
 }
 
 // WriteOrder 用户填写订单
@@ -323,4 +324,55 @@ func ReceivedOrder(w http.ResponseWriter, r *http.Request) {
 	// 重定向到用户订单页面
 	w.Header().Set("Location", "/myOrder")
 	w.WriteHeader(302)
+}
+
+// GetOrderDetail 用户获取订单详情
+func GetOrderDetail(w http.ResponseWriter, r *http.Request) {
+	ok, sess := IsLogin(r)
+
+	if !ok {
+		log.Println("用户付款订单时，没有登录账号")
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("你没有登录账号。"))
+		return
+	}
+
+	orderID := r.FormValue("orderID")
+
+	orderItems, err := model.GetOrderItemsByOrderID(orderID)
+	if err != nil {
+		log.Println("从数据库获取订单项发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	order, err := model.GetOrderByID(orderID)
+	if err != nil {
+		log.Println("从数据库获取订单发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	orderAddress, err := model.GetOrderAddressByOrderID(orderID)
+	if err != nil {
+		log.Println("从数据库获取订单地址发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+	orderAddress.Address = orderAddress.Province + orderAddress.City +
+		orderAddress.Area + orderAddress.Strees
+
+	sess.OrderItems = orderItems
+	sess.Order = order
+	sess.OrderAddress = orderAddress
+
+	// 解析模板文件，并执行模板，生成包含动态数据的HTML文档，返回给浏览器
+	t := template.New("layout")
+	t, err = t.ParseFiles("./view/template/layout.html", "./view/template/order_detail.html")
+	if err != nil {
+		log.Printf("解析模板文件发生错误：%v\n", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+	} else {
+		t.ExecuteTemplate(w, "layout", sess)
+	}
 }

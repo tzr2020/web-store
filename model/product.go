@@ -82,3 +82,24 @@ func (product *Product) UpdateStockAndSales() error {
 
 	return nil
 }
+
+// GetProductByID 从数据库获取产品，根据产品id
+func GetProductByID(pid int) (*Product, error) {
+	query := "select id, category_id, name, price, stock, sales, img_path, detail, hot_point from products"
+	query += " where id = ?"
+
+	stmt, err := util.Db.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+
+	p := &Product{}
+
+	err = stmt.QueryRow(pid).Scan(&p.ID, &p.Category_id, &p.Name, &p.Price,
+		&p.Stock, &p.Sales, &p.ImgPath, &p.Detail, &p.HotPoint)
+	if err != nil {
+		return nil, err
+	}
+
+	return p, nil
+}

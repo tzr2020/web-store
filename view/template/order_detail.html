@@ -1,0 +1,71 @@
+{{ define "content" }}
+
+<!-- 二级页面内容 start -->
+<link rel="stylesheet" href="/static/axui/iconfont.css">
+<link rel="stylesheet" href="/static/axui/css/ax.css">
+
+<style type="text/css">
+    .order_detail_container {
+        width: 1200px;
+        margin: 100px auto;
+    }
+</style>
+
+<div class="order_detail_container">
+    <div class="ax-panel ax-border ax-radius ax-padding ax-xl">
+        <div class="ax-panel-header ax-row">
+            <div class="ax-col">
+                <b class="ax-title">订单ID：{{ .Order.ID }}</b>
+            </div>
+        </div>
+        <div class="ax-panel-body">
+            <table class="ax-table ax-stripe">
+                <thead>
+                    <tr>
+                        <th>产品名称</th>
+                        <th>数量</th>
+                        <th>单价</th>
+                        <th>金额</th>
+                        <th>快递公司</th>
+                        <th>快递单号</th>
+                        <th>收货地址</th>
+                        <th>邮编</th>
+                        <th>姓名</th>
+                        <th>电话号</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ $Order := .Order }}
+                    {{ $OrderAddress := .OrderAddress }}
+
+                    {{ range .OrderItems }}
+                    <tr>
+                        <td>{{ .Product.Name }}</td>
+                        <td>{{ .Count }}</td>
+                        <td>{{ .Product.Price }}</td>
+                        <td>{{ .Amount }}</td>
+                        <td>{{ $Order.ShipName }}</td>
+                        <td>{{ $Order.ShipNumber }}</td>
+                        <td>{{ $OrderAddress.Address }}</td>
+                        <td>{{ $OrderAddress.Code }}</td>
+                        <td>{{ $OrderAddress.Name }}</td>
+                        <td>{{ $OrderAddress.Tel }}</td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/jquery-1.10.2.min.js"></script>
+<script src="/static/axui/js/ax.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+
+    });
+</script>
+<!-- 二级页面内容 end -->
+
+{{ end }}

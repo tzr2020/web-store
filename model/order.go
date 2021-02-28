@@ -123,3 +123,21 @@ func UpdateOrderReceivedTime(orderID string, time string) (bool, error) {
 
 	return true, nil
 }
+
+func GetOrderByID(orderID string) (*Order, error) {
+	query := "select id, uid, total_count, total_amount, payment, payment_type, ship_number, ship_name, ship_fee, order_status, create_time, update_time, payment_time, ship_time, received_time, finish_time, close_time, status from orders"
+	query += " where id = ?"
+
+	order := &Order{}
+
+	err := util.Db.QueryRow(query, orderID).Scan(&order.ID, &order.UID, &order.TotalCount,
+		&order.TotalAmount, &order.Payment, &order.PaymentType, &order.ShipNumber,
+		&order.ShipName, &order.ShipFee, &order.OrderStatus, &order.CreateTime,
+		&order.UpdateTime, &order.PaymentTime, &order.ShipTime, &order.ReceivedTime,
+		&order.FinishTime, &order.CloseTime, &order.Status)
+	if err != nil {
+		return nil, err
+	}
+
+	return order, nil
+}

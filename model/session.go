@@ -17,6 +17,8 @@ type Session struct {
 	Orders            []*Order            // 用于模板
 	OrderPaymentTypes []*OrderPaymentType // 用于模板
 	Address           *Address            // 用于模板
+	OrderItems        []*OrderItem        // 用于模板
+	OrderAddress      *OrderAddress       // 用于模板
 }
 
 // AddSession 数据库新增Session

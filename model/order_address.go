@@ -16,6 +16,7 @@ type OrderAddress struct {
 	Area     string
 	Strees   string
 	Code     string
+	Address  string
 }
 
 func (orderAddress *OrderAddress) Add() error {
@@ -35,4 +36,21 @@ func (orderAddress *OrderAddress) Add() error {
 	}
 
 	return nil
+}
+
+// GetOrderAddressByOrderID 从数据库获取订单地址，根据订单id
+func GetOrderAddressByOrderID(orderID string) (*OrderAddress, error) {
+	query := "select id, order_id, name, tel, province, city, area, street, code from order_addresses"
+	query += " where order_id = ?"
+
+	orderAddress := &OrderAddress{}
+
+	err := util.Db.QueryRow(query, orderID).Scan(&orderAddress.ID, &orderAddress.OrderID,
+		&orderAddress.Name, &orderAddress.Tel, &orderAddress.Province, &orderAddress.City,
+		&orderAddress.Area, &orderAddress.Strees, &orderAddress.Code)
+	if err != nil {
+		return nil, err
+	}
+
+	return orderAddress, nil
 }

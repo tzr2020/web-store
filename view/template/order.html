@@ -33,7 +33,7 @@
                     {{ range .Orders }}
                     <tr id="{{ .ID }}">
                         <td>{{ .CreateTime }}</td>
-                        <td>{{ .ID }}</td>
+                        <td><a href="/getOrderDetail?orderID={{ .ID }}">{{ .ID }}</a></td>
                         <td>{{ .TotalCount }}</td>
                         <td>{{ .TotalAmount }}</td>
                         <td>{{ .ShipFee }}</td>

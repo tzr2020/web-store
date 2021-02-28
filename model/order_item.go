@@ -12,6 +12,7 @@ type OrderItem struct {
 	ProductID int
 	Count     int
 	Amount    float64
+	Product   *Product
 }
 
 func (oit *OrderItem) Add() error {
@@ -29,4 +30,37 @@ func (oit *OrderItem) Add() error {
 	}
 
 	return nil
+}
+
+// GetOrderItemsByOrderID 从数据库获取订单项，根据订单id
+func GetOrderItemsByOrderID(orderID string) ([]*OrderItem, error) {
+	query := "select id, order_id, Product_id, count, amount from order_items"
+	query += " where order_id = ?"
+
+	var orderItems []*OrderItem
+
+	rows, err := util.Db.Query(query, orderID)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		orderItem := &OrderItem{}
+		rows.Scan(&orderItem.ID, &orderItem.OrderID, &orderItem.ProductID,
+			&orderItem.Count, &orderItem.Amount)
+		if err != nil {
+			return nil, err
+		}
+
+		// 将从数据库获取的产品设置到订单项结构的产品字段
+		product, err := GetProductByID(orderItem.ProductID)
+		if err != nil {
+			return nil, err
+		}
+		orderItem.Product = product
+
+		orderItems = append(orderItems, orderItem)
+	}
+
+	return orderItems, nil
 }
