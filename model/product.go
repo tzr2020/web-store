@@ -103,3 +103,90 @@ func GetProductByID(pid int) (*Product, error) {
 
 	return p, nil
 }
+
+// GetIndexNewProducts 从数据库获取首页新品产品
+func GetIndexNewProducts() ([]*Product, error) {
+	query := "select product_id from index_new_products"
+
+	var products []*Product
+
+	rows, err := util.Db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var product_id int
+
+		err = rows.Scan(&product_id)
+		if err != nil {
+			return nil, err
+		}
+
+		product, err := GetProductByID(product_id)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, product)
+	}
+
+	return products, nil
+}
+
+// GetIndexHotProducts 从数据库获取首页热销良品
+func GetIndexHotProducts() ([]*Product, error) {
+	query := "select product_id from index_hot_products"
+
+	var products []*Product
+
+	rows, err := util.Db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var product_id int
+
+		err = rows.Scan(&product_id)
+		if err != nil {
+			return nil, err
+		}
+
+		product, err := GetProductByID(product_id)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, product)
+	}
+
+	return products, nil
+}
+
+// GetIndexRecomProducts 从数据库获取首页推荐产品
+func GetIndexRecomProducts() ([]*Product, error) {
+	query := "select product_id from index_recom_products"
+
+	var products []*Product
+
+	rows, err := util.Db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var product_id int
+
+		err = rows.Scan(&product_id)
+		if err != nil {
+			return nil, err
+		}
+
+		product, err := GetProductByID(product_id)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, product)
+	}
+
+	return products, nil
+}

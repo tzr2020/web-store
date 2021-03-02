@@ -1,0 +1,366 @@
+/* banner */
+
+.banner {
+    height: 600px;
+    /* background-color: pink; */
+    position: relative;
+    margin-top: 3px;
+}
+
+.banner .banner_c {
+    position: relative;
+}
+
+.banner ul li {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: none;
+}
+
+.banner ul li.cur {
+    display: block;
+}
+
+.banner ul li a img {
+    width: 100%;
+}
+
+.banner .btns {
+    position: absolute;
+    left: 50%;
+    margin-left: -45px;
+    top: 90%;
+    width: 90px;
+    height: 4px;
+    /* background-color: gold; */
+}
+
+.banner .btns ol li {
+    float: left;
+    width: 20px;
+    height: 4px;
+    background-color: #fff;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.banner .btns ol li.cur {
+    background-color: #c78a49;
+}
+
+/* 新品产品 */
+
+.new_pro .pro_datail {
+    /* 用于定位左右按钮 */
+    position: relative;
+    height: 365px;
+}
+
+.new_pro .pro_datail li {
+    float: left;
+    width: 275px;
+    height: 365px;
+    margin: 0 5px;
+}
+
+.new_pro .pro_datail li.common_product .pic {
+    width: 100%;
+}
+
+.new_pro .pro_datail .btns a {
+    /* 相对于.new_pro .pro_datail定位 */
+    position: absolute;
+    top: 35%;
+    font-size: 28px;
+    font-family: serif;
+    color: #c3c3c3;
+    font-weight: 700;
+}
+
+.new_pro .pro_datail .btns a.left {
+    left: -30px;
+}
+
+.new_pro .pro_datail .btns a.right {
+    right: -30px;
+}
+
+/* 专题活动 */
+
+.special {
+    overflow: hidden;
+}
+
+.special .left {
+    float: left;
+    width: 680px;
+    height: 380px;
+    overflow: hidden;
+}
+
+.special .right {
+    float: right;
+}
+
+.special .right .r_top {
+    width: 450px;
+    height: 185px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.special .right .r_bottom {
+    width: 450px;
+    height: 185px;
+    overflow: hidden;
+}
+
+.special .pic {
+    position: relative;
+}
+
+.special .pic img {
+    /* 线性运动 */
+    transition: all .4s ease 0s;
+}
+
+.special .pic:hover img {
+    /* 放大元素 */
+    transform: scale(1.2);
+}
+
+.special .pic span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border: 2px solid #fff;
+    /* 线性运动 */
+    transition: all .4s ease 0s;
+}
+
+.special .pic:hover span {
+    /* 边框向内收缩 */
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    bottom: 10px;
+}
+
+/* 热销良品 */
+
+.liangpin .content .lp_common {
+    /* 清除浮动 */
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.liangpin .content .lp_common ul li {
+    float: left;
+    width: 220px;
+    height: 310px;
+    margin-right: 8px;
+}
+
+.liangpin .content .lp_common ul li.last {
+    margin-right: 0;
+}
+
+.liangpin .content .lp_common ul li.common_product {
+    padding-top: 0;
+}
+
+.liangpin .content .lp_common ul li.common_product .pic {
+    width: 100%;
+}
+
+/*品牌 */
+
+.pinpai .content .pp_top {
+    overflow: hidden;
+}
+
+.pinpai .content .pp_top .pp1 {
+    float: left;
+    width: 504px;
+    height: 358px;
+    background-color: blue;
+}
+
+.pinpai .content .pp_top .pp2 {
+    float: left;
+    width: 410px;
+    height: 172px;
+    background-color: gold;
+    margin-left: 15px;
+    margin-bottom: 15px;
+}
+
+.pinpai .content .pp_top .pp2.last {
+    margin-bottom: 0;
+}
+
+.pinpai .content .pp_top .pp3 {
+    float: right;
+    width: 197px;
+    height: 358px;
+    background-color: purple;
+}
+
+.pp_top .pic {
+    position: relative;
+    overflow: hidden;
+}
+
+.pp_top .pic img {
+    /* 线性运动 */
+    transition: all .4s ease 0s;
+    width: 100%;
+}
+
+.pp_top .pic:hover img {
+    /* 放大元素 */
+    transform: scale(1.2);
+}
+
+.pp_top .pic span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border: 2px solid #fff;
+    /* 线性运动 */
+    transition: all .4s ease 0s;
+}
+
+.pp_top .pic:hover span {
+    /* 边框向内收缩 */
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    bottom: 10px;
+}
+
+.pinpai .content .pp_bottom {
+    overflow: hidden;
+    margin-top: 13px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 30px;
+    color: #5d5d5d;
+    margin-bottom: 20px;
+}
+
+.pinpai .content .pp_bottom .pp_chara {
+    float: left;
+    width: 210px;
+    margin-right: 22px;
+}
+
+.pinpai .content .pp_bottom .pp_chara.last {
+    margin-right: 0;
+}
+
+.pinpai .content .pp_bottom .pp_chara a {
+    position: relative;
+    display: block;
+    height: 90px;
+    border: 1px solid #e8e8e8;
+    overflow: hidden;
+}
+
+.pinpai .content .pp_bottom .pp_chara img {
+    position: absolute;
+    left: 50%;
+    margin-left: -90px;
+    transition: all .2s ease 0s;
+}
+
+.pinpai .content .pp_bottom .pp_chara a:hover img {
+    left: 30%;
+}
+
+/* 体验 */
+
+.tiyan {
+    height: 600px;
+    background-color: #f4f0ea;
+}
+
+.tiyan .ty_inner .content ul {
+    /* 可以被浮动子元素撑开 */
+    overflow: hidden;
+}
+
+.tiyan .ty_inner .content ul .ty_content {
+    position: relative;
+    float: left;
+    width: 276px;
+    height: 432px;
+    background-color: #fff;
+    margin-right: 8px;
+}
+
+.tiyan .ty_inner .content ul .ty_content.last {
+    margin-right: 0;
+}
+
+.tiyan .ty_inner .content ul .ty_content .ty_top {
+    overflow: hidden;
+}
+
+.tiyan .ty_inner .content ul .ty_content .ty_top img {
+    width: 100%;
+    transition: all .5s ease 0s;
+}
+
+.tiyan .ty_inner .content ul .ty_content .ty_top:hover img {
+    transform: scale(1.1);
+}
+
+.tiyan .ty_inner .content ul .ty_content .ty_bottom {
+    position: absolute;
+    bottom: 12px;
+    width: 244px;
+    left: 50%;
+    margin-left: -130px;
+    background-color: #fff;
+    padding: 0 8px;
+}
+
+.tiyan .ty_inner .content ul .ty_content .ty_bottom .title {
+    line-height: 50px;
+    overflow: hidden;
+}
+
+.tiyan .ty_inner .content ul .ty_content .ty_bottom .title .tit_name {
+    float: left;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.tiyan .ty_inner .content ul .ty_content .ty_bottom .title .tit_pri {
+    float: right;
+    color: #c78a49;
+}
+
+.tiyan .ty_inner .content ul .ty_content .ty_bottom .detail {
+    font-size: 12px;
+    line-height: 18px;
+    color: #4d4d4d;
+    /* 多行文本溢出时使用省略号 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+}
+
+.tiyan .ty_inner .content ul .ty_content .ty_bottom .ty_footer {
+    line-height: 30px;
+    font-size: 12px;
+    color: #777;
+}

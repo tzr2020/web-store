@@ -1,0 +1,323 @@
+{{ define "content" }}
+
+<link rel="stylesheet" href="/static/css/index.css">
+
+<!-- 二级页面内容 start -->
+<!-- banner start -->
+<div class="banner">
+    <div class="banner_c">
+        <ul>
+            <!-- 待修改内容 -->
+            <li class="cur"><a href="#"><img src="/static/img/b1.png" alt="banner"></a></li>
+            <li><a href="#"><img src="/static/img/b2.png" alt="banner"></a></li>
+            <li><a href="#"><img src="/static/img/b3.png" alt="banner"></a></li>
+        </ul>
+    </div>
+    <div class="btns">
+        <ol>
+            <li class="cur"></li>
+            <li></li>
+            <li></li>
+        </ol>
+    </div>
+</div>
+<!-- banner end -->
+
+<!-- 新品产品 start -->
+<div class="new_pro">
+    <div class="common_title">
+        <!-- 待修改内容 -->
+        <h3>新品产品，精心挑选</h3>
+        <p>家居必备绿色健康食品</p>
+    </div>
+    <div class="pro_datail inner_c">
+        <ul>
+            {{ range .IndexPage.NewProducts }}
+            <!-- 产品盒子 -->
+            <li class="common_product">
+                <!-- 待修改内容 -->
+                <a href="/product?pid={{ .ID }}">
+                    <div class="pic">
+                        <img src="{{ .ImgPath }}" alt="product">
+                    </div>
+                    <div class="s_content">
+                        <p>{{ .Name }}</p>
+                        <span>￥{{ .Price }}</span>
+                    </div>
+                </a>
+            </li>
+            {{ end }}
+        </ul>
+        <div class="btns">
+            <a href="#" class="left">&lt;</a>
+            <a href="#" class="right">&gt;</a>
+        </div>
+    </div>
+</div>
+<!-- 新品产品 end -->
+
+<!-- 专题活动 start -->
+<div class="special inner_c">
+    <div class="common_title">
+        <!-- 待修改内容 -->
+        <h3>专题活动，限时促销</h3>
+        <p>严选材质，用心设计，健康生活</p>
+    </div>
+    <div class="content">
+        <div class="left pic">
+            <a href="#">
+                <img src="/static/img/s1.png" alt="special">
+            </a>
+            <span></span>
+        </div>
+        <div class="right">
+            <div class="r_top pic">
+                <a href="#">
+                    <img src="/static/img/s2.png" alt="special">
+                </a>
+                <span></span>
+            </div>
+            <div class="r_bottom pic">
+                <a href="#">
+                    <img src="/static/img/s3.png" alt="special">
+                </a>
+                <span></span>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 专题活动 end -->
+
+<!-- 热销良品 start -->
+<div class="liangpin inner_c">
+    <div class="common_title">
+        <h3>热销良品，大家的选择</h3>
+        <p>火爆热卖中</p>
+    </div>
+    <div class="content">
+        <div class="lp_common">
+            <ul>
+                {{ range .IndexPage.HotProducts }}
+                <!-- 产品盒子 -->
+                <li class="common_product">
+                    <div class="pic">
+                        <img src="{{ .ImgPath }}" alt="product">
+                    </div>
+                    <div class="s_content">
+                        <p>{{ .Name }}</p>
+                        <span>￥{{ .Price }}</span>
+                    </div>
+                    <a href="/product?pid={{ .ID }}" class="mask">
+                        {{ if .Stock }}
+                        <span class="btn">查看详情</span>
+                        {{ else }}
+                        <span class="stock_msg">无货，正在补货中</span>
+                        {{ end }}
+                    </a>
+                </li>
+                {{ end }}
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- 热销良品 end -->
+
+<!-- 品牌 start -->
+<div class="pinpai inner_c">
+    <div class="common_title">
+        <h3>优质品牌</h3>
+        <p>新鲜好货，快递到家</p>
+    </div>
+    <div class="content">
+        <div class="pp_top">
+            <div class="pp3 pic">
+                <a href="#">
+                    <img src="/static/img/pinpai4.png" alt="pinpai_sp">
+                    <span></span>
+                </a>
+            </div>
+            <div class="pp1 pic">
+                <a href="#">
+                    <img src="/static/img/pinpai1.png" alt="pinpai_sp">
+                    <span></span>
+                </a>
+            </div>
+            <div class="pp2 pic">
+                <a href="#">
+                    <img src="/static/img/pinpai2.png" alt="pinpai_sp">
+                    <span></span>
+                </a>
+            </div>
+            <div class="pp2 pic last">
+                <a href="#">
+                    <img src="/static/img/pinpai3.png" alt="pinpai_sp">
+                    <span></span>
+                </a>
+            </div>
+        </div>
+        <div class="pp_bottom">
+            <div class="pp_chara">
+                <a href="#">
+                    <img src="/static/img/pp1.png" alt="pinpai">
+                </a>
+                <p>自然生活，精选用料</p>
+            </div>
+
+            <div class="pp_chara">
+                <a href="#">
+                    <img src="/static/img/pp1.png" alt="pinpai">
+                </a>
+                <p>自然生活，精选用料</p>
+            </div>
+
+            <div class="pp_chara">
+                <a href="#">
+                    <img src="/static/img/pp1.png" alt="pinpai">
+                </a>
+                <p>自然生活，精选用料</p>
+            </div>
+
+            <div class="pp_chara">
+                <a href="#">
+                    <img src="/static/img/pp1.png" alt="pinpai">
+                </a>
+                <p>自然生活，精选用料</p>
+            </div>
+
+            <div class="pp_chara last">
+                <a href="#">
+                    <img src="/static/img/pp1.png" alt="pinpai">
+                </a>
+                <p>自然生活，精选用料</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 品牌 start -->
+
+<!-- 推荐良品 start -->
+<div class="liangpin inner_c">
+    <div class="common_title">
+        <h3>推荐良品，健康生活的首选</h3>
+        <p>天然之源，诚挚之礼，严格质检</p>
+    </div>
+    <div class="content">
+        <div class="lp_common">
+            <ul>
+                {{ range .IndexPage.RecomProducts }}
+                <!-- 产品盒子 -->
+                <li class="common_product">
+                    <div class="pic">
+                        <img src="{{ .ImgPath }}" alt="product">
+                    </div>
+                    <div class="s_content">
+                        <p>{{ .Name }}</p>
+                        <span>￥{{ .Price }}</span>
+                    </div>
+                    <a href="/product?pid={{ .ID }}" class="mask">
+                        <span class="btn">查看详情</span>
+                    </a>
+                </li>
+                {{ end }}
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- 推荐良品 end -->
+
+<!-- 体验 start -->
+<div class="tiyan">
+    <div class="ty_inner inner_c">
+        <div class="common_title">
+            <h3>良品体验</h3>
+            <p>用户反馈，使我们改进的目标</p>
+        </div>
+        <div class="content">
+            <ul>
+                <li class="ty_content">
+                    <div class="ty_top">
+                        <img src="/static/img/default_product.jpg" alt="">
+                    </div>
+                    <div class="ty_bottom">
+                        <p class="title">
+                            <span class="tit_name">新鲜红富士苹果 水果3斤装</span>
+                            <span class="tit_pri">¥12.00</span>
+                        </p>
+                        <p class="detail">
+                            刚刚收到苹果啦，老树果感觉没有添加剂，非常好没有坏果，快递也很快点赞，未尝试过等吃过后再评价，应该好吃吧。
+                            刚刚收到苹果啦，老树果感觉没有添加剂，非常好没有坏果，快递也很快点赞，未尝试过等吃过后再评价，应该好吃吧。
+                        </p>
+                        <p class="ty_footer">
+                            <span class="fromname">张三</span>
+                            <span class="fromdate">2020-12-16 09:59</span>
+                        </p>
+                    </div>
+                </li>
+
+                <li class="ty_content">
+                    <div class="ty_top">
+                        <img src="/static/img/default_product.jpg" alt="">
+                    </div>
+                    <div class="ty_bottom">
+                        <p class="title">
+                            <span class="tit_name">新鲜红富士苹果 水果3斤装</span>
+                            <span class="tit_pri">¥12.00</span>
+                        </p>
+                        <p class="detail">
+                            刚刚收到苹果啦，老树果感觉没有添加剂，非常好没有坏果，快递也很快点赞，未尝试过等吃过后再评价，应该好吃吧。
+                            刚刚收到苹果啦，老树果感觉没有添加剂，非常好没有坏果，快递也很快点赞，未尝试过等吃过后再评价，应该好吃吧。
+                        </p>
+                        <p class="ty_footer">
+                            <span class="fromname">张三</span>
+                            <span class="fromdate">2020-12-16 09:59</span>
+                        </p>
+                    </div>
+                </li>
+
+                <li class="ty_content">
+                    <div class="ty_top">
+                        <img src="/static/img/default_product.jpg" alt="">
+                    </div>
+                    <div class="ty_bottom">
+                        <p class="title">
+                            <span class="tit_name">新鲜红富士苹果 水果3斤装</span>
+                            <span class="tit_pri">¥12.00</span>
+                        </p>
+                        <p class="detail">
+                            刚刚收到苹果啦，老树果感觉没有添加剂，非常好没有坏果，快递也很快点赞，未尝试过等吃过后再评价，应该好吃吧。
+                            刚刚收到苹果啦，老树果感觉没有添加剂，非常好没有坏果，快递也很快点赞，未尝试过等吃过后再评价，应该好吃吧。
+                        </p>
+                        <p class="ty_footer">
+                            <span class="fromname">张三</span>
+                            <span class="fromdate">2020-12-16 09:59</span>
+                        </p>
+                    </div>
+                </li>
+
+                <li class="ty_content">
+                    <div class="ty_top">
+                        <img src="/static/img/default_product.jpg" alt="">
+                    </div>
+                    <div class="ty_bottom">
+                        <p class="title">
+                            <span class="tit_name">新鲜红富士苹果 水果3斤装</span>
+                            <span class="tit_pri">¥12.00</span>
+                        </p>
+                        <p class="detail">
+                            刚刚收到苹果啦，老树果感觉没有添加剂，非常好没有坏果，快递也很快点赞，未尝试过等吃过后再评价，应该好吃吧。
+                            刚刚收到苹果啦，老树果感觉没有添加剂，非常好没有坏果，快递也很快点赞，未尝试过等吃过后再评价，应该好吃吧。
+                        </p>
+                        <p class="ty_footer">
+                            <span class="fromname">张三</span>
+                            <span class="fromdate">2020-12-16 09:59</span>
+                        </p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- 体验 end -->
+<!-- 二级页面内容 end -->
+
+{{ end }}
