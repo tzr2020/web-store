@@ -24,8 +24,9 @@ func handlerLogin(w http.ResponseWriter, r *http.Request) {
 		// GET请求
 		ok, _ := IsLogin(r)
 		if ok {
-			// 已经登录，返回所有产品页面，不用进行用户名和密码验证和创建Session操作
-			getPageProductsByPrice(w, r)
+			// 已经登录，返回首页，不用进行用户名和密码验证和创建Session操作
+			w.Header().Set("Location", "/index")
+			w.WriteHeader(302)
 			return
 		}
 
@@ -35,8 +36,9 @@ func handlerLogin(w http.ResponseWriter, r *http.Request) {
 		// POST请求
 		ok, _ := IsLogin(r)
 		if ok {
-			// 已经登录，返回所有产品页面，不用进行用户名和密码验证和创建Session操作
-			getPageProductsByPrice(w, r)
+			// 已经登录，返回首页，不用进行用户名和密码验证和创建Session操作
+			w.Header().Set("Location", "/index")
+			w.WriteHeader(302)
 			return
 		}
 
@@ -116,21 +118,9 @@ func CheckLogin(user *model.User, w http.ResponseWriter) {
 		// 将Cookie发送到浏览器
 		http.SetCookie(w, &cookie)
 
-		// 登录成功，模板引擎生成最终页面，并返回欢迎用户页面
-		t, err := template.ParseFiles("./view/page/user/login_success.html")
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError) // 500 服务器错误 设置状态码
-			w.Write([]byte("服务器内部出现错误"))                  // 返回错误信息
-			return
-		}
-		err = t.Execute(w, user)
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError) // 500 服务器错误 设置状态码
-			w.Write([]byte("服务器内部出现错误"))                  // 返回错误信息
-			return
-		}
+		// 登录成功，模板引擎生成最终页面，并返回首页
+		w.Header().Set("Location", "/index")
+		w.WriteHeader(302)
 	} else {
 		// 登录失败，返回登录页面
 		getLoginPage(w, "用户名或密码错误")
@@ -142,15 +132,11 @@ func handlerRegist(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	// GET请求
 	case http.MethodGet:
-		log.Println(r.Method, r.URL.Path)
-
 		// 返回注册页面
 		getRegistPage(w, "")
 
 	// POST请求
 	case http.MethodPost:
-		log.Println(r.Method, r.URL.Path)
-
 		// 从表单获取用户注册信息
 		username := r.PostFormValue("username")
 		password := r.PostFormValue("password")
@@ -211,21 +197,9 @@ func CheckRegist(w http.ResponseWriter, newUser *model.User) {
 			return
 		}
 
-		// 返回注册成功页面
-		t, err := template.ParseFiles("./view/page/user/regist_success.html")
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError) // 500 服务器错误 设置状态码
-			w.Write([]byte("服务器内部出现错误"))                  // 返回错误信息
-			return
-		}
-		err = t.Execute(w, newUser.Username)
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError) // 500 服务器错误 设置状态码
-			w.Write([]byte("服务器内部出现错误"))                  // 返回错误信息
-			return
-		}
+		// 返回登录页面
+		w.Header().Set("Location", "/login")
+		w.WriteHeader(302)
 	}
 }
 
@@ -280,7 +254,8 @@ func handlerLogout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 注销账号后，返回登录页面
-	handlerLogin(w, r)
+	w.Header().Set("Location", "/login")
+	w.WriteHeader(302)
 }
 
 // IsLogin 根据Cookie，Session检查用户是否已经登录
