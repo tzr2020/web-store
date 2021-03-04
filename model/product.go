@@ -190,3 +190,32 @@ func GetIndexRecomProducts() ([]*Product, error) {
 
 	return products, nil
 }
+
+// GetNavProducts 从数据库获取导航栏产品
+func GetNavProducts() ([]*Product, error) {
+	query := "select product_id from nav_products"
+
+	var products []*Product
+
+	rows, err := util.Db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var product_id int
+
+		err = rows.Scan(&product_id)
+		if err != nil {
+			return nil, err
+		}
+
+		product, err := GetProductByID(product_id)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, product)
+	}
+
+	return products, nil
+}

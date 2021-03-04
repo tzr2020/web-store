@@ -149,14 +149,33 @@ func AddToCart(w http.ResponseWriter, r *http.Request) {
 func GetCartInfo(w http.ResponseWriter, r *http.Request) {
 	ok, sess := IsLogin(r)
 
+	categories, err := model.GetCategories()
+	if err != nil {
+		log.Println("从数据库获取所有产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	navProducts, err := model.GetNavProducts()
+	if err != nil {
+		log.Println("从数据库获取导航栏产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	if !ok {
+		sess := model.Session{}
+		sess.Nav = &model.Nav{
+			Categories:  categories,
+			NavProducts: navProducts,
+		}
 		// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端
 		t, err := template.ParseFiles("./view/template/layout.html", "./view/template/cart-info.html")
 		if err != nil {
 			log.Printf("解析模板文件发生错误：%v\n", err)
 			http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
 		} else {
-			t.ExecuteTemplate(w, "layout", nil)
+			t.ExecuteTemplate(w, "layout", sess)
 		}
 		return
 	}
@@ -168,6 +187,10 @@ func GetCartInfo(w http.ResponseWriter, r *http.Request) {
 
 	if cart != nil {
 		sess.Cart = cart
+		sess.Nav = &model.Nav{
+			Categories:  categories,
+			NavProducts: navProducts,
+		}
 	}
 
 	// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端

@@ -19,7 +19,7 @@
             <!-- logo start -->
             <h1 style="line-height: 68px;">
                 <!-- 待修改内容 -->
-                <a href="#">
+                <a href="/index">
                     惠绿商城
                 </a>
             </h1>
@@ -33,53 +33,27 @@
                     <div class="pro_inner inner_c">
                         <ul class="inn_nav">
                             <!-- 待修改内容 -->
-                            <li><a href="#">新鲜水果</a></li>
-                            <li><a href="#">海鲜水产</a></li>
-                            <li><a href="#">精选肉类</a></li>
-                            <li><a href="#">冷饮冻食</a></li>
-                            <li><a href="#">蔬菜蛋品</a></li>
+                            {{ range .Nav.Categories }}
+                            <li><a href="/products?category_id={{ .ID }}">{{ .Name }}</a></li>
+                            {{ end }}
                         </ul>
                         <ul class="inn_detail">
                             <!-- 待修改内容 -->
                             <!-- 产品盒子 -->
+                            {{ range .Nav.NavProducts }}
                             <li class="common_product">
                                 <div class="pic">
-                                    <img src="/static/img/default_product.jpg" alt="product">
+                                    <img src="{{ .ImgPath }}" alt="product">
                                 </div>
                                 <div class="s_content">
-                                    <p>新鲜红富士苹果 水果3斤装</p>
-                                    <span>￥12.00</span>
+                                    <p>{{ .Name }}</p>
+                                    <span>￥{{ .Price }}</span>
                                 </div>
-                                <a href="#" class="mask">
+                                <a href="/product?pid={{ .ID }}" class="mask">
                                     <span class="btn">查看详情</span>
                                 </a>
                             </li>
-
-                            <li class="common_product">
-                                <div class="pic">
-                                    <img src="/static/img/default_product.jpg" alt="product">
-                                </div>
-                                <div class="s_content">
-                                    <p>新鲜红富士苹果 水果3斤装</p>
-                                    <span>￥12.00</span>
-                                </div>
-                                <a href="#" class="mask">
-                                    <span class="btn">查看详情</span>
-                                </a>
-                            </li>
-
-                            <li class="common_product">
-                                <div class="pic">
-                                    <img src="/static/img/default_product.jpg" alt="product">
-                                </div>
-                                <div class="s_content">
-                                    <p>新鲜红富士苹果 水果3斤装</p>
-                                    <span>￥12.00</span>
-                                </div>
-                                <a href="#" class="mask">
-                                    <span class="btn">查看详情</span>
-                                </a>
-                            </li>
+                            {{ end }}
                         </ul>
                     </div>
                 </div>
@@ -89,7 +63,7 @@
             <div class="header_nav">
                 <ul>
                     <!-- 待修改内容 -->
-                    <li><a href="#">首页</a></li>
+                    <li><a href="/index">首页</a></li>
                     <li><a href="/products">所有产品</a></li>
                     <li><a href="#">博客</a></li>
                     <li><a href="#">文章列表</a></li>
@@ -115,9 +89,9 @@
                 <a href="#">个人</a>
                 {{ end }}
                 <span>|</span>
-                <a href="#">订单</a>
-                <div href="#" class="gwc">
-                    <a href="#">0</a>
+                <a href="/myOrder">订单</a>
+                <div class="gwc">
+                    <a href="/getCartInfo">0</a>
                     <div class="check_out">
                         <p class="check_con">
                             0件商品 总计：<span>￥0</span>

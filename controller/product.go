@@ -148,11 +148,29 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 	}
 	page.Categories = cates
 
+	categories, err := model.GetCategories()
+	if err != nil {
+		log.Println("从数据库获取所有产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	navProducts, err := model.GetNavProducts()
+	if err != nil {
+		log.Println("从数据库获取导航栏产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	// 检查用户是否已经登录
 	ok, sess := IsLogin(r)
 	if !ok {
 		sess := &model.Session{}
 		sess.PageProduct = page
+		sess.Nav = &model.Nav{
+			Categories:  categories,
+			NavProducts: navProducts,
+		}
 		// 解析模板文件
 		t, err := template.ParseFiles("./view/template/layout.html", "./view/template/products.html")
 		// 执行模板，生成HTML文档，返回页面
@@ -165,6 +183,10 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		sess.PageProduct = page
+		sess.Nav = &model.Nav{
+			Categories:  categories,
+			NavProducts: navProducts,
+		}
 	}
 
 	// 解析模板文件
@@ -209,11 +231,29 @@ func getProduct(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Category = cate
 
+	categories, err := model.GetCategories()
+	if err != nil {
+		log.Println("从数据库获取所有产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	navProducts, err := model.GetNavProducts()
+	if err != nil {
+		log.Println("从数据库获取导航栏产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	// 判断会员是否已经登录
 	ok, sess := IsLogin(r)
 	if !ok {
 		sess := &model.Session{}
 		sess.Product = p
+		sess.Nav = &model.Nav{
+			Categories:  categories,
+			NavProducts: navProducts,
+		}
 		// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端
 		t, err := template.ParseFiles("./view/template/layout.html", "./view/template/product.html")
 		if err != nil {
@@ -224,6 +264,10 @@ func getProduct(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		sess.Product = p
+		sess.Nav = &model.Nav{
+			Categories:  categories,
+			NavProducts: navProducts,
+		}
 	}
 
 	// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端

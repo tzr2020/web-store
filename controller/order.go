@@ -79,10 +79,28 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	categories, err := model.GetCategories()
+	if err != nil {
+		log.Println("从数据库获取所有产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	navProducts, err := model.GetNavProducts()
+	if err != nil {
+		log.Println("从数据库获取导航栏产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	sess.Cart = cart
 	sess.Order = order
 	sess.OrderPaymentTypes = orderPaymentTypes
 	sess.Address = address
+	sess.Nav = &model.Nav{
+		Categories:  categories,
+		NavProducts: navProducts,
+	}
 
 	// 解析模板文件，并执行模板，生成包含动态数据的HTML文档，返回给浏览器
 	t, err := template.ParseFiles("./view/template/layout.html", "./view/template/order-write.html")
@@ -224,7 +242,25 @@ func MyOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	categories, err := model.GetCategories()
+	if err != nil {
+		log.Println("从数据库获取所有产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	navProducts, err := model.GetNavProducts()
+	if err != nil {
+		log.Println("从数据库获取导航栏产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	sess.Orders = orders
+	sess.Nav = &model.Nav{
+		Categories:  categories,
+		NavProducts: navProducts,
+	}
 
 	// 解析模板文件，并执行模板，生成包含动态数据的HTML文档，返回给浏览器
 	funcMap := template.FuncMap{ // 包含自定义的模板函数

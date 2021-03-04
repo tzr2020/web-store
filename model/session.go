@@ -20,6 +20,7 @@ type Session struct {
 	OrderItems        []*OrderItem        // 用于模板
 	OrderAddress      *OrderAddress       // 用于模板
 	IndexPage         *IndexPage          // 用于模板
+	Nav               *Nav                // 用于模板
 }
 
 // AddSession 数据库新增Session

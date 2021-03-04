@@ -46,7 +46,27 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		RecomProducts: recomProducts,
 	}
 
+	categories, err := model.GetCategories()
+	if err != nil {
+		log.Println("从数据库获取所有产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	navProducts, err := model.GetNavProducts()
+	if err != nil {
+		log.Println("从数据库获取导航栏产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	nav := &model.Nav{
+		Categories:  categories,
+		NavProducts: navProducts,
+	}
+
 	sess.IndexPage = indexPage
+	sess.Nav = nav
 
 	// 解析模板文件，并执行模板，生成包含动态数据的HTML文档，返回给浏览器
 	t := template.New("layout")

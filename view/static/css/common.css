@@ -141,7 +141,7 @@ a {
 	/* 定义溢出元素内容区的内容会如何处理，hidden：内容会被修剪，并且其余内容是不可见的 */
 	overflow: hidden;
 	/* 待修改内容 */
-	background: url(/static/img/logo2.png) no-repeat center center;
+	background: url(/static/img/logo.png) no-repeat center center;
 	background-size: 140px 68px;
 }
 
