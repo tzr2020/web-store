@@ -158,7 +158,7 @@ func GetCartInfo(w http.ResponseWriter, r *http.Request) {
 
 	navProducts, err := model.GetNavProducts()
 	if err != nil {
-		log.Println("从数据库获取导航栏产品类别发生错误:", err)
+		log.Println("从数据库获取导航栏产品发生错误:", err)
 		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -187,10 +187,11 @@ func GetCartInfo(w http.ResponseWriter, r *http.Request) {
 
 	if cart != nil {
 		sess.Cart = cart
-		sess.Nav = &model.Nav{
-			Categories:  categories,
-			NavProducts: navProducts,
-		}
+	}
+
+	sess.Nav = &model.Nav{
+		Categories:  categories,
+		NavProducts: navProducts,
 	}
 
 	// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端
