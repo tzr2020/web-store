@@ -84,10 +84,7 @@ func AddUser(user *User) error {
 
 // GetUsersPage 后台查询数据库获取当前页会员用户
 func GetUserPage(pageNo string, pageSize string) ([]*User, error) {
-	query := "select count(*) from users"
-	query2 := "select id, username, password, email, nickname, sex, avatar, phone, country, province, city from users limit ?, ?"
-
-	var count int // 记录总条数
+	query := "select id, username, password, email, nickname, sex, avatar, phone, country, province, city from users limit ?, ?"
 
 	// 数据类型转换
 	intPageNo, err := strconv.Atoi(pageNo) // 当前页页码
@@ -99,14 +96,8 @@ func GetUserPage(pageNo string, pageSize string) ([]*User, error) {
 		return nil, err
 	}
 
-	// 查询数据库获取记录总条数
-	err = util.Db.QueryRow(query).Scan(&count)
-	if err != nil {
-		return nil, err
-	}
-
 	// 查询数据库获取当前页数据
-	rows, err := util.Db.Query(query2, (intPageNo-1)*intPageSize, intPageSize)
+	rows, err := util.Db.Query(query, (intPageNo-1)*intPageSize, intPageSize)
 	if err != nil {
 		return nil, err
 	}
