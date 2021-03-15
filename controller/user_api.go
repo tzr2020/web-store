@@ -46,12 +46,7 @@ func users(w http.ResponseWriter, r *http.Request) {
 			Data:  users,
 		}
 		// 将JSON结构编码为JSON数据格式后写入响应
-		enc := json.NewEncoder(w)
-		err = enc.Encode(j)
-		if err != nil {
-			log.Println(err)
-			util.ResponseWriteJson(w, j)
-		}
+		util.ResponseWriteJson(w, j)
 	}
 }
 
