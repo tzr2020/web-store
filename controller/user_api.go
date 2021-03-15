@@ -10,11 +10,11 @@ import (
 )
 
 func registerAPIUserRoutes() {
-	http.HandleFunc("/api/users", Users)
-	http.HandleFunc("/api/user", User)
+	http.HandleFunc("/api/users", users)
+	http.HandleFunc("/api/user", user)
 }
 
-func Users(w http.ResponseWriter, r *http.Request) {
+func users(w http.ResponseWriter, r *http.Request) {
 	// 从查询字符串获取数据
 	pageNo := r.FormValue("pageNo")
 	pageSize := r.FormValue("pageSize")
@@ -55,7 +55,7 @@ func Users(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func User(w http.ResponseWriter, r *http.Request) {
+func user(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
 		// 添加用户
