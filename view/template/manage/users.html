@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>会员用户列表</title>
+		<link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css"/>
+	</head>
+	<body>
+		
+		<div class="layui-container">
+			<table id="users" lay-filter="users"></table>
+			<button id="addUser" type="button" class="layui-btn layui-btn-fluid layui-btn-md layui-btn-normal">添加用户</button>
+		</div>
+		
+		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			
+			// 加载模块
+			layui.use(['table', 'layer'], function(){
+				var table = layui.table; // 获取table对象
+				var $ = layui.jquery; // 获取jquery对象
+				var layer = layui.layer; // 获取layer对象
+				
+				// 给添加用户按钮绑定单击事件-添加用户
+				$("#addUser").click(function(){
+					// 打开弹出层
+					layer.open({
+						type: 2, // iframe层
+						title: "添加用户",
+						content: "http://localhost:8081/manage/user-add.html", // 请求URL
+						area: ['500px', '550px'],
+						end: function(){ // 弹出层销毁时触发的回调函数
+							// 重载数据表格
+							table.reload("users");
+						}
+					});
+				});
+				
+				// 给数据表格行绑定事件-编辑用户、删除用户
+				table.on('tool(users)', function(row){
+					console.log("row=", row);
+					
+					if(row.event == "edit"){
+						// 编辑用户
+						layer.open({ // 打开弹出层
+							type: 2, // iframe层
+							title: "编辑用户",
+							content: "http://localhost:8081/manage/user-edit.html", // 请求URL
+							area: ['500px', '550px'],
+							success: function(layero, index){ // 弹出层弹出后触发回调函数
+								// 数据回显
+								var body = layer.getChildFrame('body', index) // 获取指定索引的iframe层的DOM结构的body对象
+								body.find('#id').val(row.data.id); // 隐藏域
+								// 为body对象的子元素对象赋值
+								body.find('#username').val(row.data.username);
+								body.find('#password').val(row.data.password);
+								body.find('#email').val(row.data.email);
+								body.find('#nickname').val(row.data.nickname);
+								// body.find('input[name="sex"][value=1]').attr('checked', row.data.sex == 1 ? true : false);
+								// body.find('input[name="sex"][value=0]').attr('checked', row.data.sex == 0 ? true : false);
+								body.find('input[name=sex][value=' + row.data.sex + ']').attr('checked', '');
+								body.find('#phone').val(row.data.phone);
+								body.find('#country').val(row.data.country);
+								body.find('#province').val(row.data.province);
+								body.find('#city').val(row.data.city);
+							},
+							end: function(){ // 弹出层销毁后触发回调函数
+								// 重载数据表格
+								table.reload("users");
+							}
+						});
+						
+					}else if(row.event == "del"){
+						// 删除用户
+						layer.confirm("是否删除会员用户？", function(index){ // 弹出询问框
+							// 发送AJAX请求
+							$.ajax({
+								type: "DELETE",
+								url: "http://localhost:8081/api/user",
+								contentType: "application/json; charset=utf-8",
+								data: JSON.stringify({id: row.data.id}),
+								dataType: "json",
+								success: function(res){
+									if(res.code != 200){
+										layer.msg(res.msg);
+									}else{
+										layer.msg(res.msg, {time: 1200});
+										row.del(); // 删除当前行的DOM结构，并更新缓存
+										layer.close(index); // 关闭弹出层
+										table.reload("users"); // 重载数据表格
+									}
+								}
+							});
+						});
+					}
+				});
+				
+				// 渲染数据表格
+				table.render({
+					elem: "#users", // 挂载元素
+					id: "users", // 用于重载数据表格
+					url: "http://localhost:8081/api/users", // 数据接口
+					parseData: function(res){ // 解析数据：解析来自接口的数据，将其格式映射为Layui数据表格的数据格式
+						// console.log("res=", res)
+						return {
+							code: res.code == 200 ? 0 : 500,
+							msg: res.msg,
+							count: res.count,
+							data: res.data
+						}
+					},
+					page: true, // 分页
+					limit: 10, // 每页记录条数
+					limits: [5, 10, 15, 20], // 每页记录条数的选项
+					request: { // 向数据接口获取数据时的查询字符串参数名，默认是page和limit，可以重新设定
+						pageName: "pageNo", // 页码的参数名
+						limitName: "pageSize" // 每页记录条数的参数名
+					},
+					cols: [[ // 表头
+						{
+							field: "id",
+							title: "ID",
+							sort: true
+						}, {
+							// field: "avatar",
+							templet: function(d){
+								return '<a href="' + d.avatar + '">' + d.avatar + '</a>'
+							},
+							title: "用户头像"
+						}, {
+							field: "username",
+							title: "用户名称",
+							sort: true
+						}, {
+							field: "password",
+							title: "用户密码",
+							sort: true
+						}, {
+							field: "email",
+							title: "电子邮箱",
+							sort: true
+						}, {
+							field: "nickname",
+							title: "昵称",
+							sort: true
+						}, {
+							// field: "sex",
+							templet: function(d){
+								// console.log("d=", d);
+								return d.sex == 1 ? '男' : '女';
+							},
+							title: "性别",
+							sort: true
+						}, {
+							field: "phone",
+							title: "手机号码",
+							sort: true
+						}, {
+							field: "country",
+							title: "国家",
+							sort: true
+						}, {
+							field: "province",
+							title: "省份",
+							sort: true
+						}, {
+							field: "city",
+							title: "城市",
+							sort: true
+						}, {
+							title: "操作",
+							width: "120",
+							align: "center",
+							templet: function() {
+								var str = '<a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="edit">编辑</a>';
+								str += '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>';
+								return str;
+							}
+						}
+					]]
+				});
+				
+			});
+			
+		</script>
+	</body>
+</html>
