@@ -28,10 +28,12 @@ func GetJsonDataCount(databaseTableName string) (count int, err error) {
 
 // ResponseWriteJson 将JSON结构编码为JSON格式的数据后写入响应
 func ResponseWriteJson(w http.ResponseWriter, j Json) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	enc := json.NewEncoder(w)
 	err = enc.Encode(j)
 	if err != nil {
 		log.Println(err)
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(ErrServerInside.Error()))
 	}
@@ -44,10 +46,12 @@ func ResponseWriteJsonOfInsideServer(w http.ResponseWriter) {
 		Msg:  ErrServerInside.Error(),
 	}
 
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	enc := json.NewEncoder(w)
 	err = enc.Encode(j)
 	if err != nil {
 		log.Println(err)
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(ErrServerInside.Error()))
 	}
