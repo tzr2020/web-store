@@ -172,3 +172,20 @@ func (user User) Update() error {
 
 	return nil
 }
+
+// UpdateUserAvatar 数据库更新用户头像
+func UpdateUserAvatar(avatar string, uid string) (err error) {
+	query := `update users set avatar = ? where id = ?`
+
+	stmt, err := util.Db.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(avatar, uid)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

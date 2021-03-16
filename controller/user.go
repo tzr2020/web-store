@@ -3,8 +3,11 @@ package controller
 import (
 	"database/sql"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"regexp"
 	"web-store/model"
 	"web-store/util"
 )
@@ -15,6 +18,7 @@ func registerUserRoutes() {
 	http.HandleFunc("/regist", handlerRegist)
 	http.HandleFunc("/checkUsername", handlerCheckUsername)
 	http.HandleFunc("/logout", handlerLogout)
+	http.HandleFunc("/uploadAvatar", uploadAvatar)
 }
 
 // handlerLogin 用户登录处理器
@@ -279,4 +283,73 @@ func IsLogin(r *http.Request) (bool, *model.Session) {
 	}
 
 	return false, nil
+}
+
+// 上传用户头像
+func uploadAvatar(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPost:
+		userID := r.PostFormValue("userID")
+
+		// 解析请求包体，设置用于存储包体数据的内存大小
+		r.ParseMultipartForm(32 << 20)
+
+		// 获取上传文件
+		file, handler, err := r.FormFile("avatarFile")
+		defer file.Close()
+		if err != nil {
+			log.Println(err)
+			util.ResponseWriteJsonOfInsideServer(w)
+			return
+		}
+
+		// 获取上传文件后缀名
+		var suffix string
+		reg, err := regexp.Compile(`.(jpg|png)$`)
+		if err != nil {
+			log.Println(err)
+			util.ResponseWriteJsonOfInsideServer(w)
+			return
+		}
+		matches := reg.FindStringSubmatch(handler.Filename)
+		if len(matches) > 0 {
+			suffix = matches[0]
+		} else {
+			util.ResponseWriteJson(w, util.Json{
+				Code: 500,
+				Msg:  "上传用户头像失败，图片文件后缀名要求是.jpg或.png",
+			})
+			return
+		}
+
+		// 存储上传文件本地
+		path := "view/static/img/avatar/" + userID + suffix
+		f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
+		defer f.Close()
+		if err != nil {
+			log.Println(err)
+			util.ResponseWriteJsonOfInsideServer(w)
+			return
+		}
+		_, err = io.Copy(f, file)
+		if err != nil {
+			log.Println(err)
+			util.ResponseWriteJsonOfInsideServer(w)
+			return
+		}
+
+		// 更新数据库
+		avatar := "/img/avatar/" + userID + ".jpg"
+		err = model.UpdateUserAvatar(avatar, userID)
+		if err != nil {
+			log.Println(err)
+			util.ResponseWriteJsonOfInsideServer(w)
+			return
+		}
+
+		util.ResponseWriteJson(w, util.Json{
+			Code: 200,
+			Msg:  "上传用户头像成功",
+		})
+	}
 }
