@@ -6,11 +6,11 @@ import (
 )
 
 type Cart struct {
-	CartID      string
-	UserID      int
-	TotalCount  int         // 购物项数，通过GetTotalCount()计算得到
-	TotalAmount float64     // 购物车总计金额，通过GetTotalAmount()计算得到
-	CartItems   []*CartItem // 购物项
+	CartID      string      `json:"cart_id,omitempty"`
+	UserID      int         `json:"user_id,omitempty,string"`
+	TotalCount  int         `json:"total_count,omitempty,string"`  // 购物项数，通过GetTotalCount()计算得到
+	TotalAmount float64     `json:"total_amount,omitempty,string"` // 购物车总计金额，通过GetTotalAmount()计算得到
+	CartItems   []*CartItem `json:"cart_items,omitempty"`          // 购物项
 }
 
 // GetTotalCount 通过购物项计算得到购物项数
@@ -108,4 +108,111 @@ func DeleteCart(cartID string) error {
 	}
 
 	return nil
+}
+
+// GetCartsPage 查询数据库，获取购物车列表，根据当前页的页码和每页记录条数
+func GetCartsPage(pageNo int, pageSize int) (carts []*Cart, err error) {
+	query := `select id, uid, total_count, total_amount
+		from carts limit ?, ?`
+
+	rows, err := util.Db.Query(query, (pageNo-1)*pageSize, pageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		c := &Cart{}
+		err = rows.Scan(&c.CartID, &c.UserID, &c.TotalCount, &c.TotalAmount)
+		if err != nil {
+			return nil, err
+		}
+		cis, err := GetCartItemByCartID(c.CartID)
+		if err != nil {
+			return nil, err
+		}
+		c.CartItems = cis
+		carts = append(carts, c)
+	}
+
+	return
+}
+
+// Add 数据库添加购物车
+func (c Cart) Add() (err error) {
+	query := "insert into carts (id, uid, total_count, total_amount) values (?,?,?,?)"
+
+	stmt, err := util.Db.Prepare(query)
+	defer stmt.Close()
+	if err != nil {
+		return
+	}
+
+	c.CartID = util.CreateUUID()
+	_, err = stmt.Exec(c.CartID, c.UserID, c.TotalCount, c.TotalAmount)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+// Update 数据库更新购物车
+func (c Cart) Update() (err error) {
+	query := `update carts set uid=?, total_count=?, total_amount=?	where id=?`
+
+	stmt, err := util.Db.Prepare(query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.Exec(&c.UserID, &c.TotalCount, &c.TotalAmount, &c.CartID)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+// Delete 数据库删除购物车
+func (c Cart) Delete() (err error) {
+	query := `delete from carts where id=?`
+
+	stmt, err := util.Db.Prepare(query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.Exec(c.CartID)
+	if err != nil {
+		return
+	}
+
+	err = DeleteCartItemByCartID(c.CartID)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func GetCartByID(cid string) (*Cart, error) {
+	query := "select id, uid, total_count, total_amount from carts"
+	query += " where id = ?"
+
+	cart := &Cart{}
+
+	err := util.Db.QueryRow(query, cid).Scan(&cart.CartID, &cart.UserID, &cart.TotalCount, &cart.TotalAmount)
+	if err != nil {
+		log.Printf("数据库扫描购物项发生错误: %v", err)
+		return nil, err
+	}
+
+	cartItems, err := GetCartItemByCartID(cart.CartID)
+	if err != nil {
+		return nil, err
+	}
+	// 设置购物车结构的购物项字段
+	cart.CartItems = cartItems
+
+	return cart, nil
 }

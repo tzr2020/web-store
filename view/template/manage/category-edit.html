@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css" />
+	</head>
+	<body>
+		
+		<div class="layui-fluid" style="margin-top: 20px;">
+			<form class="layui-form">
+				
+				<!-- 隐藏域 -->
+				<input type="hidden" name="id" id="id" value="" />
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">类别名称</label>
+					<div class="layui-input-block">
+						<input type="text" id="name" name="name" placeholder="请输入产品类别名称" class="layui-input"
+							lay-verify="required" lay-verType="tips">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">父级ID</label>
+					<div class="layui-input-block">
+						<input type="text" id="pid" name="pid" placeholder="请输入父级ID" class="layui-input"
+							lay-verify="number" lay-verType="tips" value="0">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">层级</label>
+					<div class="layui-input-block">
+						<input type="text" id="level" name="level" placeholder="请输入层级" class="layui-input"
+							lay-verify="number" lay-verType="tips" value="0">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="update">提交</button>
+					</div>
+				</div>
+				
+			</form>
+		</div>
+
+		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			layui.use(['form', 'layer'], function() {
+				var $ = layui.jquery;
+				var layer = layui.layer;
+				var form = layui.form;
+
+				// 监听表单的提交事件
+				form.on('submit(update)', function(d) {
+					$.ajax({
+						type: 'PUT',
+						url: 'http://localhost:8081/api/category',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(d.field),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								}, function() {
+									// 关闭弹出层
+									var index = parent.layer.getFrameIndex(window.name);
+									parent.layer.close(index);
+								});
+							}
+						}
+					});
+					return false;
+				});
+
+			});
+		</script>
+	</body>
+</html>

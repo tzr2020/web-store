@@ -1,0 +1,103 @@
+{{ define "layout"}}
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>后台管理系统首页</title>
+		<link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css" />
+		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body class="layui-layout-body">
+
+		<div class="layui-layout layui-layout-admin">
+			<!-- 顶部栏 -->
+			<div class="layui-header">
+				<div class="layui-logo">后台管理系统</div>
+				<!-- 顶部导航栏 -->
+				<ul class="layui-nav layui-layout-left">
+					<li class="layui-nav-item">
+						<a href="http://localhost:8081/manage/index">
+							<span>后台管理系统首页首页</span>
+						</a>
+					</li>
+					<li class="layui-nav-item">
+						<a href="http://localhost:8081/index">
+							<span>商城首页</span>
+						</a>
+					</li>
+				</ul>
+				<ul class="layui-nav layui-layout-right">
+					<li class="layui-nav-item">
+						<a href="javascript:;">
+							<span id="admin-username"></span>
+						</a>
+						<dl class="layui-nav-child">
+							<dd><a href="">账号信息</a></dd>
+							<dd><a href="">修改密码</a></dd>
+						</dl>
+					</li>
+					<li class="layui-nav-item"><a href="http://localhost:8081/api/admin/logout">退出账号</a></li>
+				</ul>
+			</div>
+			
+			<!-- 侧边栏 -->
+			<div class="layui-side layui-bg-black">
+				<div class="layui-side-scroll">
+					<!-- 侧边导航栏 -->
+					<ul class="layui-nav layui-nav-tree">
+						<!-- <li class="layui-nav-item layui-nav-itemed"> -->
+						<li class="layui-nav-item">
+							<a class="" href="javascript:;">会员用户管理</a>
+							<dl class="layui-nav-child">
+								<dd><a href="http://localhost:8081/manage/users">会员用户列表</a></dd>
+								<dd><a href="javascript:;">会员用户地址列表</a></dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item">
+							<a href="javascript:;">产品管理</a>
+							<dl class="layui-nav-child">
+								<dd><a href="http://localhost:8081/manage/products">产品列表</a></dd>
+								<dd><a href="javascript:;">添加产品</a></dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item"><a href="javascript:;">管理员管理</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<!-- 主体 -->
+			<div class="layui-body">
+				<!-- 主体内容 -->
+				{{ block "content" . }}
+				<p>Template not found!</p>
+				{{ end }}
+			</div>
+
+			<!-- 底部 -->
+			<div class="layui-footer">
+				<p style="text-align: center;">&copy;&nbsp;2021</p>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			layui.use(['element', 'layer'], function() {
+				var element = layui.element;
+				var layer = layui.layer;
+				var $ = layui.jquery;
+				
+				// 设置后台管理系统首页的顶部导航栏的管理员用户名
+				$.getJSON('http://localhost:8081/api/admin/username', function(res) {
+					if (res.code != 200) {
+						layer.msg(res.msg);
+						$('#admin-username').text('未登录账号')
+					} else {
+						$('#admin-username').text(res.data)
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
+
+{{ end }}

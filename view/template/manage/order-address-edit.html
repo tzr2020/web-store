@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css" />
+	</head>
+	<body>
+
+		<div class="layui-fluid" style="margin-top: 20px;">
+			<form class="layui-form">
+
+				<!-- 隐藏域 -->
+				<input type="hidden" id="id" name="id" />
+				<input type="hidden" id="order_id" name="order_id" />
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">姓名</label>
+					<div class="layui-input-block">
+						<input type="text" id="name" name="name" placeholder="请输入姓名" class="layui-input"
+							lay-verify="required" lay-verType="tips">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">电话号码</label>
+					<div class="layui-input-block">
+						<input type="text" id="tel" name="tel" placeholder="请输入电话号码" class="layui-input"
+							lay-verify="phone" lay-verType="tips">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">省份</label>
+					<div class="layui-input-block">
+						<input type="text" id="province" name="province" placeholder="请输入省份" class="layui-input"
+							lay-verify="required" lay-verType="tips">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">城市</label>
+					<div class="layui-input-block">
+						<input type="text" id="city" name="city" placeholder="请输入城市" class="layui-input"
+							lay-verify="required" lay-verType="tips">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">区县</label>
+					<div class="layui-input-block">
+						<input type="text" id="area" name="area" placeholder="请输入区县" class="layui-input"
+							lay-verify="required" lay-verType="tips">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">街道</label>
+					<div class="layui-input-block">
+						<input type="text" id="street" name="street" placeholder="请输入街道" class="layui-input"
+							lay-verify="required" lay-verType="tips">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">邮编</label>
+					<div class="layui-input-block">
+						<input type="text" id="code" name="code" placeholder="请输入邮编" class="layui-input"
+							lay-verify="number" lay-verType="tips">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="update">提交</button>
+					</div>
+				</div>
+
+			</form>
+		</div>
+
+		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			layui.use(['form', 'layer'], function() {
+				var $ = layui.jquery;
+				var layer = layui.layer;
+				var form = layui.form;
+
+				// 监听表单的提交事件
+				form.on('submit(update)', function(d) {
+					$.ajax({
+						type: 'PUT',
+						url: 'http://localhost:8081/api/order/address',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(d.field),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								}, function() {
+									// 关闭弹出层
+									var index = parent.layer.getFrameIndex(window.name);
+									parent.layer.close(index);
+								});
+							}
+						}
+					});
+					return false;
+				});
+
+			});
+		</script>
+	</body>
+</html>

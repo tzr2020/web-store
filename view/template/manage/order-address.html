@@ -1,0 +1,164 @@
+{{ define "content"}}
+
+<link rel="stylesheet" type="text/css" href="/static/css/manage-table.css" />
+
+<div class="layui-fluid table-body">
+	<button id="add" type="button" class="layui-btn layui-btn-fluid layui-btn-md layui-btn-normal">添加订单地址</button>
+	<table id="order-address-elem" lay-filter="order-address-filter"></table>
+</div>
+
+<script type="text/javascript">
+	layui.use(['table'], function() {
+		var table = layui.table;
+		var $ = layui.jquery;
+		var layer = layui.layer;
+
+		// 渲染数据表格
+		table.render({
+			elem: '#order-address-elem',
+			id: 'order-address-id',
+			url: 'http://localhost:8081/api/order/address-list',
+			parseData: function(res) {
+				return {
+					code: res.code == 200 ? 0 : 500,
+					msg: res.msg,
+					count: res.count,
+					data: res.data
+				}
+			},
+			request: {
+				pageName: 'pageNo',
+				limitName: 'pageSize'
+			},
+			page: true,
+			limit: 10,
+			limits: [5, 10, 15, 20],
+			cols: [
+				[{
+					field: 'id',
+					title: 'ID',
+					sort: true,
+					width: 60
+				}, {
+					field: 'order_id',
+					title: '订单ID',
+					sort: true,
+					width: 300
+				}, {
+					field: 'name',
+					title: '姓名',
+					sort: true,
+					width: 100
+				}, {
+					field: 'tel',
+					title: '电话号码',
+					width: 120
+				}, {
+					field: 'province',
+					title: '省份',
+					sort: true,
+					width: 100
+				}, {
+					field: 'city',
+					title: '城市',
+					sort: true,
+					width: 100
+				}, {
+					field: 'area',
+					title: '区县',
+					sort: true,
+					width: 100
+				}, {
+					field: 'street',
+					title: '街道',
+					sort: true
+				}, {
+					field: 'code',
+					title: '邮编',
+					sort: true,
+					width: 100
+				}, {
+					title: '操作',
+					width: 140,
+					templet: '#op-tpl'
+				}]
+			]
+		});
+
+		// 添加
+		// 添加订单地址按钮绑定事件
+		$('#add').click(function() {
+			layer.open({
+				type: 2,
+				title: '添加订单地址',
+				content: 'http://localhost:8081/manage/order-address-add.html',
+				area: ["500px", "550px"],
+				end: function() {
+					table.reload('order-address-id');
+				}
+			});
+		});
+
+		// 数据表格绑定行事件
+		table.on('tool(order-address-filter)', function(row) {
+			if (row.event == 'edit') {
+				// 编辑
+				layer.open({
+					type: 2,
+					title: '编辑订单地址',
+					content: 'http://localhost:8081/manage/order-address-edit.html',
+					area: ['500px', '500px'],
+					success: function(layero, index) {
+						var body = layer.getChildFrame('body', index)
+						body.find('#id').val(row.data.id);
+						body.find('#order_id').val(row.data.order_id);
+						body.find('#name').val(row.data.name);
+						body.find('#tel').val(row.data.tel);
+						body.find('#province').val(row.data.province);
+						body.find('#city').val(row.data.city);
+						body.find('#area').val(row.data.area);
+						body.find('#street').val(row.data.street);
+						body.find('#code').val(row.data.code);
+					},
+					end: function() {
+						table.reload('order-address-id');
+					}
+				});
+
+			} else if (row.event == 'del') {
+				// 删除
+				layer.confirm('是否删除订单地址？', function(index) {
+					$.ajax({
+						type: 'DELETE',
+						url: 'http://localhost:8081/api/order/address',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify({
+							id: row.data.id
+						}),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								});
+								row.del();
+								layer.close(index);
+								table.reload("order-address-id");
+							}
+						}
+					});
+				});
+			}
+		});
+
+	});
+</script>
+
+<script type="text/html" id="op-tpl">
+	<a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">编辑</a>
+	<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>
+</script>
+
+{{ end }}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css" />
+	</head>
+	<body>
+		
+		<div class="layui-fluid" style="margin-top: 20px;">
+			<form class="layui-form">
+				
+				<!-- 隐藏域 -->
+				<input type="hidden" id="id" name="id" />
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">代码</label>
+					<div class="layui-input-block">
+						<input type="text" id="code" name="code" placeholder="请输入支付类型代码" class="layui-input"
+							lay-verify="number" lay-verType="tips">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">名称</label>
+					<div class="layui-input-block">
+						<input type="text" id="name" name="name" placeholder="请输入支付类型名称" class="layui-input"
+							lay-verify="required" lay-verType="tips">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">描述</label>
+					<div class="layui-input-block">
+						<input type="text" id="text" name="text" placeholder="请输入支付类型描述" class="layui-input"
+							lay-verify="required" lay-verType="tips">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="update">提交</button>
+					</div>
+				</div>
+				
+			</form>
+		</div>
+
+		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			layui.use(['form', 'layer'], function() {
+				var $ = layui.jquery;
+				var layer = layui.layer;
+				var form = layui.form;
+
+				// 监听表单的提交事件
+				form.on('submit(update)', function(d) {
+					$.ajax({
+						type: 'PUT',
+						url: 'http://localhost:8081/api/order/status',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(d.field),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								}, function() {
+									// 关闭弹出层
+									var index = parent.layer.getFrameIndex(window.name);
+									parent.layer.close(index);
+								});
+							}
+						}
+					});
+					return false;
+				});
+
+			});
+		</script>
+	</body>
+</html>

@@ -7,20 +7,20 @@ import (
 )
 
 type Session struct {
-	SessionID         string
-	Username          string
-	UserID            int
-	PageProduct       *PageProduct        // 用于模板
-	Product           *Product            // 用于模板
-	Cart              *Cart               // 用于模板
-	Order             *Order              // 用于模板
-	Orders            []*Order            // 用于模板
-	OrderPaymentTypes []*OrderPaymentType // 用于模板
-	Address           *Address            // 用于模板
-	OrderItems        []*OrderItem        // 用于模板
-	OrderAddress      *OrderAddress       // 用于模板
-	IndexPage         *IndexPage          // 用于模板
-	Nav               *Nav                // 用于模板
+	SessionID         string              `json:"session_id"`
+	Username          string              `json:"username"`
+	UserID            int                 `json:"user_id,string"`
+	PageProduct       *PageProduct        `json:"page_product"`        // 用于模板
+	Product           *Product            `json:"product"`             // 用于模板
+	Cart              *Cart               `json:"cart"`                // 用于模板
+	Order             *Order              `json:"order"`               // 用于模板
+	Orders            []*Order            `json:"orders"`              // 用于模板
+	OrderPaymentTypes []*OrderPaymentType `json:"order_payment_types"` // 用于模板
+	Address           *Address            `json:"address"`             // 用于模板
+	OrderItems        []*OrderItem        `json:"order_items"`         // 用于模板
+	OrderAddress      *OrderAddress       `json:"order_address"`       // 用于模板
+	IndexPage         *IndexPage          `json:"index_page"`          // 用于模板
+	Nav               *Nav                `json:"nav"`                 // 用于模板
 }
 
 // AddSession 数据库新增Session
@@ -76,4 +76,46 @@ func GetSession(sessID string) (*Session, error) {
 	}
 
 	return sess, nil
+}
+
+// GetUserSessionPage 查询数据库，获取用户Session列表，根据当前页的页码和每页记录条数
+func GetUserSessionPage(pageNo int, pageSize int) ([]*Session, error) {
+	query := `select session_id, username, user_id
+		from session 
+		limit ?, ?`
+
+	rows, err := util.Db.Query(query, (pageNo-1)*pageSize, pageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	var ss []*Session
+	for rows.Next() {
+		s := &Session{}
+		err = rows.Scan(&s.SessionID, &s.Username, &s.UserID)
+		if err != nil {
+			return nil, err
+		}
+		ss = append(ss, s)
+	}
+
+	return ss, nil
+}
+
+func (s Session) Delete() error {
+	query := `delete from session 
+		where session_id=?`
+
+	stmt, err := util.Db.Prepare(query)
+	defer stmt.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(&s.SessionID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

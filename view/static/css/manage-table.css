@@ -2,3 +2,8 @@
 	text-align: center;
 	height: auto;
 }
+
+.table-body {
+	padding-top: 15px;
+	padding-bottom: 5px;
+}

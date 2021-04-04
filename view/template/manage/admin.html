@@ -1,0 +1,139 @@
+{{ define "content"}}
+
+<link rel="stylesheet" type="text/css" href="/static/css/manage-table.css" />
+
+<div class="layui-fluid table-body">
+	<button id="addUser" type="button" class="layui-btn layui-btn-fluid layui-btn-md layui-btn-normal">添加管理员</button>
+	<table id="admins-elem" lay-filter="admins-filter"></table>
+</div>
+
+<script type="text/javascript">
+	// 加载模块
+	layui.use(['table', 'layer'], function() {
+		var table = layui.table;
+		var layer = layui.layer;
+		var $ = layui.jquery;
+
+		// 渲染table组件
+		table.render({
+			elem: "#admins-elem", // 挂载元素
+			id: "admins-id", // 标识table组件
+			url: "http://localhost:8081/api/admin/list", // 数据接口地址
+			parseData: function(res) { // 解析数据接口的数据，将其数据格式映射为table组件的数据格式
+				return {
+					code: res.code == 200 ? 0 : 500,
+					msg: res.msg,
+					count: res.count,
+					data: res.data
+				}
+			},
+			request: { // 向数据接口地址发送请求获取数据时的查询字符串参数名，默认是page和limit，可以重新设定
+				pageName: "pageNo", // 页码的参数名
+				limitName: "pageSize" // 每页记录条数的参数名
+			},
+			page: true, // 开启分页
+			limit: 15, // 每页记录条数
+			limits: [10, 15, 20, 30], // 每页记录条数选项
+			cols: [
+				[ // 表头
+					{
+						field: "id",
+						title: "ID",
+						sort: true,
+						width: 60
+					}, {
+						field: "username",
+						title: "用户名称",
+						sort: true
+					}, {
+						field: "password",
+						title: "密码",
+						sort: true
+					}, {
+						title: "操作",
+						width: 140,
+						align: "center",
+						templet: function() {
+							var str =
+								'<a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">编辑</a>';
+							str +=
+								'<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>';
+							return str;
+						}
+					}
+				]
+			]
+		});
+
+		// 添加管理员
+		// 为添加管理员按钮绑定单击事件
+		$('#addUser').click(function() {
+			// 打开弹出层
+			layer.open({
+				type: 2, // iframe层
+				title: '添加管理员',
+				content: 'http://localhost:8081/manage/admin-add.html', // 请求URL
+				area: ['500px', '600px'],
+				end: function() { // 弹出层销毁时触发的回调函数
+					table.reload('admins-id'); // 重新加载table组件的数据
+				}
+			});
+		});
+
+		// 给数据表格行绑定事件
+		table.on('tool(admins-filter)', function(row) {
+			if (row.event == "edit") {
+				// 编辑管理员
+				// 打开弹出层
+				layer.open({
+					type: 2, // iframe层
+					title: '编辑管理员',
+					content: 'http://localhost:8081/manage/admin-edit.html', // 请求URL
+					area: ['500px', '600px'],
+					success: function(layero, index) { // 弹出层弹出后触发回调函数
+						// 数据回显
+						var body = layer.getChildFrame('body',
+							index) // 获取指定索引的iframe层的body元素对象
+						// body元素对象的子元素对象赋值
+						body.find('#id').val(row.data.id);
+						body.find('#username').val(row.data.username);
+						body.find('#password').val(row.data.password);
+					},
+					end: function() { // 弹出层销毁后触发的回调函数
+						table.reload("admins-id"); //重新加载table组件的数据
+					}
+				});
+			} else if (row.event == "del") {
+				// 删除管理员
+				// 弹出询问框
+				layer.confirm("是否删除会员管理员？", function(index) {
+					// 发送AJAX请求
+					$.ajax({
+						type: "DELETE",
+						url: "http://localhost:8081/api/admin",
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify({
+							id: row.data.id
+						}),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								});
+								row.del(); // 删除当前行的DOM结构，并更新缓存
+								layer.close(index); // 关闭弹出层
+								table.reload("admins-id"); //重新加载table组件的数据
+							}
+						}
+					});
+				});
+			}
+		});
+
+	});
+</script>
+
+{{ end }}

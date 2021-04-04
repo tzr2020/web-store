@@ -1,0 +1,173 @@
+{{ define "content"}}
+
+<link rel="stylesheet" type="text/css" href="/static/css/manage-table.css" />
+
+<div class="layui-fluid table-body">
+	<button id="add" type="button" class="layui-btn layui-btn-fluid layui-btn-md layui-btn-normal">添加导航栏产品</button>
+	<table id="nav-products-elem" lay-filter="nav-products-filter"></table>
+</div>
+
+<script type="text/javascript">
+	layui.use(['table'], function() {
+		var table = layui.table;
+		var $ = layui.jquery;
+		var layer = layui.layer;
+
+		// 渲染数据表格
+		table.render({
+			elem: '#nav-products-elem',
+			id: 'nav-products-id',
+			url: 'http://localhost:8081/api/nav-products',
+			parseData: function(res) {
+				return {
+					code: res.code == 200 ? 0 : 500,
+					msg: res.msg,
+					count: res.count,
+					data: res.data
+				}
+			},
+			request: {
+				pageName: 'pageNo',
+				limitName: 'pageSize'
+			},
+			page: true,
+			limit: 5,
+			limits: [5, 10, 15, 20],
+			cols: [
+				[{
+					field: 'id',
+					title: 'ID',
+					sort: true,
+					width: 60
+				}, {
+					title: '产品ID',
+					width: 120,
+					templet: function(d) {
+						return d.product.id;
+					}
+				}, {
+					title: '产品图片',
+					width: 140,
+					templet: function(d) {
+						return '<img src="http://localhost:8081/' + d.product.imgPath + '" style="width: 100px; height: auto;" lay-event="uploadImg" />';
+					},
+				}, {
+					title: '产品详情',
+					width: 140,
+					templet: function(d) {
+						return '<img src="http://localhost:8081/' + d.product.detail + '" style="width: 100px; height: auto;" lay-event="uploadDetail" />';
+					},
+				}, {
+					title: '产品名称',
+					minWidth: 160,
+					templet: function(d) {
+						return d.product.name;
+					}
+				}, {
+					title: '产品热点',
+					width: 140,
+					templet: function(d) {
+						return d.product.hotPoint;
+					}
+				}, {
+					title: '价格',
+					width: 80,
+					templet: function(d) {
+						return d.product.price;
+					}
+				}, {
+					title: '库存',
+					width: 80,
+					templet: function(d) {
+						return d.product.stock;
+					}
+				}, {
+					title: '销量',
+					width: 80,
+					templet: function(d) {
+						return d.product.sales;
+					}
+				}, {
+					title: '类别',
+					width: 100,
+					templet: function(d) {
+						return d.product.category.name;
+					}
+				}, {
+					title: '操作',
+					width: 140,
+					templet: '#op-tpl'
+				}]
+			]
+		});
+
+		// 添加
+		// 添加导航栏产品按钮绑定事件
+		$('#add').click(function() {
+			layer.open({
+				type: 2,
+				title: '添加导航栏产品',
+				content: 'http://localhost:8081/manage/nav-product-add.html',
+				area: ["500px", "550px"],
+				end: function() {
+					table.reload('nav-products-id');
+				}
+			});
+		});
+
+		// 数据表格绑定行事件
+		table.on('tool(nav-products-filter)', function(row) {
+			if (row.event == 'edit') {
+				// 编辑
+				layer.open({
+					type: 2,
+					title: '编辑导航栏产品',
+					content: 'http://localhost:8081/manage/nav-product-edit.html',
+					area: ['500px', '500px'],
+					success: function(layero, index) {
+						var body = layer.getChildFrame('body', index)
+						body.find('#id').val(row.data.id);
+						body.find('#product_id').val(row.data.product_id);
+					},
+					end: function() {
+						table.reload('nav-products-id');
+					}
+				});
+
+			} else if (row.event == 'del') {
+				// 删除
+				layer.confirm('是否删除导航栏产品？', function(index) {
+					$.ajax({
+						type: 'DELETE',
+						url: 'http://localhost:8081/api/nav-product',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify({
+							id: row.data.id
+						}),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								});
+								row.del();
+								layer.close(index);
+								table.reload("nav-products-id");
+							}
+						}
+					});
+				});
+			}
+		});
+
+	});
+</script>
+
+<script type="text/html" id="op-tpl">
+	<a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">编辑</a>
+	<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>
+</script>
+
+{{ end }}

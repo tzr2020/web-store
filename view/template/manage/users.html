@@ -1,207 +1,207 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>会员用户列表</title>
-		<link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css"/>
-		<link rel="stylesheet" type="text/css" href="/static/css/manage-table.css"/>
-	</head>
-	<body>
-		
-		<div class="layui-fluid">
-			<button id="addUser" type="button" class="layui-btn layui-btn-fluid layui-btn-md layui-btn-normal" style="margin-top: 10px;">添加用户</button>
-			<table id="users" lay-filter="users"></table>
-		</div>
-		
-		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
-		<script type="text/javascript">
-			
-			// 加载模块
-			layui.use(['table', 'layer'], function(){
-				var table = layui.table; // 获取table对象
-				var $ = layui.jquery; // 获取jquery对象
-				var layer = layui.layer; // 获取layer对象
-				
-				// 给添加用户按钮绑定单击事件-添加用户
-				$("#addUser").click(function(){
-					// 打开弹出层
-					layer.open({
-						type: 2, // iframe层
-						title: "添加用户",
-						content: "http://localhost:8081/manage/user-add.html", // 请求URL
-						area: ['500px', '600px'],
-						end: function(){ // 弹出层销毁时触发的回调函数
-							// 重载数据表格
-							table.reload("users");
+{{ define "content"}}
+
+<link rel="stylesheet" type="text/css" href="/static/css/manage-table.css" />
+
+<div class="layui-fluid table-body">
+	<button id="addUser" type="button" class="layui-btn layui-btn-fluid layui-btn-md layui-btn-normal">添加用户</button>
+	<table id="users-elem" lay-filter="users-filter"></table>
+</div>
+
+<script type="text/javascript">
+	// 加载模块
+	layui.use(['table', 'layer'], function() {
+		var table = layui.table;
+		var layer = layui.layer;
+		var $ = layui.jquery;
+
+		// 渲染table组件
+		table.render({
+			elem: "#users-elem", // 挂载元素
+			id: "users-id", // 标识table组件
+			url: "http://localhost:8081/api/users", // 数据接口地址
+			parseData: function(res) { // 解析数据接口的数据，将其数据格式映射为table组件的数据格式
+				return {
+					code: res.code == 200 ? 0 : 500,
+					msg: res.msg,
+					count: res.count,
+					data: res.data
+				}
+			},
+			request: { // 向数据接口地址发送请求获取数据时的查询字符串参数名，默认是page和limit，可以重新设定
+				pageName: "pageNo", // 页码的参数名
+				limitName: "pageSize" // 每页记录条数的参数名
+			},
+			page: true, // 开启分页
+			limit: 15, // 每页记录条数
+			limits: [10, 15, 20, 30], // 每页记录条数选项
+			cols: [
+				[ // 表头
+					{
+						field: "id",
+						title: "ID",
+						sort: true,
+						width: 60
+					}, {
+						title: "头像",
+						width: 80,
+						templet: function(data) {
+							return '<a id="uploadAvatar" lay-event="uploadAvatar"><img src="http://localhost:8081/static/' +
+								data.avatar + '" style="width: 40px; height: auto;" /></a>'
+						}
+					}, {
+						field: "username",
+						title: "用户名称",
+						sort: true
+					}, {
+						field: "password",
+						title: "密码",
+						sort: true
+					}, {
+						field: "email",
+						title: "电子邮箱",
+						sort: true
+					}, {
+						field: "nickname",
+						title: "昵称",
+						sort: true
+					}, {
+						title: "性别",
+						sort: true,
+						width: 80,
+						templet: function(d) {
+							return d.sex == 1 ? '男' : '女';
+						}
+					}, {
+						field: "phone",
+						title: "手机号码",
+						sort: true,
+						width: 120
+					}, {
+						field: "country",
+						title: "国家",
+						width: 80,
+						sort: true
+					}, {
+						field: "province",
+						title: "省份",
+						sort: true,
+						width: 80
+					}, {
+						field: "city",
+						title: "城市",
+						sort: true,
+						width: 80
+					}, {
+						title: "操作",
+						width: 140,
+						align: "center",
+						templet: function() {
+							var str =
+								'<a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">编辑</a>';
+							str +=
+								'<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>';
+							return str;
+						}
+					}
+				]
+			]
+		});
+
+		// 添加用户
+		// 为添加用户按钮绑定单击事件
+		$('#addUser').click(function() {
+			// 打开弹出层
+			layer.open({
+				type: 2, // iframe层
+				title: '添加用户',
+				content: 'http://localhost:8081/manage/user-add.html', // 请求URL
+				area: ['500px', '600px'],
+				end: function() { // 弹出层销毁时触发的回调函数
+					table.reload('users-id'); // 重新加载table组件的数据
+				}
+			});
+		});
+
+		// 给数据表格行绑定事件
+		table.on('tool(users-filter)', function(row) {
+			if (row.event == "edit") {
+				// 编辑用户
+				// 打开弹出层
+				layer.open({
+					type: 2, // iframe层
+					title: '编辑用户',
+					content: 'http://localhost:8081/manage/user-edit.html', // 请求URL
+					area: ['500px', '600px'],
+					success: function(layero, index) { // 弹出层弹出后触发回调函数
+						// 数据回显
+						var body = layer.getChildFrame('body',
+							index) // 获取指定索引的iframe层的body元素对象
+						// body元素对象的子元素对象赋值
+						body.find('#id').val(row.data.id);
+						body.find('#username').val(row.data.username);
+						body.find('#password').val(row.data.password);
+						body.find('#email').val(row.data.email);
+						body.find('#nickname').val(row.data.nickname);
+						body.find('input[name=sex][value=' + row.data.sex + ']').attr(
+							'checked', '');
+						body.find('#phone').val(row.data.phone);
+						body.find('#country').val(row.data.country);
+						body.find('#province').val(row.data.province);
+						body.find('#city').val(row.data.city);
+					},
+					end: function() { // 弹出层销毁后触发的回调函数
+						table.reload("users-id"); //重新加载table组件的数据
+					}
+				});
+			} else if (row.event == "del") {
+				// 删除用户
+				// 弹出询问框
+				layer.confirm("是否删除会员用户？", function(index) {
+					// 发送AJAX请求
+					$.ajax({
+						type: "DELETE",
+						url: "http://localhost:8081/api/user",
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify({
+							id: row.data.id
+						}),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								});
+								row.del(); // 删除当前行的DOM结构，并更新缓存
+								layer.close(index); // 关闭弹出层
+								table.reload("users-id"); //重新加载table组件的数据
+							}
 						}
 					});
 				});
-				
-				// 给数据表格行绑定事件-编辑用户、删除用户、上传用户头像
-				table.on('tool(users)', function(row){
-					console.log("row=", row);
-					
-					if(row.event == "edit"){
-						// 编辑用户
-						layer.open({ // 打开弹出层
-							type: 2, // iframe层
-							title: "编辑用户",
-							content: "http://localhost:8081/manage/user-edit.html", // 请求URL
-							area: ['500px', '600px'],
-							success: function(layero, index){ // 弹出层弹出后触发回调函数
-								// 数据回显
-								var body = layer.getChildFrame('body', index) // 获取指定索引的iframe层的DOM结构的body对象
-								body.find('#id').val(row.data.id); // 隐藏域
-								// 为body对象的子元素对象赋值
-								body.find('#username').val(row.data.username);
-								body.find('#password').val(row.data.password);
-								body.find('#email').val(row.data.email);
-								body.find('#nickname').val(row.data.nickname);
-								// body.find('input[name="sex"][value=1]').attr('checked', row.data.sex == 1 ? true : false);
-								// body.find('input[name="sex"][value=0]').attr('checked', row.data.sex == 0 ? true : false);
-								body.find('input[name=sex][value=' + row.data.sex + ']').attr('checked', '');
-								body.find('#phone').val(row.data.phone);
-								body.find('#country').val(row.data.country);
-								body.find('#province').val(row.data.province);
-								body.find('#city').val(row.data.city);
-							},
-							end: function(){ // 弹出层销毁后触发回调函数
-								// 重载数据表格
-								table.reload("users");
-							}
-						});
-						
-					}else if(row.event == "del"){
-						// 删除用户
-						layer.confirm("是否删除会员用户？", function(index){ // 弹出询问框
-							// 发送AJAX请求
-							$.ajax({
-								type: "DELETE",
-								url: "http://localhost:8081/api/user",
-								contentType: "application/json; charset=utf-8",
-								data: JSON.stringify({id: row.data.id}),
-								dataType: "json",
-								success: function(res){
-									if(res.code != 200){
-										layer.msg(res.msg);
-									}else{
-										layer.msg(res.msg, {time: 1200});
-										row.del(); // 删除当前行的DOM结构，并更新缓存
-										layer.close(index); // 关闭弹出层
-										table.reload("users"); // 重载数据表格
-									}
-								}
-							});
-						});
-					}else if(row.event == "uploadAvatar"){
-						// 上传用户头像
-						layer.open({ // 打开弹出层
-							type: 2, // iframe层
-							title: "上传用户头像",
-							area: ['300px', '300px'],
-							content: "http://localhost:8081/manage/user-avatar-upload.html", // 请求URL
-							success: function(layero, index){
-								// 弹出层弹出时回调
-								var body = layer.getChildFrame('body', index) // 获取指定索引的iframe层的DOM结构的body对象
-								body.find('#userID').val(row.data.id); // 隐藏域
-							},
-							end: function(){
-								// 弹出层销毁时回调
-								table.reload("users"); // 重载数据表格
-							}
-						});
+			} else if (row.event == "uploadAvatar") {
+				// 上传用户头像
+				// 打开弹出层
+				layer.open({
+					type: 2, // iframe层
+					title: '上传用户头像',
+					area: ['300px', '300px'],
+					content: 'http://localhost:8081/manage/user-avatar-upload.html', // 请求URL
+					success: function(layero, index) { // 弹出层弹出时触发的回调函数
+						var body = layer.getChildFrame('body',
+							index) // 获取指定索引的iframe层的的body元素对象
+						// body元素对象的子元素对象赋值
+						body.find('#userID').val(row.data.id);
+					},
+					end: function() { // 弹出层销毁时触发的回调函数
+						table.reload("users-id"); //重新加载table组件的数据
 					}
 				});
-				
-				// 渲染数据表格
-				table.render({
-					elem: "#users", // 挂载元素
-					id: "users", // 用于重载数据表格
-					url: "http://localhost:8081/api/users", // 数据接口
-					height: 600,
-					parseData: function(res){ // 解析数据：解析来自接口的数据，将其格式映射为Layui数据表格的数据格式
-						// console.log("res=", res)
-						return {
-							code: res.code == 200 ? 0 : 500,
-							msg: res.msg,
-							count: res.count,
-							data: res.data
-						}
-					},
-					page: true, // 分页
-					limit: 15, // 每页记录条数
-					limits: [10, 15, 20, 30], // 每页记录条数的选项
-					request: { // 向数据接口获取数据时的查询字符串参数名，默认是page和limit，可以重新设定
-						pageName: "pageNo", // 页码的参数名
-						limitName: "pageSize" // 每页记录条数的参数名
-					},
-					cols: [[ // 表头
-						{
-							field: "id",
-							title: "ID",
-							sort: true
-						}, {
-							// field: "avatar",
-							templet: '#avatarTpl',
-							title: "用户头像"
-						}, {
-							field: "username",
-							title: "用户名称",
-							sort: true
-						}, {
-							field: "password",
-							title: "用户密码",
-							sort: true
-						}, {
-							field: "email",
-							title: "电子邮箱",
-							sort: true
-						}, {
-							field: "nickname",
-							title: "昵称",
-							sort: true
-						}, {
-							// field: "sex",
-							templet: function(d){
-								// console.log("d=", d);
-								return d.sex == 1 ? '男' : '女';
-							},
-							title: "性别",
-							sort: true
-						}, {
-							field: "phone",
-							title: "手机号码",
-							sort: true
-						}, {
-							field: "country",
-							title: "国家",
-							sort: true
-						}, {
-							field: "province",
-							title: "省份",
-							sort: true
-						}, {
-							field: "city",
-							title: "城市",
-							sort: true
-						}, {
-							title: "操作",
-							width: "140",
-							align: "center",
-							templet: function() {
-								var str = '<a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">编辑</a>';
-								str += '<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>';
-								return str;
-							}
-						}
-					]]
-				});
-			});
-		</script>
-		<script type="text/html" id="avatarTpl">
-			<a id="uploadAvatar" lay-event="uploadAvatar">
-				<img src="http://localhost:8081/static/{{d.avatar}}" style="width: 40px; height: auto;" />
-			</a>
-		</script>
-	</body>
-</html>
+			}
+		});
+
+	});
+</script>
+
+{{ end }}

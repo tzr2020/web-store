@@ -1,0 +1,165 @@
+{{ define "content"}}
+
+<link rel="stylesheet" type="text/css" href="/static/css/manage-table.css" />
+
+<div class="layui-fluid table-body">
+	<button id="add" type="button" class="layui-btn layui-btn-fluid layui-btn-md layui-btn-normal">添加订单项</button>
+	<table id="order-item-elem" lay-filter="order-item-filter"></table>
+</div>
+
+<script type="text/javascript">
+	layui.use(['table'], function() {
+		var table = layui.table;
+		var $ = layui.jquery;
+		var layer = layui.layer;
+
+		// 渲染数据表格
+		table.render({
+			elem: '#order-item-elem',
+			id: 'order-item-id',
+			url: 'http://localhost:8081/api/order/item-list',
+			parseData: function(res) {
+				return {
+					code: res.code == 200 ? 0 : 500,
+					msg: res.msg,
+					count: res.count,
+					data: res.data
+				}
+			},
+			request: {
+				pageName: 'pageNo',
+				limitName: 'pageSize'
+			},
+			page: true,
+			limit: 10,
+			limits: [5, 10, 15, 20],
+			cols: [
+				[{
+					field: 'id',
+					title: 'ID',
+					sort: true,
+					width: 60
+				}, {
+					title: '用户ID',
+					templet: function(d) {
+						return d.order.uid
+					},
+					sort: true,
+					width: 90
+				}, {
+					field: 'order_id',
+					title: '订单ID',
+					sort: true,
+					width: 300
+				}, {
+					field: 'product_id',
+					title: '产品ID',
+					width: 90
+				}, {
+					title: '产品名称',
+					templet: function(d) {
+						return d.product.name
+					},
+					width: 300
+				}, {
+					title: '产品图片',
+					width: 140,
+					templet: function(d) {
+						return '<img src="http://localhost:8081/' + d.product.imgPath + '" style="width: 100px; height: auto;" />';
+					}
+				}, {
+					title: '价格',
+					width: 80,
+					templet: function(d) {
+						return d.product.price
+					}
+				}, {
+					field: 'count',
+					title: '产品数量',
+					width: 100
+				}, {
+					field: 'amount',
+					title: '金额小计',
+					width: 100
+				}, {
+					title: '操作',
+					width: 140,
+					templet: '#op-tpl'
+				}]
+			]
+		});
+
+		// 添加
+		// 添加订单项按钮绑定事件
+		$('#add').click(function() {
+			layer.open({
+				type: 2,
+				title: '添加订单项',
+				content: 'http://localhost:8081/manage/order-item-add.html',
+				area: ["500px", "550px"],
+				end: function() {
+					table.reload('order-item-id');
+				}
+			});
+		});
+
+		// 数据表格绑定行事件
+		table.on('tool(order-item-filter)', function(row) {
+			if (row.event == 'edit') {
+				// 编辑
+				layer.open({
+					type: 2,
+					title: '编辑订单项',
+					content: 'http://localhost:8081/manage/order-item-edit.html',
+					area: ['500px', '500px'],
+					success: function(layero, index) {
+						var body = layer.getChildFrame('body', index)
+						body.find('#id').val(row.data.id);
+						body.find('#order_id').val(row.data.order_id);
+						body.find('#product_id').val(row.data.product_id);
+						body.find('#price').val(row.data.price);
+						body.find('#count').val(row.data.count);
+						body.find('#amount').val(row.data.amount);
+					},
+					end: function() {
+						table.reload('order-item-id');
+					}
+				});
+
+			} else if (row.event == 'del') {
+				// 删除
+				layer.confirm('是否删除订单项？', function(index) {
+					$.ajax({
+						type: 'DELETE',
+						url: 'http://localhost:8081/api/order/item',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify({
+							id: row.data.id
+						}),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								});
+								row.del();
+								layer.close(index);
+								table.reload("order-item-id");
+							}
+						}
+					});
+				});
+			}
+		});
+
+	});
+</script>
+
+<script type="text/html" id="op-tpl">
+	<a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">编辑</a>
+	<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>
+</script>
+
+{{ end }}

@@ -1,0 +1,226 @@
+{{ define "content"}}
+
+<link rel="stylesheet" type="text/css" href="/static/css/manage-table.css" />
+
+<div class="layui-fluid table-body">
+	<button id="add" type="button" class="layui-btn layui-btn-fluid layui-btn-md layui-btn-normal">添加订单</button>
+	<table id="orders-elem" lay-filter="orders-filter"></table>
+</div>
+
+<script type="text/javascript">
+	layui.use(['table'], function() {
+		var table = layui.table;
+		var $ = layui.jquery;
+		var layer = layui.layer;
+
+		// 渲染数据表格
+		table.render({
+			elem: '#orders-elem',
+			id: 'orders-id',
+			url: 'http://localhost:8081/api/orders',
+			parseData: function(res) {
+				return {
+					code: res.code == 200 ? 0 : 500,
+					msg: res.msg,
+					count: res.count,
+					data: res.data
+				}
+			},
+			request: {
+				pageName: 'pageNo',
+				limitName: 'pageSize'
+			},
+			page: true,
+			limit: 5,
+			limits: [5, 10, 15, 20],
+			cols: [
+				[{
+					field: 'id',
+					title: 'ID',
+					sort: true,
+					width: 300
+				}, {
+					field: 'uid',
+					title: '用户ID',
+					sort: true,
+					width: 100
+				}, {
+					field: 'total_count',
+					title: '订单项数',
+					sort: true,
+					width: 120
+				}, {
+					field: 'total_amount',
+					title: '订单金额',
+					sort: true,
+					width: 120
+				}, {
+					field: 'payment',
+					title: '支付金额',
+					sort: true,
+					width: 120
+				}, {
+					templet: function(d) {
+						return d.order_payment_type.text;
+					},
+					title: '支付方式',
+					width: 120
+				}, {
+					field: 'ship_number',
+					title: '快递单号',
+					width: 300
+				}, {
+					field: 'ship_name',
+					title: '快递公司',
+					sort: true,
+					width: 200
+				}, {
+					field: 'ship_fee',
+					title: '运费',
+					sort: true,
+					width: 100
+				}, {
+					templet: function(d) {
+						return d.order_status_obj.text;
+					},
+					title: '订单状态',
+					width: 300
+				}, {
+					field: 'create_time',
+					title: '创建时间',
+					sort: true,
+					width: 160
+				}, {
+					field: 'update_time',
+					title: '更新时间',
+					sort: true,
+					width: 160
+				}, {
+					field: 'payment_time',
+					title: '支付时间',
+					sort: true,
+					width: 160
+				}, {
+					field: 'ship_time',
+					title: '发货时间',
+					sort: true,
+					width: 160
+				}, {
+					field: 'received_time',
+					title: '收货时间',
+					sort: true,
+					width: 160
+				}, {
+					field: 'finish_time',
+					title: '完成时间',
+					sort: true,
+					width: 160
+				}, {
+					field: 'close_time',
+					title: '关闭时间',
+					sort: true,
+					width: 160
+				}, {
+					templet: function(d) {
+						if (d.status == 1) {
+							return '正常';
+						} else if (d.status == -1) {
+							return '删除';
+						} else {
+							return '禁用';
+						}
+					},
+					title: '状态',
+					sort: true,
+					width: 100
+				}, {
+					title: '操作',
+					width: 140,
+					templet: '#op-tpl'
+				}]
+			]
+		});
+
+		// 添加
+		// 添加订单按钮绑定事件
+		$('#add').click(function() {
+			layer.open({
+				type: 2,
+				title: '添加订单',
+				content: 'http://localhost:8081/manage/order-add.html',
+				area: ["500px", "550px"],
+				end: function() {
+					table.reload('orders-id');
+				}
+			});
+		});
+
+		// 数据表格绑定行事件
+		table.on('tool(orders-filter)', function(row) {
+			if (row.event == 'edit') {
+				// 编辑
+				layer.open({
+					type: 2,
+					title: '编辑订单',
+					content: 'http://localhost:8081/manage/order-edit.html',
+					area: ['500px', '500px'],
+					success: function(layero, index) {
+						var body = layer.getChildFrame('body', index)
+						body.find('#id').val(row.data.id);
+						body.find('#uid').val(row.data.uid);
+						body.find('#total_count').val(row.data.total_count);
+						body.find('#total_amount').val(row.data.total_amount);
+						body.find('#select_payment_type').val(row.data.payment_type);
+						body.find('#ship_number').val(row.data.ship_number);
+						body.find('#ship_name').val(row.data.ship_name);
+						body.find('#ship_fee').val(row.data.ship_fee);
+						body.find('#select_order_ststus').val(row.data.order_status);
+						body.find('#create_time').val(row.data.create_time);
+						body.find('#update_time').val(row.data.update_time);
+						body.find('#payment_time').val(row.data.payment_time);
+						body.find('#ship_time').val(row.data.ship_time);
+						body.find('#received_time').val(row.data.received_time);
+						body.find('#finish_time').val(row.data.finish_time);
+						body.find('#close_time').val(row.data.close_time);
+					},
+					end: function() {
+						table.reload('orders-id');
+					}
+				});
+
+			} else if (row.event == 'del') {
+				// 删除
+				layer.confirm('是否删除订单？', function(index) {
+					$.ajax({
+						type: 'DELETE',
+						url: 'http://localhost:8081/api/order',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify({
+							id: row.data.id
+						}),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								});
+								layer.close(index);
+								table.reload("orders-id");
+							}
+						}
+					});
+				});
+			}
+		});
+
+	});
+</script>
+
+<script type="text/html" id="op-tpl">
+	<a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">编辑</a>
+	<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>
+</script>
+
+{{ end }}

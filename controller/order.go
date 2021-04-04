@@ -205,7 +205,7 @@ func CommitOrder(w http.ResponseWriter, r *http.Request) {
 		Province: province,
 		City:     city,
 		Area:     area,
-		Strees:   street,
+		Street:   street,
 		Code:     code,
 	}
 	if err = orderAddress.Add(); err != nil {
@@ -396,7 +396,7 @@ func GetOrderDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	orderAddress.Address = orderAddress.Province + orderAddress.City +
-		orderAddress.Area + orderAddress.Strees
+		orderAddress.Area + orderAddress.Street
 
 	sess.OrderItems = orderItems
 	sess.Order = order

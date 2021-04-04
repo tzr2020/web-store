@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>上传产品图片</title>
+		<link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css" />
+	</head>
+	<body>
+
+		<!-- 隐藏域 -->
+		<input type="hidden" id="productID" name="productID" />
+
+		<div class="layui-container">
+			<button type="button" class="layui-btn" id="upload-product-img">
+				<i class="layui-icon">&#xe67c;</i>上传图片
+			</button>
+		</div>
+
+		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			layui.use('upload', function() {
+				var upload = layui.upload;
+				var $ = layui.jquery;
+
+				upload.render({
+					elem: '#upload-product-img',
+					url: 'http://localhost:8081/api/uploadProductImg',
+					method: 'post',
+					data: {
+						productID: function() {
+							return $('#productID').val();
+						}
+					},
+					field: 'productImg', // 文件域的字段名
+					accept: 'images', // 上传时校验的文件类型
+					size: 300, // 文件最大可允许上传的大小（单位KB）
+					done: function(res) {
+						//上传完毕回调
+						if (res.code != 200) {
+							layer.alert(res.msg);
+						} else {
+							layer.msg(res.msg, {
+								time: 1200
+							}, function() {
+								// 关闭弹出层
+								var index = parent.layer.getFrameIndex(window.name);
+								parent.layer.close(index);
+							});
+						}
+					}
+				});
+			});
+		</script>
+	</body>
+</html>

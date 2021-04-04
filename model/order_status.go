@@ -7,10 +7,10 @@ import (
 
 // OrderStatus 订单状态字典结构
 type OrderStatus struct {
-	ID   int
-	Code int    // 状态码
-	Name string // 状态名称
-	Text string // 状态描述
+	ID   int    `json:"id,string"`
+	Code int    `json:"code,string"` // 状态码
+	Name string `json:"name"`        // 状态名称
+	Text string `json:"text"`        // 状态描述
 }
 
 // GetOrderStatus 从数据库获取订单的状态字典
@@ -79,4 +79,99 @@ func OrderStatusCodeToOperateText(code int) string {
 	}
 
 	return "暂无操作"
+}
+
+func GetOrderStatusByCode(code int) (*OrderStatus, error) {
+	query := `select id, code, name, text
+		from order_status
+		where code=?`
+
+	stmt, err := util.Db.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+
+	osobj := &OrderStatus{}
+
+	err = stmt.QueryRow(code).Scan(&osobj.ID, &osobj.Code, &osobj.Name, &osobj.Text)
+	if err != nil {
+		return nil, err
+	}
+
+	return osobj, nil
+}
+
+func GetOrderStatusPage(pageNo int, pageSize int) (osobjs []*OrderStatus, err error) {
+	query := `select id, code, name, text
+		from order_status
+		limit ?,?`
+
+	rows, err := util.Db.Query(query, (pageNo-1)*pageSize, pageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		osobj := &OrderStatus{}
+		err := rows.Scan(&osobj.ID, &osobj.Code, &osobj.Name, &osobj.Text)
+		if err != nil {
+			return nil, err
+		}
+		osobjs = append(osobjs, osobj)
+	}
+
+	return
+}
+
+func (osobj *OrderStatus) Add() error {
+	query := `insert into order_status (code, name, text)
+		values (?,?,?)`
+
+	stmt, err := util.Db.Prepare(query)
+	defer stmt.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(osobj.Code, osobj.Name, osobj.Text)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (osobj *OrderStatus) Update() error {
+	query := `update order_status set code=?, name=?, text=?
+		where id=?`
+
+	stmt, err := util.Db.Prepare(query)
+	defer stmt.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(osobj.Code, osobj.Name, osobj.Text, osobj.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (osobj *OrderStatus) Delete() error {
+	query := `delete from order_status where id=?`
+
+	stmt, err := util.Db.Prepare(query)
+	defer stmt.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(osobj.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

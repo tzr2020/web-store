@@ -51,7 +51,7 @@ func testAddOrder(t *testing.T) {
 		Province: "山东",
 		City:     "青岛",
 		Area:     "城阳区",
-		Strees:   "xxx路xx号",
+		Street:   "xxx路xx号",
 		Code:     "345345",
 	}
 

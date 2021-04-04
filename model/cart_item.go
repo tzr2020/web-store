@@ -2,15 +2,17 @@ package model
 
 import (
 	"log"
+	"strconv"
 	"web-store/util"
 )
 
 type CartItem struct {
-	CartItemID int
-	CartID     string
-	Product    *Product // 产品
-	Count      int      // 产品数量
-	Amount     float64  // 产品金额小计，通过GetAmount()计算得到
+	CartItemID int      `json:"cart_item_id,omitempty,string"`
+	CartID     string   `json:"cart_id,omitempty"`
+	ProductID  int      `json:"product_id,omitempty,string"`
+	Product    *Product `json:"product,omitempty"`       // 产品
+	Count      int      `json:"count,omitempty,string"`  // 产品数量
+	Amount     float64  `json:"amount,omitempty,string"` // 产品金额小计，通过GetAmount()计算得到
 }
 
 // GetAmount 通过购物项里的产品数量、产品里的价格相乘得到
@@ -135,4 +137,84 @@ func DeleteCartItem(cartItemID string) error {
 	}
 
 	return nil
+}
+
+// GetCartitemsPage 查询数据库，获取购物车项列表，根据当前页的页码和每页记录条数
+func GetCartitemsPage(pageNo int, pageSize int) (cits []*CartItem, err error) {
+	query := `select id, cart_id, product_id, count, amount
+		from cart_items limit ?, ?`
+
+	rows, err := util.Db.Query(query, (pageNo-1)*pageSize, pageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		cit := &CartItem{}
+		err = rows.Scan(&cit.CartItemID, &cit.CartID, &cit.ProductID, &cit.Count, &cit.Amount)
+		if err != nil {
+			return nil, err
+		}
+		strProductID := strconv.Itoa(cit.ProductID)
+		product, err := GetProduct(strProductID)
+		if err != nil {
+			return nil, err
+		}
+		cit.Product = product
+		cits = append(cits, cit)
+	}
+
+	return
+}
+
+// Add 数据库添加购物车项
+// func (cit CartItem) Add() (err error) {
+// 	query := "insert into cart_items (id, cart_id, product_id, count, amount) values (?,?,?,?,?)"
+
+// 	stmt, err := util.Db.Prepare(query)
+// 	defer stmt.Close()
+// 	if err != nil {
+// 		return
+// 	}
+
+// 	_, err = stmt.Exec(cit.CartItemID, cit.CartID, cit.Product.ID, cit.Count, cit.Amount)
+// 	if err != nil {
+// 		return
+// 	}
+
+// 	return
+// }
+
+// Update 数据库更新购物车项
+// func (cit CartItem) Update() (err error) {
+// 	query := `update cart_items cart_id=?, product_id=?, count=?, amount=? where id=?`
+
+// 	stmt, err := util.Db.Prepare(query)
+// 	if err != nil {
+// 		return
+// 	}
+
+// 	_, err = stmt.Exec(cit.CartID, cit.Product.ID, cit.Count, cit.Amount, cit.CartItemID)
+// 	if err != nil {
+// 		return
+// 	}
+
+// 	return
+// }
+
+// Delete 数据库删除购物车项
+func (cit CartItem) Delete() (err error) {
+	query := `delete from cart_items where id=?`
+
+	stmt, err := util.Db.Prepare(query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.Exec(cit.CartItemID)
+	if err != nil {
+		return
+	}
+
+	return
 }

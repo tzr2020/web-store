@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css" />
+	</head>
+	<body>
+
+		<div class="layui-fluid" style="margin-top: 20px;">
+			<form class="layui-form">
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">类别</label>
+					<div class="layui-input-block">
+						<select id="categoryID" name="categoryID"></select>
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">名称</label>
+					<div class="layui-input-block">
+						<input type="text" id="name" name="name" placeholder="请输入产品名称" class="layui-input"
+							lay-verify="required" lay-verType="tips">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">价格</label>
+					<div class="layui-input-block">
+						<input type="text" id="price" name="price" placeholder="请输入产品价格" class="layui-input"
+							lay-verify="number" lay-verType="tips">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">库存</label>
+					<div class="layui-input-block">
+						<input type="text" id="stock" name="stock" placeholder="请输入产品库存" class="layui-input"
+							lay-verify="number" lay-verType="tips">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">销量</label>
+					<div class="layui-input-block">
+						<input type="text" id="sales" name="sales" placeholder="请输入产品销量" class="layui-input" value="0"
+							lay-verify="number" lay-verType="tips">
+					</div>
+				</div>
+
+				<div class="layui-form-item layui-form-text">
+					<label class="layui-form-label">热点</label>
+					<div class="layui-input-block">
+						<textarea id="hotPoint" name="hotPoint" placeholder="请输入产品热点内容"
+							class="layui-textarea"></textarea>
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="add">提交</button>
+						<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					</div>
+				</div>
+
+			</form>
+		</div>
+
+		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			layui.use(['form', 'layer'], function() {
+				var $ = layui.jquery;
+				var layer = layui.layer;
+				var form = layui.form;
+
+				// 加载产品类别下拉框数据
+				$.getJSON('http://localhost:8081/api/categories', function(res) {
+					if (res.code != 200) {
+						layer.msg(res.msg)
+					} else {
+						var list = res.data;
+						var str = '';
+						for (var i = 0; i < list.length; i++) {
+							str += '<option value=\"' + list[i].id + '\">' + list[i].name + '</option>';
+						}
+						$('#categoryID').html(str);
+						form.render('select'); // 重新渲染下拉框
+					}
+				});
+
+				// 监听表单的提交事件
+				form.on('submit(add)', function(d) {
+					$.ajax({
+						type: 'POST',
+						url: 'http://localhost:8081/api/product',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(d.field),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								}, function() {
+									// 关闭弹出层
+									var index = parent.layer.getFrameIndex(window.name);
+									parent.layer.close(index);
+								});
+							}
+						}
+					});
+					return false;
+				});
+
+			});
+		</script>
+	</body>
+</html>

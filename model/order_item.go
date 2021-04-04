@@ -7,12 +7,13 @@ import (
 
 // OrderItem 订单项结构
 type OrderItem struct {
-	ID        int
-	OrderID   string
-	ProductID int
-	Count     int
-	Amount    float64
-	Product   *Product
+	ID        int      `json:"id,string"`
+	OrderID   string   `json:"order_id"`
+	Order     *Order   `json:"order"`
+	ProductID int      `json:"product_id,string"`
+	Product   *Product `json:"product"`
+	Count     int      `json:"count,string"`
+	Amount    float64  `json:"amount,string"`
 }
 
 func (oit *OrderItem) Add() error {
@@ -63,4 +64,79 @@ func GetOrderItemsByOrderID(orderID string) ([]*OrderItem, error) {
 	}
 
 	return orderItems, nil
+}
+
+func GetOrderItemPage(pageNo int, pageSize int) ([]*OrderItem, error) {
+	query := `select id, order_id, product_id, count, amount
+		from order_items
+		limit ?, ?`
+
+	rows, err := util.Db.Query(query, (pageNo-1)*pageSize, pageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	var oits []*OrderItem
+	for rows.Next() {
+		oit := &OrderItem{}
+		err = rows.Scan(&oit.ID, &oit.OrderID, &oit.ProductID,
+			&oit.Count, &oit.Amount)
+		if err != nil {
+			return nil, err
+		}
+
+		o, err := GetOrderByID(oit.OrderID)
+		if err != nil {
+			return nil, err
+		}
+		oit.Order = o
+
+		p, err := GetProductByID(oit.ProductID)
+		if err != nil {
+			return nil, err
+		}
+		oit.Product = p
+
+		oits = append(oits, oit)
+	}
+
+	return oits, nil
+}
+
+func (oit OrderItem) Update() error {
+	query := `update order_items 
+		set order_id=?, product_id=?, count=?, amount=?
+		where id=?`
+
+	stmt, err := util.Db.Prepare(query)
+	defer stmt.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(&oit.OrderID, &oit.ProductID,
+		&oit.Count, &oit.Amount, &oit.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (oit OrderItem) Delete() error {
+	query := `delete from order_items
+		where id=?`
+
+	stmt, err := util.Db.Prepare(query)
+	defer stmt.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(&oit.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -1,0 +1,152 @@
+{{ define "content"}}
+
+<link rel="stylesheet" type="text/css" href="/static/css/manage-table.css" />
+
+<div class="layui-fluid table-body">
+	<button id="add" type="button" class="layui-btn layui-btn-fluid layui-btn-md layui-btn-normal">添加购物项</button>
+	<table id="cartitems-elem" lay-filter="cartitems-filter"></table>
+</div>
+
+<script type="text/javascript">
+	layui.use(['table'], function() {
+		var table = layui.table;
+		var $ = layui.jquery;
+		var layer = layui.layer;
+
+		// 渲染数据表格
+		table.render({
+			elem: '#cartitems-elem',
+			id: 'cartitems-id',
+			url: 'http://localhost:8081/api/cartitems',
+			parseData: function(res) {
+				return {
+					code: res.code == 200 ? 0 : 500,
+					msg: res.msg,
+					count: res.count,
+					data: res.data
+				}
+			},
+			request: {
+				pageName: 'pageNo',
+				limitName: 'pageSize'
+			},
+			page: true,
+			limit: 10,
+			limits: [10, 15, 20, 30],
+			cols: [
+				[{
+					field: 'cart_item_id',
+					title: 'ID',
+					sort: true,
+					width: 60
+				}, {
+					field: 'cart_id',
+					title: '购物车ID',
+					sort: true,
+					width: 300
+				}, {
+					field: 'product_id',
+					title: '产品ID',
+					width: 90
+				}, {
+					title: '产品名称',
+					templet: function(d) {
+						return d.product.name
+					}
+				}, {
+					title: '产品图片',
+					width: 140,
+					templet: function(d) {
+						return '<img src="http://localhost:8081/' + d.product.imgPath + '" style="width: 100px; height: auto;" />';
+					}
+				}, {
+					title: '价格',
+					width: 80,
+					templet: function(d) {
+						return d.product.price
+					}
+				}, {
+					field: 'count',
+					title: '产品数量',
+					width: 100
+				}, {
+					field: 'amount',
+					title: '金额小计',
+					width: 100
+				}, {
+					title: '操作',
+					width: 140,
+					templet: '#op-tpl'
+				}]
+			]
+		});
+
+		// 添加购物项
+		// 添加购物项钮绑定事件
+		$('#add').click(function() {
+			layer.open({
+				type: 2,
+				title: '添加购物项',
+				content: 'http://localhost:8081/manage/cartitems-add.html',
+				area: ["500px", "500px"],
+				end: function() {
+					table.reload('cartitems-id');
+				}
+			});
+		});
+
+		// 数据表格绑定行事件
+		table.on('tool(cartitems-filter)', function(row) {
+			if (row.event == 'edit') {
+				// 编辑
+				layer.open({
+					type: 2,
+					title: '编辑购物项',
+					content: 'http://localhost:8081/manage/cartitems-edit.html',
+					area: ['500px', '350px'],
+					success: function(layero, index) {
+						// 数据回显
+						var body = layer.getChildFrame('body', index)
+						body.find('#cart_id').val(row.data.cart_id);
+						body.find('#product_id').val(row.data.product_id);
+						body.find('#count').val(row.data.count);
+					},
+					end: function() {
+						table.reload('cartitems-id');
+					}
+				});
+			} else if (row.event == 'del') {
+				// 删除
+				layer.confirm('是否删除购物项？', function(index) {
+					$.ajax({
+						type: 'DELETE',
+						url: 'http://localhost:8081/api/cartitem',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(row.data),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								});
+								row.del();
+								layer.close(index);
+								table.reload("cartitems-id");
+							}
+						}
+					});
+				});
+			}
+		});
+
+	});
+</script>
+
+<script type="text/html" id="op-tpl">
+	<a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">编辑</a>
+	<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>
+</script>
+
+{{ end }}

@@ -1,0 +1,198 @@
+{{ define "content"}}
+
+<link rel="stylesheet" type="text/css" href="/static/css/manage-table.css" />
+
+<div class="layui-fluid table-body">
+	<button id="add" type="button" class="layui-btn layui-btn-fluid layui-btn-md layui-btn-normal">添加产品</button>
+	<table id="products-elem" lay-filter="products-filter"></table>
+</div>
+
+<script type="text/javascript">
+	layui.use(['table'], function() {
+		var table = layui.table;
+		var $ = layui.jquery;
+		var layer = layui.layer;
+
+		// 渲染数据表格
+		table.render({
+			elem: '#products-elem',
+			id: 'products-id',
+			url: 'http://localhost:8081/api/products',
+			parseData: function(res) {
+				return {
+					code: res.code == 200 ? 0 : 500,
+					msg: res.msg,
+					count: res.count,
+					data: res.data
+				}
+			},
+			request: {
+				pageName: 'pageNo',
+				limitName: 'pageSize'
+			},
+			page: true,
+			limit: 5,
+			limits: [5, 10, 15, 20],
+			cols: [
+				[{
+					field: 'id',
+					title: 'ID',
+					sort: true,
+					width: 60
+				}, {
+					title: '产品图片',
+					width: 140,
+					templet: function(d) {
+						return '<img src="http://localhost:8081/' + d.imgPath + '" style="width: 100px; height: auto;" lay-event="uploadImg" />';
+					},
+				}, {
+					title: '产品详情',
+					width: 140,
+					templet: function(d) {
+						return '<img src="http://localhost:8081/' + d.detail + '" style="width: 100px; height: auto;" lay-event="uploadDetail" />';
+					},
+				}, {
+					field: 'name',
+					title: '产品名称',
+					sort: true,
+					minWidth: 160
+				}, {
+					field: 'hotPoint',
+					title: '产品热点',
+					width: 140
+				}, {
+					field: 'price',
+					title: '价格',
+					sort: true,
+					width: 80
+				}, {
+					field: 'stock',
+					title: '库存',
+					sort: true,
+					width: 80
+				}, {
+					field: 'sales',
+					title: '销量',
+					sort: true,
+					width: 80
+				}, {
+					title: '类别',
+					width: 100,
+					templet: function(d) {
+						return d.category.name;
+					}
+				}, {
+					title: '操作',
+					width: 140,
+					templet: '#op-tpl'
+				}]
+			]
+		});
+
+		// 添加
+		// 添加产品按钮绑定事件
+		$('#add').click(function() {
+			layer.open({
+				type: 2,
+				title: '添加产品',
+				content: 'http://localhost:8081/manage/product-add.html',
+				area: ["500px", "550px"],
+				end: function() {
+					table.reload('products-id');
+				}
+			});
+		});
+
+		// 数据表格绑定行事件
+		table.on('tool(products-filter)', function(row) {
+			if (row.event == 'edit') {
+				// 编辑
+				layer.open({
+					type: 2,
+					title: '编辑产品',
+					content: 'http://localhost:8081/manage/product-edit.html',
+					area: ['500px', '500px'],
+					success: function(layero, index) {
+						var body = layer.getChildFrame('body', index)
+						body.find('#productID').val(row.data.id);
+						body.find('#selectCategoryID').val(row.data.categoryID);
+						body.find('#name').val(row.data.name);
+						body.find('#price').val(row.data.price);
+						body.find('#stock').val(row.data.stock);
+						body.find('#sales').val(row.data.sales);
+						body.find('#hotPoint').val(row.data.hotPoint);
+					},
+					end: function() {
+						table.reload('products-id');
+					}
+				});
+
+			} else if (row.event == 'del') {
+				// 删除
+				layer.confirm('是否删除产品？', function(index) {
+					$.ajax({
+						type: 'DELETE',
+						url: 'http://localhost:8081/api/product',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify({
+							id: row.data.id
+						}),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								});
+								row.del();
+								layer.close(index);
+								table.reload("products-id");
+							}
+						}
+					});
+				});
+
+			} else if (row.event == 'uploadImg') {
+				// 上传产品图片
+				layer.open({
+					type: 2,
+					title: "上传产品图片",
+					area: ['300px', '300px'],
+					content: "http://localhost:8081/manage/product-img-upload.html",
+					success: function(layero, index) {
+						var body = layer.getChildFrame('body', index)
+						body.find('#productID').val(row.data.id);
+					},
+					end: function() {
+						table.reload("products-id");
+					}
+				});
+
+			} else if (row.event == 'uploadDetail') {
+				// 上传产品详情
+				layer.open({
+					type: 2,
+					title: "上传产品详情",
+					area: ['300px', '300px'],
+					content: "http://localhost:8081/manage/product-detail-upload.html",
+					success: function(layero, index) {
+						var body = layer.getChildFrame('body', index)
+						body.find('#productID').val(row.data.id);
+					},
+					end: function() {
+						table.reload("products-id");
+					}
+				});
+			}
+		});
+
+	});
+</script>
+
+<script type="text/html" id="op-tpl">
+	<a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">编辑</a>
+	<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>
+</script>
+
+{{ end }}

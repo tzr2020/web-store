@@ -26,7 +26,7 @@ func GetJsonDataCount(databaseTableName string) (count int, err error) {
 	return
 }
 
-// ResponseWriteJson 将JSON结构编码为JSON格式的数据后写入响应
+// ResponseWriteJson 将JSON结构编码为JSON格式的数据后写入响应后返回响应
 func ResponseWriteJson(w http.ResponseWriter, j Json) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	enc := json.NewEncoder(w)
@@ -39,7 +39,7 @@ func ResponseWriteJson(w http.ResponseWriter, j Json) {
 	}
 }
 
-// ResponseWriteJsonOfInsideServer 将表示服务器内部发生错误的JSON结构编码为JSON格式的数据后写入响应
+// ResponseWriteJsonOfInsideServer 将表示服务器内部发生错误的JSON结构编码为JSON格式的数据后写入响应后返回响应
 func ResponseWriteJsonOfInsideServer(w http.ResponseWriter) {
 	j := Json{
 		Code: http.StatusInternalServerError,

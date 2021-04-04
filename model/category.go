@@ -3,11 +3,11 @@ package model
 import "web-store/util"
 
 type Category struct {
-	ID    int
-	Name  string // 产品类别名称
-	PID   int    // 父级id
-	Level int    // 层级
-	Img   string // 图片路径
+	ID    int    `json:"id,string"`
+	Name  string `json:"name"`         // 产品类别名称
+	PID   int    `json:"pid,string"`   // 父级id
+	Level int    `json:"level,string"` // 层级
+	Img   string `json:"img"`          // 图片路径
 }
 
 // GetCategories 从数据库获取所有产品类别
@@ -44,4 +44,60 @@ func GetCategory(cate_id string) (*Category, error) {
 	}
 
 	return cate, nil
+}
+
+// Add 数据库添加产品类别
+func (cate Category) Add() error {
+	query := `insert into categories (id, name, p_id, level)
+		values (?,?,?,?)`
+
+	stmt, err := util.Db.Prepare(query)
+	defer stmt.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(cate.ID, cate.Name, cate.PID, cate.Level)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Update 数据库更新产品类别
+func (cate Category) Update() error {
+	query := `update categories set name=?, p_id=?, level=?
+		where id=?`
+
+	stmt, err := util.Db.Prepare(query)
+	defer stmt.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(cate.Name, cate.PID, cate.Level, cate.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Delete 数据库删除产品类别
+func (cate Category) Delete() error {
+	query := `delete from categories where id=?`
+
+	stmt, err := util.Db.Prepare(query)
+	defer stmt.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(cate.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

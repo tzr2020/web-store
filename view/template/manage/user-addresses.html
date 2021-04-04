@@ -1,0 +1,168 @@
+{{ define "content"}}
+
+<link rel="stylesheet" type="text/css" href="/static/css/manage-table.css" />
+
+<div class="layui-fluid table-body">
+	<button id="add" type="button" class="layui-btn layui-btn-fluid layui-btn-md layui-btn-normal">添加用户地址</button>
+	<table id="user-addresses-elem" lay-filter="user-addresses-filter"></table>
+</div>
+
+<script type="text/javascript">
+	layui.use(['table'], function() {
+		var table = layui.table;
+		var $ = layui.jquery;
+		var layer = layui.layer;
+
+		// 渲染数据表格
+		table.render({
+			elem: '#user-addresses-elem',
+			id: 'user-addresses-id',
+			url: 'http://localhost:8081/api/user/addresses',
+			parseData: function(res) {
+				return {
+					code: res.code == 200 ? 0 : 500,
+					msg: res.msg,
+					count: res.count,
+					data: res.data
+				}
+			},
+			request: {
+				pageName: 'pageNo',
+				limitName: 'pageSize'
+			},
+			page: true,
+			limit: 10,
+			limits: [10, 15, 20, 30],
+			cols: [
+				[{
+					field: 'id',
+					title: 'ID',
+					sort: true,
+					width: 60
+				}, {
+					field: 'uid',
+					title: '用户ID',
+					sort: true,
+					width: 90
+				}, {
+					field: 'name',
+					title: '姓名',
+					sort: true,
+					width: 100
+				}, {
+					field: 'tel',
+					title: '电话号码',
+					width: 120
+				}, {
+					field: 'province',
+					title: '省份',
+					sort: true,
+					width: 100
+				}, {
+					field: 'city',
+					title: '城市',
+					sort: true,
+					width: 100
+				}, {
+					field: 'area',
+					title: '区县',
+					sort: true,
+					width: 100
+				}, {
+					field: 'street',
+					title: '街道',
+					sort: true
+				}, {
+					field: 'code',
+					title: '邮编',
+					sort: true,
+					width: 100
+				}, {
+					title: '是否默认',
+					width: 120,
+					templet: function(d) {
+						return d.is_default == 1 ? '是' : '否';
+					}
+				}, {
+					title: '操作',
+					width: 140,
+					templet: '#op-tpl'
+				}]
+			]
+		});
+
+		// 添加用户地址
+		// 添加用户地址按钮绑定事件
+		$('#add').click(function() {
+			layer.open({
+				type: 2,
+				title: '添加用户地址',
+				content: 'http://localhost:8081/manage/user-address-add.html',
+				area: ["500px", "550px"],
+				end: function() {
+					table.reload('user-addresses-id');
+				}
+			});
+		});
+
+		// 数据表格绑定行事件
+		table.on('tool(user-addresses-filter)', function(row) {
+			if (row.event == 'edit') {
+				// 编辑
+				layer.open({
+					type: 2,
+					title: '编辑用户地址',
+					content: 'http://localhost:8081/manage/user-address-edit.html',
+					area: ['500px', '500px'],
+					success: function(layero, index) {
+						// 数据回显
+						var body = layer.getChildFrame('body', index)
+						body.find('#addressID').val(row.data.id);
+						body.find('#name').val(row.data.name);
+						body.find('#tel').val(row.data.tel);
+						body.find('#province').val(row.data.province);
+						body.find('#city').val(row.data.city);
+						body.find('#area').val(row.data.area);
+						body.find('#street').val(row.data.street);
+						body.find('#code').val(row.data.code);
+						body.find('#selectIsDefault').val(row.data.is_default);
+					},
+					end: function() {
+						table.reload('user-addresses-id');
+					}
+				});
+			} else if (row.event == 'del') {
+				// 删除
+				layer.confirm('是否删除用户地址？', function(index) {
+					$.ajax({
+						type: 'DELETE',
+						url: 'http://localhost:8081/api/user/address',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(row.data),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								});
+								row.del();
+								layer.close(index);
+								table.reload("user-addresses-id");
+							}
+						}
+					});
+				});
+			}
+		});
+
+	});
+</script>
+
+<script type="text/html" id="op-tpl">
+	<a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">编辑</a>
+	<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>
+</script>
+
+{{ end }}

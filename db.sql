@@ -285,3 +285,25 @@ CREATE TABLE `nav_products` (
 INSERT INTO `nav_products` VALUES (DEFAULT, 1);
 INSERT INTO `nav_products` VALUES (DEFAULT, 2);
 INSERT INTO `nav_products` VALUES (DEFAULT, 3);
+
+
+
+DROP TABLE IF EXISTS `admins`;
+CREATE TABLE `admins` (
+	`id` int(11) NOT NULL AUTO_INCREMENT COMMENT '管理员id',
+    `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL UNIQUE COMMENT '登录名称',
+    `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '登录密码',
+	PRIMARY KEY (`id`)
+)CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT '管理员表';
+
+INSERT INTO `admins` VALUES (1, 'admin1', 'admin123');
+INSERT INTO `admins` VALUES (NULL, 'admin2', 'admin123');
+
+
+
+DROP TABLE IF EXISTS `session_admin`;
+CREATE TABLE `session_admin` (
+    `session_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+    `admin_id` int(11) NOT NULL,
+    PRIMARY KEY (`session_id`)
+)CHARACTER SET = utf8 COLLATE = utf8_general_ci;

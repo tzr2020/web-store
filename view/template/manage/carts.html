@@ -1,0 +1,130 @@
+{{ define "content"}}
+
+<link rel="stylesheet" type="text/css" href="/static/css/manage-table.css" />
+
+<div class="layui-fluid table-body">
+	<button id="add" type="button" class="layui-btn layui-btn-fluid layui-btn-md layui-btn-normal">添加购物车</button>
+	<table id="carts-elem" lay-filter="carts-filter"></table>
+</div>
+
+<script type="text/javascript">
+	layui.use(['table'], function() {
+		var table = layui.table;
+		var $ = layui.jquery;
+		var layer = layui.layer;
+
+		// 渲染数据表格
+		table.render({
+			elem: '#carts-elem',
+			id: 'carts-id',
+			url: 'http://localhost:8081/api/carts',
+			parseData: function(res) {
+				return {
+					code: res.code == 200 ? 0 : 500,
+					msg: res.msg,
+					count: res.count,
+					data: res.data
+				}
+			},
+			request: {
+				pageName: 'pageNo',
+				limitName: 'pageSize'
+			},
+			page: true,
+			limit: 10,
+			limits: [10, 15, 20, 30],
+			cols: [
+				[{
+					field: 'cart_id',
+					title: 'ID',
+					sort: true,
+					width: 300
+				}, {
+					field: 'user_id',
+					title: '用户ID',
+					sort: true,
+					width: 90
+				}, {
+					field: 'total_count',
+					title: '购物项数',
+				}, {
+					field: 'total_amount',
+					title: '金额总计',
+				}, {
+					title: '操作',
+					width: 140,
+					templet: '#op-tpl'
+				}]
+			]
+		});
+
+		// 添加购物车
+		// 添加购物车按钮绑定事件
+		$('#add').click(function() {
+			layer.open({
+				type: 2,
+				title: '添加购物车',
+				content: 'http://localhost:8081/manage/cart-add.html',
+				area: ["500px", "300px"],
+				end: function() {
+					table.reload('carts-id');
+				}
+			});
+		});
+
+		// 数据表格绑定行事件
+		table.on('tool(carts-filter)', function(row) {
+			if (row.event == 'edit') {
+				// 编辑
+				layer.open({
+					type: 2,
+					title: '编辑购物车',
+					content: 'http://localhost:8081/manage/cart-edit.html',
+					area: ['500px', '350px'],
+					success: function(layero, index) {
+						// 数据回显
+						var body = layer.getChildFrame('body', index)
+						body.find('#cart_id').val(row.data.cart_id);
+						body.find('#user_id').val(row.data.user_id);
+						body.find('#total_count').val(row.data.total_count);
+						body.find('#total_amount').val(row.data.total_amount);
+					},
+					end: function() {
+						table.reload('carts-id');
+					}
+				});
+			} else if (row.event == 'del') {
+				// 删除
+				layer.confirm('是否删除购物车？', function(index) {
+					$.ajax({
+						type: 'DELETE',
+						url: 'http://localhost:8081/api/cart',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(row.data),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								});
+								row.del();
+								layer.close(index);
+								table.reload("carts-id");
+							}
+						}
+					});
+				});
+			}
+		});
+
+	});
+</script>
+
+<script type="text/html" id="op-tpl">
+	<a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">编辑</a>
+	<a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="del">删除</a>
+</script>
+
+{{ end }}

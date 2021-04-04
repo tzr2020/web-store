@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>后台管理员登录</title>
+		<link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/manage-login.css" />
+	</head>
+	<body>
+
+		<div class="layui-container">
+			<div class="layui-row user-login-main">
+				<div class="layui-col-md4 layui-col-md-offset4">
+					<div class="user-login-header">
+						<h2>后台管理员登录</h2>
+					</div>
+					<form class="layui-form user-login-body">
+						<div class="layui-form-item">
+							<input type="text" name="username" placeholder="登录名称" class="layui-input"
+								lay-verify="required" lay-verType="tips" lay-reqText="登录名称不能为空" />
+						</div>
+						<div class="layui-form-item">
+							<input type="password" name="password" placeholder="登录密码" class="layui-input"
+								lay-verify="required" lay-verType="tips" lay-reqText="登录密码不能为空" />
+						</div>
+						<div class="layui-form-item">
+							<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="user-login">登录</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="layui-row user-login-footer">
+				<p>©&nbsp;2021</p>
+			</div>
+		</div>
+
+		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			layui.use('form', function() {
+				var form = layui.form;
+				var $ = layui.jquery;
+
+				form.on('submit(user-login)', function(data) {
+					$.ajax({
+						type: 'POST',
+						url: 'http://localhost:8081/api/admin/login',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(data.field),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								window.location.replace("http://localhost:8081/manage/index");
+							}
+						}
+					});
+					return false;
+				});
+
+			});
+		</script>
+	</body>
+</html>

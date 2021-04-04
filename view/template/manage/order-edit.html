@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css" />
+	</head>
+	<body>
+
+		<!-- 隐藏域 -->
+		<input type="hidden" id="select_payment_type" />
+		<input type="hidden" id="select_order_ststus" />
+		
+		<div class="layui-fluid" style="margin-top: 20px;">
+			<form class="layui-form">
+				
+				<!-- 隐藏域 -->
+				<input type="hidden" id="id" name="id" />
+				<input type="hidden" id="uid" name="uid" />
+				<input type="hidden" id="create_time" name="create_time" />
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">购物项数</label>
+					<div class="layui-input-block">
+						<input type="text" id="total_count" name="total_count" placeholder="请输入购物项数" class="layui-input" lay-verify="number"
+							lay-verType="tips">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">订单金额</label>
+					<div class="layui-input-block">
+						<input type="text" id="total_amount" name="total_amount" placeholder="请输入订单金额" class="layui-input" lay-verify="number"
+							lay-verType="tips">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">支付方式</label>
+					<div class="layui-input-block">
+						<select id="payment_type" name="payment_type"></select>
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">快递单号</label>
+					<div class="layui-input-block">
+						<input type="text" id="ship_number" name="ship_number" placeholder="请输入快递单号" class="layui-input">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">快递公司</label>
+					<div class="layui-input-block">
+						<input type="text" id="ship_name" name="ship_name" placeholder="请输入快递公司" class="layui-input">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">运费</label>
+					<div class="layui-input-block">
+						<input type="text" id="ship_fee" name="ship_fee" placeholder="请输入运费" class="layui-input" lay-verify="number"
+							lay-verType="tips">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">订单状态</label>
+					<div class="layui-input-block">
+						<select id="order_status" name="order_status"></select>
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">支付时间</label>
+					<div class="layui-input-block">
+						<input type="text" id="payment_time" name="payment_time" placeholder="请输入支付时间" class="layui-input">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">发货时间</label>
+					<div class="layui-input-block">
+						<input type="text" id="ship_time" name="ship_time" placeholder="请输入发货时间" class="layui-input">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">收货时间</label>
+					<div class="layui-input-block">
+						<input type="text" id="received_time" name="received_time" placeholder="请输入收货时间" class="layui-input">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">完成时间</label>
+					<div class="layui-input-block">
+						<input type="text" id="finish_time" name="finish_time" placeholder="请输入完成时间" class="layui-input">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">关闭时间</label>
+					<div class="layui-input-block">
+						<input type="text" id="close_time" name="close_time" placeholder="请输入关闭时间" class="layui-input">
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<label class="layui-form-label">状态</label>
+					<div class="layui-input-block">
+						<select id="status" name="status">
+							<option value="1">正常</option>
+							<option value="-1">删除</option>
+							<option value="0">禁用</option>
+						</select>
+					</div>
+				</div>
+				
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="update">提交</button>
+					</div>
+				</div>
+				
+			</form>
+		</div>
+
+		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			layui.use(['form', 'layer'], function() {
+				var $ = layui.jquery;
+				var layer = layui.layer;
+				var form = layui.form;
+
+				// 加载订单支付类型下拉框数据，并设置下拉框的默认选项
+				$.getJSON('http://localhost:8081/api/order/payment-type-list2', function(res) {
+					if (res.code != 200) {
+						layer.msg(res.msg)
+					} else {
+						var list = res.data;
+						var str = '';
+						for (var i = 0; i < list.length; i++) {
+							if ($('#select_payment_type').val() == list[i].code) {
+								str += '<option selected value=\"' + list[i].code + '\">' + list[i].text + '</option>';
+							} else {
+								str += '<option value=\"' + list[i].code + '\">' + list[i].text + '</option>';
+							}
+						}
+						$('#payment_type').html(str);
+						form.render('select'); // 重新渲染下拉框
+					}
+				});
+				
+				// 加载订单状态下拉框数据，并设置下拉框的默认选项
+				$.getJSON('http://localhost:8081/api/order/status-list2', function(res) {
+					if (res.code != 200) {
+						layer.msg(res.msg)
+					} else {
+						var list = res.data;
+						var str = '';
+						for (var i = 0; i < list.length; i++) {
+							if ($('#select_order_ststus').val() == list[i].code) {
+								str += '<option selected value=\"' + list[i].code + '\">' + list[i].text + '</option>';
+							} else {
+								str += '<option value=\"' + list[i].code + '\">' + list[i].text + '</option>';
+							}
+						}
+						$('#order_status').html(str);
+						form.render('select'); // 重新渲染下拉框
+					}
+				});
+
+				// 监听表单的提交事件
+				form.on('submit(update)', function(d) {
+					$.ajax({
+						type: 'PUT',
+						url: 'http://localhost:8081/api/order',
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify(d.field),
+						dataType: "json",
+						success: function(res) {
+							if (res.code != 200) {
+								layer.msg(res.msg);
+							} else {
+								layer.msg(res.msg, {
+									time: 1200
+								}, function() {
+									// 关闭弹出层
+									var index = parent.layer.getFrameIndex(window.name);
+									parent.layer.close(index);
+								});
+							}
+						}
+					});
+					return false;
+				});
+
+			});
+		</script>
+	</body>
+</html>
