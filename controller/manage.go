@@ -45,7 +45,10 @@ func index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// 返回后台管理系统首页
-	util.ExecuteTpl(w, "./view/template/manage/manage-index.html")
+	util.ExecuteTowTpl(w, [2]string{
+		"./view/template/manage/manage-layout.html",
+		"./view/template/manage/manage-index.html",
+	})
 }
 
 // usersPage 返回后台管理系统的会员用户列表页面
