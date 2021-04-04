@@ -12,6 +12,7 @@ import (
 func registerAPIUserRoutes() {
 	http.HandleFunc("/api/users", users)
 	http.HandleFunc("/api/user", user)
+	http.HandleFunc("/api/user/username", getUserUsername)
 }
 
 func users(w http.ResponseWriter, r *http.Request) {
@@ -52,6 +53,48 @@ func users(w http.ResponseWriter, r *http.Request) {
 
 func user(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
+	case http.MethodGet:
+		// 获取用户
+
+		// 从查询字符串获取数据
+		pageNo := r.FormValue("pageNo")
+		pageSize := r.FormValue("pageSize")
+		// 数据类型转换
+		intPageNo, err := strconv.Atoi(pageNo)
+		intPageSize, err := strconv.Atoi(pageSize)
+		if err != nil {
+			log.Println(err)
+			util.ResponseWriteJsonOfInsideServer(w)
+			return
+		}
+
+		// 获取cookie
+		c, err := r.Cookie("user")
+		if err != nil {
+			log.Println(err)
+			util.ResponseWriteJsonOfInsideServer(w)
+			return
+		}
+		// 查询数据库，获取Session
+		sessID := c.Value
+		sess, err := model.GetSession(sessID)
+		if err != nil {
+			log.Println(err)
+			util.ResponseWriteJsonOfInsideServer(w)
+			return
+		}
+
+		// 查询数据库，获取会员用户
+		u, err := model.GetUserByID(intPageNo, intPageSize, sess.UserID)
+
+		// 返回成功的JSON响应
+		util.ResponseWriteJson(w, util.Json{
+			Code:  200,
+			Msg:   "获取会员用户成功",
+			Count: 1,
+			Data:  u,
+		})
+
 	case http.MethodPost:
 		// 添加用户
 
@@ -180,4 +223,29 @@ func user(w http.ResponseWriter, r *http.Request) {
 		j.Msg = "数据库更新会员用户成功"
 		util.ResponseWriteJson(w, j)
 	}
+}
+
+// getUserUsername 返回包含会员用户的用户名数据的JSON响应
+func getUserUsername(w http.ResponseWriter, r *http.Request) {
+	// 获取cookie
+	c, err := r.Cookie("user")
+	if err != nil {
+		log.Println(err)
+		util.ResponseWriteJsonOfInsideServer(w)
+		return
+	}
+	// 查询数据库，获取Session
+	sessID := c.Value
+	sess, err := model.GetSession(sessID)
+	if err != nil {
+		log.Println(err)
+		util.ResponseWriteJsonOfInsideServer(w)
+		return
+	}
+	// 返回成功的JSON响应
+	util.ResponseWriteJson(w, util.Json{
+		Code: 200,
+		Msg:  "获取会员用户的用户名成功",
+		Data: sess.Username,
+	})
 }

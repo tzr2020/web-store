@@ -19,6 +19,8 @@ func registerUserRoutes() {
 	http.HandleFunc("/checkUsername", handlerCheckUsername)
 	http.HandleFunc("/logout", handlerLogout)
 	http.HandleFunc("/uploadAvatar", uploadAvatar)
+	http.HandleFunc("/user/space/index", userSpaceIndex)
+	http.HandleFunc("/user/space/accountinfo", userSpaceAccountinfo)
 }
 
 // handlerLogin 用户登录处理器
@@ -352,4 +354,38 @@ func uploadAvatar(w http.ResponseWriter, r *http.Request) {
 			Msg:  "上传用户头像成功",
 		})
 	}
+}
+
+// userSpaceIndex 返回会员用户的个人空间首页
+func userSpaceIndex(w http.ResponseWriter, r *http.Request) {
+	// 判断会员用户是否已经登录
+	ok, _ := IsLogin(r)
+	if !ok {
+		// 重定向到会员用户登录页面
+		w.Header().Set("Location", "/login")
+		w.WriteHeader(302)
+		return
+	}
+	// 返回后台管理系统的会员用户列表页面
+	util.ExecuteTowTpl(w, [2]string{
+		"./view/template/user-space-layout.html",
+		"./view/template/user-space-index.html",
+	})
+}
+
+// userSpaceAccountinfo 返回会员用户的个人空间的账号信息页面
+func userSpaceAccountinfo(w http.ResponseWriter, r *http.Request) {
+	// 判断会员用户是否已经登录
+	ok, _ := IsLogin(r)
+	if !ok {
+		// 重定向到会员用户登录页面
+		w.Header().Set("Location", "/login")
+		w.WriteHeader(302)
+		return
+	}
+	// 返回后台管理系统的会员用户列表页面
+	util.ExecuteTowTpl(w, [2]string{
+		"./view/template/user-space-layout.html",
+		"./view/template/user-space-accountinfo.html",
+	})
 }

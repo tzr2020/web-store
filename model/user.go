@@ -189,3 +189,28 @@ func UpdateUserAvatar(avatar string, uid string) (err error) {
 
 	return nil
 }
+
+func GetUserByID(pageNo int, pageSize int, uid int) ([]*User, error) {
+	query := `select id, username, password, email, nickname, sex, avatar, phone, country, province, city
+		from users
+		where id=?
+		limit ?,?`
+
+	// 查询数据库获取当前页数据
+	rows, err := util.Db.Query(query, uid, (pageNo-1)*pageSize, pageSize)
+	if err != nil {
+		return nil, err
+	}
+	var users []*User
+	for rows.Next() {
+		user := &User{}
+		err = rows.Scan(&user.ID, &user.Username, &user.Password, &user.Email, &user.Nickname,
+			&user.Sex, &user.Avatar, &user.Phone, &user.Country, &user.Province, &user.City)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
+}

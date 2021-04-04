@@ -1,0 +1,95 @@
+{{ define "layout"}}
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>个人空间首页</title>
+		<link rel="stylesheet" type="text/css" href="/static/layui/css/layui.css" />
+		<script src="/static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body class="layui-layout-body">
+
+		<div class="layui-layout layui-layout-admin">
+			<!-- 顶部栏 -->
+			<div class="layui-header">
+				<div class="layui-logo">个人空间</div>
+				<!-- 顶部导航栏 -->
+				<ul class="layui-nav layui-layout-left">
+					<li class="layui-nav-item">
+						<a href="http://localhost:8081/index">
+							<span>商城首页</span>
+						</a>
+					</li>
+				</ul>
+				<ul class="layui-nav layui-layout-right">
+					<li class="layui-nav-item">
+						<a href="javascript:;">
+							<span id="user-username"></span>
+						</a>
+						<dl class="layui-nav-child">
+							<dd><a href="">账号信息</a></dd>
+							<dd><a href="">修改密码</a></dd>
+						</dl>
+					</li>
+					<li class="layui-nav-item"><a href="http://localhost:8081/logout">退出账号</a></li>
+				</ul>
+			</div>
+			
+			<!-- 侧边栏 -->
+			<div class="layui-side layui-bg-black">
+				<div class="layui-side-scroll">
+					<!-- 侧边导航栏 -->
+					<ul class="layui-nav layui-nav-tree">
+						
+						<li class="layui-nav-item">
+							<a class="" href="http://localhost:8081/user/space/accountinfo">查看账号信息</a>
+						</li>
+						
+						<li class="layui-nav-item">
+							<a class="" href="javascript:;">修改账号密码</a>
+						</li>
+						
+						<li class="layui-nav-item">
+							<a class="" href="javascript:;">上传用户头像</a>
+						</li>
+						
+					</ul>
+				</div>
+			</div>
+
+			<!-- 主体 -->
+			<div class="layui-body">
+				<!-- 主体内容 -->
+				{{ block "content" . }}
+				<p>Template not found!</p>
+				{{ end }}
+			</div>
+
+			<!-- 底部 -->
+			<div class="layui-footer">
+				<p style="text-align: center;">&copy;&nbsp;2021</p>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			layui.use(['element', 'layer'], function() {
+				var element = layui.element;
+				var layer = layui.layer;
+				var $ = layui.jquery;
+				
+				// 设置后台管理系统首页的顶部导航栏的管理员用户名
+				$.getJSON('http://localhost:8081/api/user/username', function(res) {
+					if (res.code != 200) {
+						layer.msg(res.msg);
+						$('#user-username').text('未登录账号')
+					} else {
+						$('#user-username').text(res.data)
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
+
+{{ end }}
