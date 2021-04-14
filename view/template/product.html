@@ -9,9 +9,9 @@
     <div class="content_inner inner_c">
         <!-- 面包屑导航 start -->
         <div class="bread_nav">
-            <a href="http://localhost:8081/index">首页</a>
+            <a href="/index">首页</a>
             <span>&gt;</span><a href="/products">所有商品</a>
-            <span>&gt;</span><a href="#">{{ .Product.Category.Name}}</a>
+            <span>&gt;</span><a href="/products?category_id={{ .Product.Category.ID }}">{{ .Product.Category.Name}}</a>
             <span>&gt;</span><span>{{ .Product.Name }}</span>
         </div>
         <!-- 面包屑导航 end -->
