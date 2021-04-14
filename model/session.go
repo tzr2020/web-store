@@ -21,6 +21,7 @@ type Session struct {
 	OrderAddress      *OrderAddress       `json:"order_address"`       // 用于模板
 	IndexPage         *IndexPage          `json:"index_page"`          // 用于模板
 	Nav               *Nav                `json:"nav"`                 // 用于模板
+	Category          *Category           `json:"category"`            // 用于模板
 }
 
 // AddSession 数据库新增Session

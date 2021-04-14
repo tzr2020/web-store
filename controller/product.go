@@ -75,24 +75,31 @@ func registerProductRoutes() {
 
 // getPageProductsByPrice 根据请求参数（价格区间，产品类别）来查询数据库得到相应的产品列表分页结构后，返回产品列表页面
 func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
-	// 获取页码
+	// 从查询字符串获取页码
 	pageNo := r.FormValue("pageNo")
 	if pageNo == "" {
 		pageNo = "1"
 	}
-
-	// 获取价格区间
+	// 从查询字符串获取价格区间
 	minPrice := r.FormValue("min")
 	maxPrice := r.FormValue("max")
 	if minPrice == "" {
 		minPrice = "0"
 	}
-
-	// 获取产品类别id
+	// 从查询字符串获取产品类别id
 	category_id := r.FormValue("category_id")
 
+	var cate *model.Category
 	var page *model.PageProduct
 	var err error
+
+	if category_id != "" {
+		// 查询数据库，获取产品类别
+		cate, err = model.GetCategory(category_id)
+		if err != nil {
+			cate = nil
+		}
+	}
 
 	if maxPrice == "" {
 		if category_id == "" {
@@ -166,6 +173,7 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 	ok, sess := IsLogin(r)
 	if !ok {
 		sess := &model.Session{}
+		sess.Category = cate
 		sess.PageProduct = page
 		sess.Nav = &model.Nav{
 			Categories:  categories,
@@ -182,6 +190,7 @@ func getPageProductsByPrice(w http.ResponseWriter, r *http.Request) {
 			// t.Execute(w, page)
 		}
 	} else {
+		sess.Category = cate
 		sess.PageProduct = page
 		sess.Nav = &model.Nav{
 			Categories:  categories,
