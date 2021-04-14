@@ -24,6 +24,7 @@ func registerOrderRoutes() {
 func WriteOrder(w http.ResponseWriter, r *http.Request) {
 	ok, sess := IsLogin(r)
 
+	// 判断会员用户是否已经登录账号
 	if !ok {
 		log.Println("用户填写订单时，没有登录账号")
 		w.WriteHeader(http.StatusUnauthorized)
@@ -31,6 +32,7 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 获取HTML表单的订单支付方式
 	paymentType := r.PostFormValue("paymentType")
 	if paymentType == "" {
 		paymentType = "1"
@@ -42,6 +44,7 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 查询数据库，获取会员用户的购物车
 	cart, err := model.GetCartByUserID(sess.UserID)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("从数据库获取购物车发生错误:", err)
@@ -54,6 +57,7 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 查询数据库，获取会员用户预存的收货地址
 	address := &model.Address{}
 	addresses, err := model.GetAddressByUserID(sess.UserID)
 	if err != nil && err != sql.ErrNoRows {
@@ -65,13 +69,7 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 		address = addresses[0]
 	}
 
-	shipFee := 11.00
-	order := &model.Order{
-		Payment:     cart.TotalAmount + shipFee,
-		PaymentType: intPaymentType,
-		ShipFee:     shipFee,
-	}
-
+	// 查询数据库，获取所有订单支付方式
 	orderPaymentTypes, err := model.GetOrderPaymentTypes()
 	if err != nil {
 		log.Println("从数据库获取所有订单支付方式发生错误:", err)
@@ -79,6 +77,7 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 查询数据库，获取所有产品类别
 	categories, err := model.GetCategories()
 	if err != nil {
 		log.Println("从数据库获取所有产品类别发生错误:", err)
@@ -86,11 +85,19 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 查询数据库，获取导航栏产品
 	navProducts, err := model.GetNavProducts()
 	if err != nil {
 		log.Println("从数据库获取导航栏产品类别发生错误:", err)
 		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	shipFee := 11.00
+	order := &model.Order{
+		Payment:     cart.TotalAmount + shipFee,
+		PaymentType: intPaymentType,
+		ShipFee:     shipFee,
 	}
 
 	sess.Cart = cart
@@ -117,6 +124,7 @@ func WriteOrder(w http.ResponseWriter, r *http.Request) {
 func CommitOrder(w http.ResponseWriter, r *http.Request) {
 	ok, sess := IsLogin(r)
 
+	// 判断会员用户是否已经登录账号
 	if !ok {
 		log.Println("用户提交订单时，没有登录账号")
 		w.WriteHeader(http.StatusUnauthorized)
@@ -124,6 +132,7 @@ func CommitOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 从HTML表单获取数据
 	name := r.PostFormValue("name")
 	tel := r.PostFormValue("tel")
 	province := r.PostFormValue("province")
@@ -133,6 +142,7 @@ func CommitOrder(w http.ResponseWriter, r *http.Request) {
 	code := r.PostFormValue("code")
 	paymentType := r.PostFormValue("paymentType")
 
+	// 查询数据库，获取会员用户的购物车
 	cart, err := model.GetCartByUserID(sess.UserID)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("从数据库获取购物车发生错误:", err)
@@ -228,6 +238,7 @@ func CommitOrder(w http.ResponseWriter, r *http.Request) {
 func MyOrder(w http.ResponseWriter, r *http.Request) {
 	ok, sess := IsLogin(r)
 
+	// 判断会员用户是否已经登录账号
 	if !ok {
 		log.Println("用户查看订单时，没有登录账号")
 		w.WriteHeader(http.StatusUnauthorized)
@@ -235,6 +246,7 @@ func MyOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 查询数据库，获取会员用户的所有订单
 	orders, err := model.GetOrdersByUserID(sess.UserID)
 	if err != nil {
 		log.Println("数据库获取某用户的所有订单发生错误:", err)
@@ -242,6 +254,7 @@ func MyOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 查询数据库，获取所有产品类别
 	categories, err := model.GetCategories()
 	if err != nil {
 		log.Println("从数据库获取所有产品类别发生错误:", err)
@@ -249,6 +262,7 @@ func MyOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 查询数据库，获取导航栏产品
 	navProducts, err := model.GetNavProducts()
 	if err != nil {
 		log.Println("从数据库获取导航栏产品类别发生错误:", err)
@@ -282,6 +296,7 @@ func MyOrder(w http.ResponseWriter, r *http.Request) {
 func PayOrder(w http.ResponseWriter, r *http.Request) {
 	ok, _ := IsLogin(r)
 
+	// 判断会员用户是否已经登录账号
 	if !ok {
 		log.Println("用户付款订单时，没有登录账号")
 		w.WriteHeader(http.StatusUnauthorized)
@@ -324,6 +339,7 @@ func PayOrder(w http.ResponseWriter, r *http.Request) {
 func ReceivedOrder(w http.ResponseWriter, r *http.Request) {
 	ok, _ := IsLogin(r)
 
+	// 判断会员用户是否已经登录账号
 	if !ok {
 		log.Println("用户付款订单时，没有登录账号")
 		w.WriteHeader(http.StatusUnauthorized)
@@ -366,6 +382,7 @@ func ReceivedOrder(w http.ResponseWriter, r *http.Request) {
 func GetOrderDetail(w http.ResponseWriter, r *http.Request) {
 	ok, sess := IsLogin(r)
 
+	// 判断会员用户是否已经登录账号
 	if !ok {
 		log.Println("用户付款订单时，没有登录账号")
 		w.WriteHeader(http.StatusUnauthorized)
@@ -375,6 +392,7 @@ func GetOrderDetail(w http.ResponseWriter, r *http.Request) {
 
 	orderID := r.FormValue("orderID")
 
+	// 查询数据库，获取订单项
 	orderItems, err := model.GetOrderItemsByOrderID(orderID)
 	if err != nil {
 		log.Println("从数据库获取订单项发生错误:", err)
@@ -382,6 +400,7 @@ func GetOrderDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 查询数据库，获取订单
 	order, err := model.GetOrderByID(orderID)
 	if err != nil {
 		log.Println("从数据库获取订单发生错误:", err)
@@ -389,6 +408,7 @@ func GetOrderDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 查询数据库，获取订单的地址
 	orderAddress, err := model.GetOrderAddressByOrderID(orderID)
 	if err != nil {
 		log.Println("从数据库获取订单地址发生错误:", err)
@@ -398,6 +418,24 @@ func GetOrderDetail(w http.ResponseWriter, r *http.Request) {
 	orderAddress.Address = orderAddress.Province + orderAddress.City +
 		orderAddress.Area + orderAddress.Street
 
+	categories, err := model.GetCategories()
+	if err != nil {
+		log.Println("从数据库获取所有产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	navProducts, err := model.GetNavProducts()
+	if err != nil {
+		log.Println("从数据库获取导航栏产品类别发生错误:", err)
+		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	sess.Nav = &model.Nav{
+		Categories:  categories,
+		NavProducts: navProducts,
+	}
 	sess.OrderItems = orderItems
 	sess.Order = order
 	sess.OrderAddress = orderAddress
