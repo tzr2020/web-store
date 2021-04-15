@@ -1,0 +1,100 @@
+{{ define "content" }}
+
+<link rel="stylesheet" href="/static/css/common2.css">
+<link rel="stylesheet" href="/static/css/products.css">
+
+<!-- 二级页面内容 start -->
+<div class="content">
+    <div class="content_inner inner_c">
+        <!-- 面包屑导航 start -->
+        <div class="bread_nav">
+            <a href="/index">首页</a>
+            <span>&gt;</span><a href="/searchProducts">搜索商品</a>
+        </div>
+        <!-- 面包屑导航 end -->
+
+        <!-- 产品搜索 start -->
+        <div class="s_detail">
+            <div class="price_search">
+                <form action="/searchProducts" method="POST">
+                    <span>价格：</span>
+                    <input type="text" name="min" value=""> 元 -
+                    <input type="text" name="max" value=""> 元&nbsp;
+                    <input type="text" name="product_name" value="" style="width: 200px;">&nbsp;
+                    <button>查询</button>
+                </form>
+            </div>
+
+            <div class="amount">
+                {{ if .PageProduct }}
+                共<span>{{ .PageProduct.TotalRecord }}</span>个商品
+                {{ else }}
+                共<span>0</span>个商品
+                {{ end }}
+            </div>
+        </div>
+        <!-- 产品排序 end -->
+
+        <!-- 产品列表 start -->
+        <div class="s_product">
+            {{ if .PageProduct }}
+            <ul>
+            <!-- 产品盒子 -->
+            {{ range .PageProduct.Products }}
+            <li class="common_product">
+                <div class="pic">
+                    <img src={{ .ImgPath }} alt="product">
+                </div>
+                <div class="s_content">
+                    <p>{{ .Name }}</p>
+                    <span>￥{{ .Price }}</span>
+                </div>
+                <a href="/product?pid={{ .ID }}" class="mask">
+                    {{ if .Stock }}
+                    <span class="btn">查看详情</span>
+                    {{ else }}
+                    <span class="stock_msg">无货，正在补货中</span>
+                    {{ end }}
+                </a>
+            </li>
+            {{ end }}
+            </ul>
+            {{ else }}
+            {{ end }}
+
+            {{ if .PageProduct }}
+            <div id="page_nav">
+                {{ if .PageProduct.IsHasPrev }}
+                <a href="/products?min={{ .PageProduct.MinPrice }}&max={{ .PageProduct.MaxPrice }}&category_id={{ .PageProduct.Category_id }}">首页</a>
+                <a href="/products?pageNo={{ .PageProduct.GetPrevPageNo }}&min={{ .PageProduct.MinPrice }}&max={{ .PageProduct.MaxPrice }}&category_id={{ .PageProduct.Category_id }}">上一页</a>
+                {{ end }}
+
+                当前页:第{{ .PageProduct.PageNo }}页 共{{ .PageProduct.TotalPageNo }}页、{{ .PageProduct.TotalRecord }}件商品
+
+                {{ if .PageProduct.IsHasNext }}
+                <a href="/products?pageNo={{ .PageProduct.GetNextPageNo }}&min={{ .PageProduct.MinPrice }}&max={{ .PageProduct.MaxPrice }}&category_id={{ .PageProduct.Category_id }}">下一页</a>
+                <a href="/products?pageNo={{ .PageProduct.TotalPageNo }}&min={{ .PageProduct.MinPrice }}&max={{ .PageProduct.MaxPrice }}&category_id={{ .PageProduct.Category_id }}">末页</a>
+                {{ end }}
+
+                到第<input value="{{ .PageProduct.PageNo }}" name="pn" id="pn_input" />页
+                <input type="button" value="确定" id="sub">
+
+                <script>
+                    // 给分页跳转确定按钮绑定单击事件
+                    $("#sub").click(function () {
+                        // 获取输入的页码
+                        var pageNo = $("#pn_input").val();
+                        location = "/products?pageNo=" + pageNo + "&min={{ .PageProduct.MinPrice }}&max={{ .PageProduct.MaxPrice }}&category_id={{ .PageProduct.Category_id }}";
+                    });
+                </script>
+            </div>
+            {{ else }}
+            {{ end }}
+
+        </div>
+        <!-- 产品列表 end -->
+    </div>
+</div>
+<!-- 二级页面内容 end -->
+
+{{ end }}

@@ -14,6 +14,7 @@ func registerProductRoutes() {
 	http.HandleFunc("/products", getPageProductsByPrice)
 	// http.HandleFunc("/productsByPrice", getPageProductsByPrice)
 	http.HandleFunc("/product", getProduct)
+	http.HandleFunc("/searchProducts", searchProducts)
 }
 
 // func getProducts(w http.ResponseWriter, r *http.Request) {
@@ -286,5 +287,111 @@ func getProduct(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
 	} else {
 		t.ExecuteTemplate(w, "layout", sess)
+	}
+}
+
+// searchProducts 根据产品名称，搜索产品
+func searchProducts(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		categories, err := model.GetCategories()
+		if err != nil {
+			log.Println("从数据库获取所有产品类别发生错误:", err)
+			http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+			return
+		}
+		navProducts, err := model.GetNavProducts()
+		if err != nil {
+			log.Println("从数据库获取导航栏产品类别发生错误:", err)
+			http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		sess := &model.Session{}
+		sess.Nav = &model.Nav{
+			Categories:  categories,
+			NavProducts: navProducts,
+		}
+
+		// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端
+		t, err := template.ParseFiles("./view/template/layout.html", "./view/template/products-search.html")
+		if err != nil {
+			log.Printf("解析模板文件发生错误：%v\n", err)
+			http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+		} else {
+			t.ExecuteTemplate(w, "layout", sess)
+		}
+	case http.MethodPost:
+		// 从查询字符串获取页码
+		pageNo := r.FormValue("pageNo")
+		if pageNo == "" {
+			pageNo = "1"
+		}
+		// 从查询字符串获取价格区间
+		minPrice := r.FormValue("min")
+		maxPrice := r.FormValue("max")
+		if minPrice == "" {
+			minPrice = "0"
+		}
+		if maxPrice == "" {
+			maxPrice = "100000000"
+		}
+		// 从查询字符串获取产品类别id
+		productName := r.FormValue("product_name")
+
+		page, err := model.GetPageProductsByPriceAndProductName(pageNo, productName, minPrice, maxPrice)
+		if err != nil {
+			log.Println("查询数据库，获取产品发生错误:", err)
+			http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		categories, err := model.GetCategories()
+		if err != nil {
+			log.Println("从数据库获取所有产品类别发生错误:", err)
+			http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		navProducts, err := model.GetNavProducts()
+		if err != nil {
+			log.Println("从数据库获取导航栏产品类别发生错误:", err)
+			http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// 检查用户是否已经登录，返回页面
+		ok, sess := IsLogin(r)
+		if !ok {
+			sess := &model.Session{}
+			sess.PageProduct = page
+			sess.Nav = &model.Nav{
+				Categories:  categories,
+				NavProducts: navProducts,
+			}
+			// 解析模板文件，执行模板结合动态数据，生成最终HTML文档，传递给ResponseWriter响应客户端
+			t, err := template.ParseFiles("./view/template/layout.html", "./view/template/products-search.html")
+			if err != nil {
+				log.Printf("解析模板文件发生错误：%v\n", err)
+				http.Error(w, util.ErrServerInside.Error(), http.StatusInternalServerError)
+			} else {
+				t.ExecuteTemplate(w, "layout", sess)
+			}
+		} else {
+			sess.PageProduct = page
+			sess.Nav = &model.Nav{
+				Categories:  categories,
+				NavProducts: navProducts,
+			}
+			// 解析模板文件
+			t, err := template.ParseFiles("./view/template/layout.html", "./view/template/products-search.html")
+			// 执行模板，生成HTML文档，返回页面
+			if err != nil {
+				log.Printf("解析模板文件发生错误：%v", err)
+				http.Error(w, "服务器内部发生错误", http.StatusInternalServerError)
+			} else {
+				t.ExecuteTemplate(w, "layout", sess)
+			}
+		}
 	}
 }

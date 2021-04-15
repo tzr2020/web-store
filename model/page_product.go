@@ -256,3 +256,57 @@ func GetPageProductsByPriceAndCategoryID(pageNo string, category_id string, minP
 
 	return pageProduct, nil
 }
+
+// GetPageProductsByPriceAndProductName 根据页码，产品名称，价格区间查询数据库，获取产品分页
+func GetPageProductsByPriceAndProductName(pageNo string, productName string, minPrice string, maxPrice string) (*PageProduct, error) {
+	query := `select count(*)
+		from products
+		where name like ?
+		and price between ? and ?`
+	query2 := `select id, category_id, name, price, stock, sales, img_path, detail, hot_point
+		from products
+		where name like ?
+		and price between ? and ? 
+		limit ?, ?`
+
+	iPageNo, _ := strconv.ParseInt(pageNo, 10, 64) // 当前页页码，转换为int类型
+	var pageSize int64 = 12                        // 每页记录数
+	var totalRecord int64                          // 总记录数
+	var totalPageNo int64                          // 总页数
+
+	// 查询数据库，获取总记录数
+	err := util.Db.QueryRow(query, "%"+productName+"%", minPrice, maxPrice).Scan(&totalRecord)
+	if err != nil {
+		return nil, err
+	}
+	// 计算总页数
+	if totalRecord%pageSize == 0 {
+		totalPageNo = totalRecord / pageSize
+	} else {
+		totalPageNo = totalRecord/pageSize + 1
+	}
+
+	// 查询数据库，获取产品
+	rows, err := util.Db.Query(query2, "%"+productName+"%", minPrice, maxPrice, (iPageNo-1)*pageSize, pageSize)
+	if err != nil {
+		return nil, err
+	}
+	var ps []*Product
+	for rows.Next() {
+		p := &Product{}
+		rows.Scan(&p.ID, &p.Category_id, &p.Name, &p.Price, &p.Stock, &p.Sales,
+			&p.ImgPath, &p.Detail, &p.HotPoint)
+		ps = append(ps, p)
+	}
+
+	// 产品分页结构
+	pageProduct := &PageProduct{
+		Products:    ps,
+		PageNo:      iPageNo,
+		PageSize:    pageSize,
+		TotalPageNo: totalPageNo,
+		TotalRecord: totalRecord,
+	}
+
+	return pageProduct, nil
+}
