@@ -11,8 +11,6 @@ func RegsiRoutes() {
 	registerManageRoutes()
 
 	// 前台页面处理器注册路由
-	registerHomeRoutes()
-	registerAboutRoutes()
 	registerUserRoutes()
 	registerProductRoutes()
 	regsiterCartRoutes()
