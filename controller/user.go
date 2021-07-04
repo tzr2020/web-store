@@ -294,7 +294,7 @@ func uploadAvatar(w http.ResponseWriter, r *http.Request) {
 		userID := r.PostFormValue("userID")
 
 		// 解析请求包体，设置用于存储包体数据的内存大小
-		r.ParseMultipartForm(32 << 20)
+		r.ParseMultipartForm(32 << 20) // 32MB
 
 		// 获取上传文件
 		file, handler, err := r.FormFile("avatarFile")

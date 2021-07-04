@@ -82,8 +82,8 @@
         // 购物项的产品数量input绑定change事件
         $(".updateCartItem").change(function () {
             var cartItemID = $(this).attr("id");
-            var bookCount = $(this).val();
-            location = "/updateCartItem?cartItemID=" + cartItemID + "&productCount=" + bookCount;
+            var productCount = $(this).val();
+            location = "/updateCartItem?cartItemID=" + cartItemID + "&productCount=" + productCount;
         });
     });
 </script>

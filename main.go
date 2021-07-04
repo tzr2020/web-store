@@ -16,7 +16,7 @@ func main() {
 	}
 
 	// 路由器注册路由规则和处理器
-	controller.RegsiRoutes()
+	controller.RegisterRoutes()
 
 	// 启动服务器
 	err := server.ListenAndServe()
