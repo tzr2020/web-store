@@ -72,7 +72,7 @@
 
 在MVC开发模式中，M代表Model即模型，V代表View即视图，C代表Controller即控制器。根据分层原则，将Web开发中的代码解耦，使得系统具有可扩展性、易维护性和可重用性，方便程序员维护和阅读代码。
 
-![image](https://raw.githubusercontent.com/tzr2020/Github-Article/main/Image/Go Web MVC 开发模式.png)
+![image](https://raw.githubusercontent.com/tzr2020/Github-Article/main/Image/GoWebMVC开发模式.png)
 
 Controller 层负责业务中的处理逻辑，主要流程有获取数据、处理数据和返回数据。
 
